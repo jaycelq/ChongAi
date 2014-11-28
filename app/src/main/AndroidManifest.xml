@@ -25,6 +25,10 @@
             android:name="me.qiang.android.chongai.Activity.CustomAlbum"
             android:label="@string/title_activity_custom_album" >
         </activity>
+        <activity
+            android:name="me.qiang.android.chongai.Activity.ImagePager"
+            android:label="@string/title_activity_image_pager" >
+        </activity>
     </application>
 
 </manifest>

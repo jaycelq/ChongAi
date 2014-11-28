@@ -15,6 +15,7 @@
  *******************************************************************************/
 package me.qiang.android.chongai.Fragment;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -42,6 +43,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import me.qiang.android.chongai.Activity.ImagePager;
 import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.PopUpWindow.ListImageDirPopupWindow;
 import me.qiang.android.chongai.R;
@@ -237,9 +239,27 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
             ImageLoader.getInstance()
                     .displayImage(imageUrls.get(position), holder.imageView, options);
             item_select.setImageResource(R.drawable.picture_unselected);
+
+
+            imageView.setColorFilter(null);
+            imageView.setTag(position);
+            //设置ImageView的点击事件
+            imageView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    Intent intent = new Intent(getActivity(), ImagePager.class);
+                    Bundle bundle=new Bundle();
+                    bundle.putInt(Constants.Extra.IMAGE_POSITION, (Integer)v.getTag());
+                    bundle.putStringArrayList(Constants.Extra.IMAGE_TO_SHOW, (ArrayList)imageUrls);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
+            });
+
             item_select.setColorFilter(null);
             item_select.setTag(position);
-            //设置ImageView的点击事件
             item_select.setOnClickListener(new View.OnClickListener()
             {
                 //选择，则将图片变暗，反之则反之
@@ -247,7 +267,6 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
                 public void onClick(View v)
                 {
                     int position = (int) v.getTag();
-                    // 已经选择过该图片
                     if (mSelectedImage.contains(imageUrls.get(position)))
                     {
                         mSelectedImage.remove(imageUrls.get(position));
@@ -269,9 +288,6 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
                 }
             });
 
-            /**
-             * 已经选择过的图片，显示出选择过的效果
-             */
             if (mSelectedImage.contains(imageUrls.get(position)))
             {
                 holder.item_select.setImageResource(R.drawable.pictures_selected);
