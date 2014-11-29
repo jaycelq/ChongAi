@@ -1,5 +1,6 @@
 package me.qiang.android.chongai.Fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -14,6 +15,9 @@ import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.qiang.android.chongai.Activity.CustomAlbum;
 import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.R;
@@ -21,16 +25,16 @@ import me.qiang.android.chongai.widget.ExpandableGridView;
 
 public class StateEditFragment extends AbsListViewBaseFragment {
 
-    String[] imageUrls = Constants.IMAGES;
+    List<String> imageUrls = new ArrayList<String>();
 
     DisplayImageOptions options;
+    ImageAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         options = new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.ic_stub)
                 .showImageForEmptyUri(R.drawable.ic_empty)
                 .showImageOnFail(R.drawable.ic_error)
                 .cacheInMemory(true)
@@ -50,15 +54,30 @@ public class StateEditFragment extends AbsListViewBaseFragment {
     private void initView(View rootView) {
         listView = (ExpandableGridView) rootView.findViewById(R.id.listView);
         ((ExpandableGridView)listView).setExpanded(true);
-        ((GridView) listView).setAdapter(new ImageAdapter());
+        imageUrls.add("drawable://" + R.drawable.icon_addpic_unfocused);
+        adapter = new ImageAdapter();
+        ((GridView) listView).setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), CustomAlbum.class);
-                startActivity(intent);
-
+                if (position == imageUrls.size() - 1) {
+                    Intent intent = new Intent(getActivity(), CustomAlbum.class);
+                    intent.putStringArrayListExtra(Constants.Extra.IMAGE_SELECTED, (ArrayList)imageUrls);
+                    startActivityForResult(intent, Constants.Extra.ALBUM_MUTIPLE_SELECT);
+                }
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Constants.Extra.ALBUM_MUTIPLE_SELECT && resultCode == Activity.RESULT_OK) {
+            imageUrls = data.getStringArrayListExtra(Constants.Extra.IMAGE_SELECTED);
+            imageUrls.add("drawable://" + R.drawable.icon_addpic_unfocused);
+            adapter.notifyDataSetChanged();
+        }
     }
 
     public class ImageAdapter extends BaseAdapter {
@@ -71,7 +90,9 @@ public class StateEditFragment extends AbsListViewBaseFragment {
 
         @Override
         public int getCount() {
-            return imageUrls.length;
+            int size = imageUrls.size();
+            if (size > 9) size = 9;
+            return size;
         }
 
         @Override
@@ -99,7 +120,11 @@ public class StateEditFragment extends AbsListViewBaseFragment {
             }
 
             ImageLoader.getInstance()
-                    .displayImage(imageUrls[position], holder.imageView, options);
+                    .displayImage(imageUrls.get(position), holder.imageView, options);
+//            ImageSize targetSize = new ImageSize(150, 150);
+//            Bitmap bmp = ImageLoader.getInstance()
+//                    .loadImageSync(imageUrls.get(position), targetSize, options);
+//            holder.imageView.setImageBitmap(bmp);
 
             return view;
         }

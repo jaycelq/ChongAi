@@ -15,12 +15,15 @@
  *******************************************************************************/
 package me.qiang.android.chongai.Fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +43,6 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import me.qiang.android.chongai.Activity.ImagePager;
@@ -58,7 +60,7 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
 
     private final static int SCAN_OK = 1;
 	List<String> imageUrls = new ArrayList<String>();
-    public  List<String> mSelectedImage = new LinkedList<String>();
+    public  List<String> mSelectedImage = new ArrayList<String>();
 
 	DisplayImageOptions options;
     private AlbumHelper helper;
@@ -70,6 +72,7 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
     private RelativeLayout mBottomLy;
     private TextView albumChoosed;
     private TextView albumImageCount;
+    private ImageView select;
 
     private Handler mHandler = new Handler(){
         @Override
@@ -162,13 +165,20 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
 	}
 
     private void initView(View rootView) {
+        ActionBarActivity actionBarActivity = (ActionBarActivity)getActivity();
+        ActionBar actionBar = actionBarActivity.getSupportActionBar();
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setCustomView(R.layout.actionbar);
         listView = (GridView) rootView.findViewById(R.id.grid);
         mBottomLy = (RelativeLayout) rootView.findViewById(R.id.id_bottom_ly);
         albumChoosed = (TextView) rootView.findViewById(R.id.id_choose_dir);
         albumImageCount = (TextView) rootView.findViewById(R.id.id_total_count);
+        select = (ImageView) getActivity().findViewById(R.id.state_edit_send);
         DisplayMetrics outMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(outMetrics);
         mScreenHeight = outMetrics.heightPixels;
+        mSelectedImage = getActivity().getIntent().getStringArrayListExtra(Constants.Extra.IMAGE_SELECTED);
+        mSelectedImage.remove(mSelectedImage.size() - 1);
     }
 
     private void initEvent()
@@ -191,6 +201,15 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
                     lp.alpha = .3f;
                     getActivity().getWindow().setAttributes(lp);
                 }
+            }
+        });
+
+        select.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent data = new Intent().putStringArrayListExtra(Constants.Extra.IMAGE_SELECTED, (ArrayList)mSelectedImage);
+                getActivity().setResult(Activity.RESULT_OK, data);
+                getActivity().finish();
             }
         });
     }

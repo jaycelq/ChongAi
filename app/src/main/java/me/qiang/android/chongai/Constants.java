@@ -151,5 +151,9 @@ public final class Constants {
 		public static final String FRAGMENT_INDEX = "com.nostra13.example.universalimageloader.FRAGMENT_INDEX";
 		public static final String IMAGE_POSITION = "com.nostra13.example.universalimageloader.IMAGE_POSITION";
         public static final String IMAGE_TO_SHOW = "me.qiang.android.imagepager.IMAGE_TO_SHOW";
+        public static final String IMAGE_SELECTED = "me.qiang.android.imagegrid.IMAGE_SELECTED";
+        public static final String BITMAP_SELECTED = "me.qiang.android.imagegrid.BITMAP_SELECTED";
+
+        public static final int ALBUM_MUTIPLE_SELECT = 100;
 	}
 }
