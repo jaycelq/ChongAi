@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 
@@ -18,12 +19,14 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.qiang.android.chongai.Activity.BaiduLBS;
 import me.qiang.android.chongai.Activity.CustomAlbum;
 import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.widget.ExpandableGridView;
 
 public class StateEditFragment extends AbsListViewBaseFragment {
+    private Button btnMap;
 
     List<String> imageUrls = new ArrayList<String>();
 
@@ -65,6 +68,16 @@ public class StateEditFragment extends AbsListViewBaseFragment {
                     intent.putStringArrayListExtra(Constants.Extra.IMAGE_SELECTED, (ArrayList)imageUrls);
                     startActivityForResult(intent, Constants.Extra.ALBUM_MUTIPLE_SELECT);
                 }
+            }
+        });
+
+
+        //添加一个地图测试按钮
+        btnMap=(Button)rootView.findViewById(R.id.btnMap);
+        btnMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(),BaiduLBS.class));
             }
         });
     }
