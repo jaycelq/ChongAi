@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="E:\ChongAi\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.2\classes.jar"
+        jumboMode="false"
+        revision="21.1.0"
+        sha1="d1bf02de1c56d942e7a9d093b8610ba1ef4128e3">
+        <dex dex="E:\ChongAi\app\build\intermediates\pre-dexed\debug\classes-db4582d5fda7b16ac4c4d52b8cda0b786be186c6.jar" />
+    </item>
+    <item
+        jar="C:\Users\qiang\.gradle\caches\modules-2\files-2.1\com.nostra13.universalimageloader\universal-image-loader\1.9.3\a85588bec3e2c4584d593d3f15df1677321bca72\universal-image-loader-1.9.3.jar"
+        jumboMode="false"
+        revision="21.1.0"
+        sha1="a85588bec3e2c4584d593d3f15df1677321bca72">
+        <dex dex="E:\ChongAi\app\build\intermediates\pre-dexed\debug\universal-image-loader-1.9.3-5d0ba75dc9ef5d8f16f83f83fd3c7c06384e8af9.jar" />
+    </item>
+    <item
+        jar="D:\sdk\extras\android\m2repository\com\android\support\support-annotations\21.0.2\support-annotations-21.0.2.jar"
+        jumboMode="false"
+        revision="21.1.0"
+        sha1="99373741f99a0556ee293c41e8faa1ca3ae8a4e6">
+        <dex dex="E:\ChongAi\app\build\intermediates\pre-dexed\debug\support-annotations-21.0.2-644f1fb9143f9421813b635a264cb7aa256453b7.jar" />
+    </item>
+    <item
+        jar="E:\ChongAi\app\libs\BaiduLBS_Android.jar"
+        jumboMode="false"
+        revision="21.1.0"
+        sha1="0bcf5f1b3b75dea10f12b24831d0bd102718ee42">
+        <dex dex="E:\ChongAi\app\build\intermediates\pre-dexed\debug\BaiduLBS_Android-9f55033ad232107f52aa49b2144102461c398994.jar" />
+    </item>
+    <item
+        jar="E:\ChongAi\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.2\libs\internal_impl-21.0.2.jar"
+        jumboMode="false"
+        revision="21.1.0"
+        sha1="962e8b12569c56dbdcf8367eb4eac8bb129cd18f">
+        <dex dex="E:\ChongAi\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.2-839920549a16a26329be08cd300b9e729532777c.jar" />
+    </item>
+    <item
+        jar="E:\ChongAi\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.2\classes.jar"
+        jumboMode="false"
+        revision="21.1.0"
+        sha1="7ae2d38807a43b2f2185ff4089a92c790b579e54">
+        <dex dex="E:\ChongAi\app\build\intermediates\pre-dexed\debug\classes-f5e3d8eb27b900b928e42d5ff66d63db4930fe96.jar" />
+    </item>
+
+</items>
