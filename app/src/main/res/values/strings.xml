@@ -16,5 +16,6 @@
     <string name="state_edit_hint">说点什么吧…</string>
     <string name="title_activity_image_pager">ImagePager</string>
     <string name="select_image">选择图片</string>
+    <string name="title_activity_baidu_map">BaiduMap</string>
 
 </resources>

@@ -26,5 +26,10 @@
         android:stretchMode="columnWidth"
         android:verticalSpacing="4dip"
         android:padding="4dip" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnMap"
+        android:text="地图"/>
 </LinearLayout>
 </ScrollView>
