@@ -145,6 +145,12 @@ public class LoginActivity extends BaseLoginRegisterActivity {
                     Log.i("JSON", response.toString());
                     showProgress(false);
                 }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    Log.i("JSON", "JSON FAIL");
+                    showProgress(false);
+                }
             });
         }
     }
