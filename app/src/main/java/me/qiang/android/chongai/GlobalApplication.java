@@ -15,6 +15,8 @@ import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public class GlobalApplication extends Application {
+    private static Context context;
+
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     @SuppressWarnings("unused")
     @Override
@@ -25,6 +27,7 @@ public class GlobalApplication extends Application {
         }
 
         super.onCreate();
+        GlobalApplication.context = getApplicationContext();
 
         initImageLoader(getApplicationContext());
     }
@@ -44,5 +47,9 @@ public class GlobalApplication extends Application {
                 .build();
         // Initialize ImageLoader with configuration.
         ImageLoader.getInstance().init(config);
+    }
+
+    public static Context getAppContext() {
+        return GlobalApplication.context;
     }
 }

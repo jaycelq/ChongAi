@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,24 +24,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-
-import org.apache.http.Header;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import me.qiang.android.chongai.R;
-import me.qiang.android.chongai.util.HttpClient;
-import me.qiang.android.chongai.util.MD5;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
+public class BaseLoginRegisterActivity extends Activity implements LoaderCallbacks<Cursor> {
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -148,10 +138,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            //mAuthTask = new UserLoginTask(email, password);
-            //mAuthTask.execute((Void) null);
-            LoginHttpClient loginHttpClient = new LoginHttpClient(email, password);
-            loginHttpClient.login();
+            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask.execute((Void) null);
         }
     }
 
@@ -249,7 +237,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(LoginActivity.this,
+                new ArrayAdapter<String>(BaseLoginRegisterActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);
@@ -309,45 +297,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         protected void onCancelled() {
             mAuthTask = null;
             showProgress(false);
-        }
-    }
-
-    public class LoginHttpClient {
-        private final String mEmail;
-        private final String mPassword;
-        private JSONObject userInfo = new JSONObject();
-
-        LoginHttpClient(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-            try {
-                userInfo.put("email", mEmail);
-                userInfo.put("password", MD5.md5(mPassword));
-            } catch (JSONException ex) {
-                // 键为null或使用json不支持的数字格式(NaN, infinities)
-                throw new RuntimeException(ex);
-            }
-
-        }
-
-        public void login(){
-            RequestParams params = new RequestParams();
-            params.setUseJsonStreamer(true);
-            params.put("act", "login");
-            params.put("userinfo", userInfo);
-            HttpClient.post("page1.php", params, new AsyncHttpResponseHandler() {
-                @Override
-                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                    Log.i("GET", "fail");
-                    showProgress(false);
-                }
-
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                    Log.i("GET", "success");
-                    showProgress(false);
-                }
-            });
         }
     }
 }

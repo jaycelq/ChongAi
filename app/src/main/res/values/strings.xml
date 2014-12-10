@@ -17,5 +17,10 @@
     <string name="title_activity_image_pager">ImagePager</string>
     <string name="select_image">选择图片</string>
     <string name="title_activity_baidu_map">BaiduMap</string>
+    <string name="title_activity_navagation">NavagationActivity</string>
+    <string name="login">登陆</string>
+    <string name="visitor">访客登陆</string>
+    <string name="register">还没有账号？点击注册！</string>
+    <string name="otherlogin">第三方登陆</string>
 
 </resources>
