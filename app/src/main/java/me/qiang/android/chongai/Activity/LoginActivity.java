@@ -143,6 +143,7 @@ public class LoginActivity extends BaseLoginRegisterActivity {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     // If the response is JSONObject instead of expected JSONArray
                     Log.i("JSON", response.toString());
+                    showProgress(false);
                 }
             });
         }
