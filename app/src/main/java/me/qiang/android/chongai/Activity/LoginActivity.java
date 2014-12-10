@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import org.apache.http.Header;
@@ -138,17 +138,11 @@ public class LoginActivity extends BaseLoginRegisterActivity {
             params.setUseJsonStreamer(true);
             params.put("act", "login");
             params.put("userinfo", userInfo);
-            HttpClient.post("login", params, new AsyncHttpResponseHandler() {
+            HttpClient.post("login", params, new JsonHttpResponseHandler() {
                 @Override
-                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                    Log.i("GET", "fail");
-                    showProgress(false);
-                }
-
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                    Log.i("GET", "success");
-                    showProgress(false);
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    // If the response is JSONObject instead of expected JSONArray
+                    Log.i("JSON", response.toString());
                 }
             });
         }
