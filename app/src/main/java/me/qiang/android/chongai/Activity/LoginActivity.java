@@ -138,7 +138,7 @@ public class LoginActivity extends BaseLoginRegisterActivity {
             params.setUseJsonStreamer(true);
             params.put("act", "login");
             params.put("userinfo", userInfo);
-            HttpClient.post("page1.php", params, new AsyncHttpResponseHandler() {
+            HttpClient.post("login", params, new AsyncHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                     Log.i("GET", "fail");

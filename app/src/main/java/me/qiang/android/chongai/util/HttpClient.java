@@ -11,7 +11,7 @@ import me.qiang.android.chongai.GlobalApplication;
  * Created by qiang on 12/10/2014.
  */
 public class HttpClient {
-    private static final String BASE_URL="http://192.168.1.234/";
+    private static final String BASE_URL="http://128.199.226.246/";
 
     private static AsyncHttpClient client = new AsyncHttpClient();
     private static PersistentCookieStore myCookieStore = new PersistentCookieStore(GlobalApplication.getAppContext());
