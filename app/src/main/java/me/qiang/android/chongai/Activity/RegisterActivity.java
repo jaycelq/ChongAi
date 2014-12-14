@@ -5,8 +5,9 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -20,32 +21,30 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import me.qiang.android.chongai.GlobalApplication;
 import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.util.HttpClient;
 import me.qiang.android.chongai.util.MD5;
 
-/**
- * A login screen that offers login via email/password.
- */
-public class LoginActivity extends BaseLoginRegisterActivity {
+public class RegisterActivity extends BaseLoginRegisterActivity {
 
+    private EditText mPasswordConfirmView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
+        mPasswordConfirmView = (EditText) findViewById(R.id.password_confirm);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                    attemptRegister();
                     return true;
                 }
                 return false;
@@ -53,35 +52,56 @@ public class LoginActivity extends BaseLoginRegisterActivity {
         });
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                attemptRegister();
             }
         });
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-        showProgress(false);
-        Log.i("Login", "onCreate");
     }
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_register, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    public void attemptLogin() {
+    public void attemptRegister() {
 
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
+        mPasswordConfirmView.setError(null);
 
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String passwordConfirm = mPasswordConfirmView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -93,6 +113,14 @@ public class LoginActivity extends BaseLoginRegisterActivity {
             focusView = mPasswordView;
             cancel = true;
         }
+
+        // Check if password confirm is equal to password
+        if(!TextUtils.equals(password, passwordConfirm)) {
+            mPasswordConfirmView.setError(getString(R.string.error_different_password));
+            focusView = mPasswordConfirmView;
+            cancel = true;
+        }
+
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
@@ -113,18 +141,17 @@ public class LoginActivity extends BaseLoginRegisterActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            LoginHttpClient loginHttpClient = new LoginHttpClient(email, password);
-            loginHttpClient.login();
+            RegisterHttpClient registerHttpClient = new RegisterHttpClient(email, password);
+            registerHttpClient.register();
         }
     }
 
-
-    public class LoginHttpClient {
+    public class RegisterHttpClient {
         private final String mEmail;
         private final String mPassword;
         private JSONObject userInfo = new JSONObject();
 
-        LoginHttpClient(String email, String password) {
+        RegisterHttpClient(String email, String password) {
             mEmail = email;
             mPassword = password;
             try {
@@ -137,25 +164,21 @@ public class LoginActivity extends BaseLoginRegisterActivity {
 
         }
 
-        public void login(){
+        public void register(){
             RequestParams params = new RequestParams();
             params.setUseJsonStreamer(true);
-            params.put("act", "login");
+            params.put("act", "register");
             params.put("userinfo", userInfo);
-            HttpClient.post("login", params, new JsonHttpResponseHandler() {
+            HttpClient.post("login/register", params, new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     // If the response is JSONObject instead of expected JSONArray
                     Log.i("JSON", response.toString());
                     try {
                         if(response.getInt("status") == 0) {
-                            GlobalApplication.setLoginStatus(true, mEmail);
-                            Intent intent = new Intent(LoginActivity.this, StateEdit.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
+                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                         }
-                        else
-                            showProgress(false);
+                        showProgress(false);
                     } catch (JSONException ex)
                     {}
                 }
@@ -169,6 +192,3 @@ public class LoginActivity extends BaseLoginRegisterActivity {
         }
     }
 }
-
-
-

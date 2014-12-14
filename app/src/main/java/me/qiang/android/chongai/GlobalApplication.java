@@ -16,6 +16,7 @@ import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
  */
 public class GlobalApplication extends Application {
     private static Context context;
+    public static LoginStatus loginStatus = new LoginStatus();
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     @SuppressWarnings("unused")
@@ -51,5 +52,20 @@ public class GlobalApplication extends Application {
 
     public static Context getAppContext() {
         return GlobalApplication.context;
+    }
+
+    public static class LoginStatus {
+        public boolean isLogin;
+        public String user_email;
+
+        LoginStatus() {
+            isLogin = false;
+            user_email = null;
+        }
+    }
+
+    public static void setLoginStatus(boolean isLogin, String user_email) {
+        loginStatus.isLogin = isLogin;
+        loginStatus.user_email = user_email;
     }
 }

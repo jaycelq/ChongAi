@@ -69,6 +69,7 @@ public class NavigationActivity extends ActionBarActivity implements View.OnClic
             case R.id.otherlogin:
                 break;
             case R.id.register:
+                startActivity(new Intent(this, RegisterActivity.class));
                 break;
         }
     }
