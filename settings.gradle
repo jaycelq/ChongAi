@@ -1,1 +1,3 @@
-include ':app'
+include ':libraries:Android-PullToRefresh:extras:pullToRefreshListFragment'
+include ':libraries:Android-PullToRefresh:extras:pullToRefreshViewPager'
+include ':app',':libraries:Android-PullToRefresh'

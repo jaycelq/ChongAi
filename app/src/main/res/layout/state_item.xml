@@ -13,6 +13,7 @@
         app:border_color="#FF000000"/>
 
     <RelativeLayout
+        android:id="@+id/state_owner_title"
         android:layout_toRightOf="@id/state_owner_photo"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
@@ -35,5 +36,14 @@
             android:text="时间"/>
 
     </RelativeLayout>
+    
+    <ImageView
+        android:id="@+id/state_body_image"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:layout_below="@id/state_owner_title"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/hugh"/>
 
 </RelativeLayout>

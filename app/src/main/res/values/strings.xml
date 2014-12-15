@@ -23,5 +23,6 @@
     <string name="register">还没有账号？点击注册！</string>
     <string name="otherlogin">第三方登陆</string>
     <string name="title_activity_register">RegisterActivity</string>
+    <string name="title_activity_state_explore">StateExploreActivity</string>
 
 </resources>
