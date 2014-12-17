@@ -29,6 +29,7 @@
             android:text="名字"/>
 
         <TextView
+            android:id="@+id/state_create_time"
             android:layout_alignParentBottom="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
