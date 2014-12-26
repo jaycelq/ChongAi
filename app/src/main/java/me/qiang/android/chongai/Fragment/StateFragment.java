@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -193,8 +194,9 @@ public class StateFragment extends Fragment {
                 assert view != null;
                 holder.stateOwnerPhoto = (CircleImageView) view.findViewById(R.id.state_owner_photo);
                 holder.stateOwnerName = (TextView) view.findViewById(R.id.state_owner_name);
-                holder.stateCreateTime = (TextView) view.findViewById(R.id.state_create_time);
+                holder.stateCreateTime = (TextView) view.findViewById(R.id.state_create_distance);
                 holder.stateBodyImage = (ImageView) view.findViewById(R.id.state_body_image);
+                holder.stateBodyPraise = (LinearLayout) view.findViewById(R.id.state_body_praise);
                 view.setTag(holder);
             } else {
                 holder = (ViewHolder) view.getTag();
@@ -202,8 +204,9 @@ public class StateFragment extends Fragment {
 
             holder.stateOwnerPhoto.setImageResource(R.drawable.hugh);
             holder.stateBodyImage.setImageResource(R.drawable.hugh);
-            holder.stateCreateTime.setText("时间");
-            holder.stateOwnerName.setText("名字");
+
+            CircleImageView praisePhoto = (CircleImageView) inflater.inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
+            holder.stateBodyPraise.addView(praisePhoto);
 
 
             return view;
@@ -215,5 +218,6 @@ public class StateFragment extends Fragment {
         TextView stateOwnerName;
         TextView stateCreateTime;
         ImageView stateBodyImage;
+        LinearLayout stateBodyPraise;
     }
 }

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tab_menu"
+    android:layout_width="fill_parent"
+    android:layout_height="50dp"
+    android:background="@color/myPrimaryDarkColor"
+    android:orientation="horizontal">
+
+    <RadioButton
+        android:id="@+id/rbChat"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/home"
+        android:drawablePadding="5dp"
+        android:button="@null"
+        android:checked="true"
+        android:gravity="center_horizontal|bottom"
+        android:paddingTop="2dp"
+        android:text="微信" />
+
+    <RadioButton
+        android:id="@+id/rbAddress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/date"
+        android:drawablePadding="5dp"
+        android:button="@null"
+        android:gravity="center_horizontal|bottom"
+        android:paddingTop="2dp"
+        android:text="越遛" />
+
+    <!--<RadioButton-->
+        <!--android:id="@+id/addState"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_weight="1"-->
+        <!--android:drawableTop="@drawable/plus"-->
+        <!--android:drawablePadding="5dp"-->
+        <!--android:button="@null"-->
+        <!--android:gravity="center_horizontal|bottom"-->
+        <!--android:paddingTop="2dp"-->
+        <!--android:text="发布" />-->
+    <ImageView
+        android:id="@+id/add_state"
+        android:padding="10dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:src="@drawable/plus"/>
+
+    <RadioButton
+        android:id="@+id/rbFind"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/map"
+        android:drawablePadding="5dp"
+        android:button="@null"
+        android:gravity="center_horizontal|bottom"
+        android:paddingTop="2dp"
+        android:text="地图" />
+
+    <RadioButton
+        android:id="@+id/rbMe"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/question"
+        android:drawablePadding="5dp"
+        android:button="@null"
+        android:gravity="center_horizontal|bottom"
+        android:paddingTop="2dp"
+        android:text="我" />
+</RadioGroup>

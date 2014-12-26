@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<de.hdodenhof.circleimageview.CircleImageView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/praise_photo"
+    android:layout_width="23dp"
+    android:layout_height="23dp"
+    android:src="@drawable/hugh"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    app:border_width="2dp"
+    app:border_color="#FF000000"/>

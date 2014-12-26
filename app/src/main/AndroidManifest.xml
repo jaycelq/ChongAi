@@ -61,6 +61,10 @@
         <activity
             android:name=".Activity.StateExploreActivity"
             android:label="@string/title_activity_state_explore" >
+        </activity>
+        <activity
+            android:name=".Activity.MainActivity"
+            android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
