@@ -51,7 +51,8 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="center"
-        android:src="@drawable/plus"/>
+        android:src="@drawable/plus"
+        android:background="?android:attr/selectableItemBackground"/>
 
     <RadioButton
         android:id="@+id/rbFind"

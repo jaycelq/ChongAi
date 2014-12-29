@@ -2,7 +2,7 @@ package me.qiang.android.chongai.Fragment;
 
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +14,7 @@ import me.qiang.android.chongai.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BottomNavigationFragment extends Fragment {
+public class BottomNavigationFragment extends BaseFragment {
 
     private OnFragmentInteractionListener mListener;
     ImageView addState;
