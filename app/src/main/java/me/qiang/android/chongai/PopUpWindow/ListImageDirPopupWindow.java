@@ -68,6 +68,7 @@ public class ListImageDirPopupWindow extends PopupWindow
 	}
 
     public void setPositionSelected(int positionSelected) {
+        mListDir.setItemChecked(positionSelected, true);
         this.positionSelected = positionSelected;
         adapter.notifyDataSetChanged();
     }
@@ -75,6 +76,7 @@ public class ListImageDirPopupWindow extends PopupWindow
 	public void initViews()
 	{
 		mListDir = (ListView) mConvertView.findViewById(R.id.id_list_dir);
+        mListDir.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         adapter = new PopUpWindowAdapter();
 		mListDir.setAdapter(adapter);
 	}

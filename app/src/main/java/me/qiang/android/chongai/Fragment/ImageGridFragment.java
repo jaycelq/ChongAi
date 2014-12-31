@@ -28,7 +28,8 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
@@ -74,6 +75,11 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
     private TextView albumImageCount;
     private ImageView select;
 
+    // TODO: remove it
+    private ListView listDir;
+    Animation slide_in;
+    Animation slide_out;
+
     private Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -104,9 +110,10 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
             public void onDismiss()
             {
                 // 设置背景颜色变暗
-                WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
-                lp.alpha = 1.0f;
-                getActivity().getWindow().setAttributes(lp);
+//                WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
+//                lp.alpha = 1.0f;
+//                getActivity().getWindow().setAttributes(lp);
+                listView.setAlpha(1.0f);
             }
         });
         albumListView = (ListView) container.findViewById(R.id.id_list_dir);
@@ -114,6 +121,8 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 albumPopUpWindow.setPositionSelected(position);
+                ImageView album_select = (ImageView)view.findViewById(R.id.album_select);
+                album_select.setImageResource(R.drawable.dir_choose);
                 getImages(albumList.get(position).getFolderName());
                 albumChoosed.setText(albumList.get(position).getFolderName());
                 albumImageCount.setText(albumList.get(position).getImageCounts() + "张");
@@ -177,8 +186,50 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
         DisplayMetrics outMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(outMetrics);
         mScreenHeight = outMetrics.heightPixels;
-        mSelectedImage = getActivity().getIntent().getStringArrayListExtra(Constants.Extra.IMAGE_SELECTED);
-        mSelectedImage.remove(mSelectedImage.size() - 1);
+//        mSelectedImage = getActivity().getIntent().getStringArrayListExtra(Constants.Extra.IMAGE_SELECTED);
+//        mSelectedImage.remove(mSelectedImage.size() - 1);
+        listDir = (ListView) rootView.findViewById(R.id.id_list_dir);
+        slide_in = AnimationUtils.loadAnimation(getActivity(), R.anim.dir_list_slide_in);
+        slide_in.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                // Called when the Animation starts
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                // Called when the Animation ended
+                // Since we are fading a View out we set the visibility
+                // to GONE once the Animation is finished
+                //test.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+                // This is called each time the Animation repeats
+            }
+        });
+
+        slide_out = AnimationUtils.loadAnimation(getActivity(), R.anim.dir_list_slide_out);
+        slide_out.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                // Called when the Animation starts
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                // Called when the Animation ended
+                // Since we are fading a View out we set the visibility
+                // to GONE once the Animation is finished
+                listDir.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+                // This is called each time the Animation repeats
+            }
+        });
     }
 
     private void initEvent()
@@ -195,11 +246,14 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
                     albumPopUpWindow
                             .setAnimationStyle(R.style.anim_popup_dir);
                     albumPopUpWindow.showAsDropDown(mBottomLy, 0, 0);
-
-                    // 设置背景颜色变暗
-                    WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
-                    lp.alpha = .3f;
-                    getActivity().getWindow().setAttributes(lp);
+                            // 设置背景颜色变暗
+//                    WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
+//                    lp.alpha = .3f;
+//                    getActivity().getWindow().setAttributes(lp);
+                    listView.setAlpha(0.3f);
+//                    test.startAnimation(slide_in);
+//                    listDir.setVisibility(View.VISIBLE);
+//                    listDir.startAnimation(slide_out);
                 }
             }
         });

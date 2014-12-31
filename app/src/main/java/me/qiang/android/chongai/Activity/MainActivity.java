@@ -1,5 +1,6 @@
 package me.qiang.android.chongai.Activity;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -22,14 +23,14 @@ import me.qiang.android.chongai.PopUpWindow.CreateNewStatePopupWindow;
 import me.qiang.android.chongai.R;
 
 public class MainActivity extends ActionBarActivity implements DrawerFragment.OnFragmentInteractionListener,
-        StateFragment.OnFragmentInteractionListener, BottomNavigationFragment.OnFragmentInteractionListener {
+        StateFragment.OnFragmentInteractionListener, BottomNavigationFragment.OnFragmentInteractionListener,
+        BottomPopupFragment.OnFragmentInteractionListener, CreateNewStateFragment.OnFragmentInteractionListener {
 
     private Toolbar mToolbar;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
 
     private CreateNewStatePopupWindow createNewStatePopupWindow;
-    private MainFragment mainFragment;
 
     private final String MAINFRAGEMENT = "MAINFRAGEMENT";
 
@@ -48,9 +49,8 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.On
 //        drawerLayout.setDrawerListener(mActionBarDrawerToggle);
 
         if (savedInstanceState == null) {
-            mainFragment = new MainFragment();
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.full_screen_container, mainFragment, MAINFRAGEMENT)
+                    .add(R.id.full_screen_container, new MainFragment(), MAINFRAGEMENT)
                     .commit();
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.frame_drawer, new DrawerFragment())
@@ -116,11 +116,31 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.On
         BottomPopupFragment bottomPopupFragment = new BottomPopupFragment();
         ft.replace(R.id.bottom_container, bottomPopupFragment, "bottomFragment");
         ft.addToBackStack(null);
-        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
         // Start the animated transition.
         ft.commit();
     }
 
+    @Override
+    public void onCloseButtonClicked() {
+        getSupportFragmentManager().popBackStack();
+    }
 
+    @Override
+    public void onCreateNewFragmentClick(int id) {
+        switch (id) {
+            case R.id.pop_up_bg:
+                onCloseButtonClicked();
+                break;
+            case R.id.pick_photo:
+                startAlbumActivity();
+            default:
+                break;
+        }
+    }
+
+    private void startAlbumActivity() {
+        Intent intent = new Intent(MainActivity.this, CustomAlbum.class);
+        startActivity(intent);
+    }
 }
