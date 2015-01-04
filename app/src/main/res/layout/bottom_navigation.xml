@@ -3,6 +3,7 @@
     android:id="@+id/tab_menu"
     android:layout_width="fill_parent"
     android:layout_height="50dp"
+    android:elevation="4dp"
     android:background="@color/myPrimaryDarkColor"
     android:orientation="horizontal">
 

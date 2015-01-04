@@ -32,19 +32,21 @@
             <!--android:layout_alignParentBottom="true"-->
             <!--tools:layout="@layout/bottom_navigation" />-->
     <!--</RelativeLayout>-->
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
         <FrameLayout
             android:id="@+id/full_screen_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
         <FrameLayout
             android:id="@+id/bottom_container"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_alignParentBottom="true"/>
-    </RelativeLayout>
+            android:layout_gravity="bottom"/>
+    </LinearLayout>
 
     <me.qiang.android.chongai.widget.ScrimInsetsFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"

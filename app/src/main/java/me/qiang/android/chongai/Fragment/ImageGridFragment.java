@@ -15,21 +15,18 @@
  *******************************************************************************/
 package me.qiang.android.chongai.Fragment;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
@@ -57,7 +54,7 @@ import me.qiang.android.chongai.util.AlbumItem;
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public class ImageGridFragment extends AbsListViewBaseFragment {
+public class ImageGridFragment extends AbsListViewBaseFragment implements ListDirFragment.OnListDirSelectedListener{
 
     private final static int SCAN_OK = 1;
 	List<String> imageUrls = new ArrayList<String>();
@@ -76,9 +73,8 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
     private ImageView select;
 
     // TODO: remove it
-    private ListView listDir;
-    Animation slide_in;
-    Animation slide_out;
+    private ListDirFragment listDirFragment;
+    private int positionSelected;
 
     private Handler mHandler = new Handler(){
         @Override
@@ -174,10 +170,10 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
 	}
 
     private void initView(View rootView) {
-        ActionBarActivity actionBarActivity = (ActionBarActivity)getActivity();
-        ActionBar actionBar = actionBarActivity.getSupportActionBar();
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        actionBar.setCustomView(R.layout.actionbar);
+//        ActionBarActivity actionBarActivity = (ActionBarActivity)getActivity();
+//        ActionBar actionBar = actionBarActivity.getSupportActionBar();
+//        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+//        actionBar.setCustomView(R.layout.actionbar);
         listView = (GridView) rootView.findViewById(R.id.grid);
         mBottomLy = (RelativeLayout) rootView.findViewById(R.id.id_bottom_ly);
         albumChoosed = (TextView) rootView.findViewById(R.id.id_choose_dir);
@@ -188,48 +184,7 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
         mScreenHeight = outMetrics.heightPixels;
 //        mSelectedImage = getActivity().getIntent().getStringArrayListExtra(Constants.Extra.IMAGE_SELECTED);
 //        mSelectedImage.remove(mSelectedImage.size() - 1);
-        listDir = (ListView) rootView.findViewById(R.id.id_list_dir);
-        slide_in = AnimationUtils.loadAnimation(getActivity(), R.anim.dir_list_slide_in);
-        slide_in.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                // Called when the Animation starts
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                // Called when the Animation ended
-                // Since we are fading a View out we set the visibility
-                // to GONE once the Animation is finished
-                //test.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-                // This is called each time the Animation repeats
-            }
-        });
-
-        slide_out = AnimationUtils.loadAnimation(getActivity(), R.anim.dir_list_slide_out);
-        slide_out.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                // Called when the Animation starts
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                // Called when the Animation ended
-                // Since we are fading a View out we set the visibility
-                // to GONE once the Animation is finished
-                listDir.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-                // This is called each time the Animation repeats
-            }
-        });
+//        test = (ImageView) rootView.findViewById(R.id.test);
     }
 
     private void initEvent()
@@ -243,32 +198,62 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
             public void onClick(View v)
             {
                 if(albumPopUpWindow != null) {
-                    albumPopUpWindow
-                            .setAnimationStyle(R.style.anim_popup_dir);
-                    albumPopUpWindow.showAsDropDown(mBottomLy, 0, 0);
+                    //albumPopUpWindow
+                    //        .setAnimationStyle(R.style.anim_popup_dir);
+                    //albumPopUpWindow.showAsDropDown(mBottomLy, 0, 0);
                             // 设置背景颜色变暗
 //                    WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
 //                    lp.alpha = .3f;
 //                    getActivity().getWindow().setAttributes(lp);
-                    listView.setAlpha(0.3f);
+                    //listView.setAlpha(0.3f);
 //                    test.startAnimation(slide_in);
-//                    listDir.setVisibility(View.VISIBLE);
-//                    listDir.startAnimation(slide_out);
+//                    test.setVisibility(View.VISIBLE);
+//                    test.startAnimation(slide_in);
+                    listDirFragment = (ListDirFragment) getChildFragmentManager().findFragmentByTag("DIRLIST");
+                    if (listDirFragment != null && listDirFragment.isVisible()) {
+                        getActivity().onBackPressed();
+                    }
+                    else {
+                        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+                        ft.setCustomAnimations(R.anim.dir_list_slide_in, 0, 0, R.anim.dir_list_slide_out);
+
+                        if (listDirFragment == null) {
+                            Log.i("TAG", "CREATE NEW FRAGMENT");
+                            listDirFragment = ListDirFragment.newInstance(positionSelected);
+                        }
+                        listDirFragment.setOnListDirSelectedListener(ImageGridFragment.this);
+                        ft.add(R.id.list_dir_container, listDirFragment, "DIRLIST");
+
+                        ft.addToBackStack(null);
+
+                        // Start the animated transition.
+                        ft.commit();
+                    }
                 }
             }
         });
 
-        select.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent data = new Intent().putStringArrayListExtra(Constants.Extra.IMAGE_SELECTED, (ArrayList)mSelectedImage);
-                getActivity().setResult(Activity.RESULT_OK, data);
-                getActivity().finish();
-            }
-        });
+//        select.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent data = new Intent().putStringArrayListExtra(Constants.Extra.IMAGE_SELECTED, (ArrayList)mSelectedImage);
+//                getActivity().setResult(Activity.RESULT_OK, data);
+//                getActivity().finish();
+//            }
+//        });
     }
 
-	public class ImageAdapter extends BaseAdapter {
+    @Override
+    public void setSelectedImages(List<String> imageUrls, String folderName, int folderCount, int position) {
+        this.imageUrls = imageUrls;
+        adapter.notifyDataSetChanged();
+        albumChoosed.setText(folderName);
+        albumImageCount.setText(folderCount+ "张");
+        positionSelected = position;
+        getActivity().onBackPressed();
+    }
+
+    public class ImageAdapter extends BaseAdapter {
 
 		private LayoutInflater inflater;
 

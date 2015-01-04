@@ -20,6 +20,8 @@ import android.widget.EditText;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.qiang.android.chongai.R;
+
 /**
  * A login screen that offers login via email/password.
  */
@@ -136,7 +138,7 @@ public class BaseLoginRegisterActivity extends Activity implements LoaderCallbac
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<String>(BaseLoginRegisterActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
+                        R.layout.autocomplete_dropdown, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);
     }

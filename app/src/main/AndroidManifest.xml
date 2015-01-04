@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
@@ -49,6 +50,11 @@
             android:name=".Activity.LoginActivity"
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".Activity.NavigationActivity"
@@ -66,11 +72,6 @@
             android:name=".Activity.MainActivity"
             android:theme="@style/AppTheme"
             android:label="@string/title_activity_main" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 

@@ -16,10 +16,9 @@
     android:background="@android:color/white"/>
 
     <FrameLayout
-        android:id="@+id/list_dir"
+        android:id="@+id/list_dir_container"
         android:layout_width="match_parent"
         android:layout_height="400dp"
-        layout="@layout/list_dir"
         android:layout_above="@+id/id_bottom_ly"/>
 
     <RelativeLayout

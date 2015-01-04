@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.qiang.android.chongai.Constants;
+import me.qiang.android.chongai.R;
 
 public class AlbumHelper {
     private static String ALLIMAGE = Constants.ALLIMAGE;
@@ -103,7 +104,10 @@ public class AlbumHelper {
             AlbumItem mAlbumItem = new AlbumItem();
             mAlbumItem.setFolderName(key);
             mAlbumItem.setImageCounts(value.size());
-            mAlbumItem.setTopImagePath(value.get(0));//获取该组的第一张图片
+            if(value.size() > 0)
+                mAlbumItem.setTopImagePath(value.get(0));//获取该组的第一张图片
+            else
+                mAlbumItem.setTopImagePath("drawable://" + R.drawable.drawer_background);
             if (key.equals(ALLIMAGE))
                 list.add(0, mAlbumItem);
             else

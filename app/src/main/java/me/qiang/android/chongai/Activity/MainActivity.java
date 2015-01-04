@@ -1,17 +1,23 @@
 package me.qiang.android.chongai.Activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.io.File;
+import java.io.IOException;
 
 import me.qiang.android.chongai.Fragment.BottomNavigationFragment;
 import me.qiang.android.chongai.Fragment.BottomPopupFragment;
@@ -21,6 +27,7 @@ import me.qiang.android.chongai.Fragment.MainFragment;
 import me.qiang.android.chongai.Fragment.StateFragment;
 import me.qiang.android.chongai.PopUpWindow.CreateNewStatePopupWindow;
 import me.qiang.android.chongai.R;
+import me.qiang.android.chongai.util.CameraUtil;
 
 public class MainActivity extends ActionBarActivity implements DrawerFragment.OnFragmentInteractionListener,
         StateFragment.OnFragmentInteractionListener, BottomNavigationFragment.OnFragmentInteractionListener,
@@ -33,6 +40,8 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.On
     private CreateNewStatePopupWindow createNewStatePopupWindow;
 
     private final String MAINFRAGEMENT = "MAINFRAGEMENT";
+
+    static final int REQUEST_TAKE_PHOTO = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,6 +143,10 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.On
                 break;
             case R.id.pick_photo:
                 startAlbumActivity();
+                break;
+            case R.id.take_photo:
+                takePhoto();
+                break;
             default:
                 break;
         }
@@ -142,5 +155,47 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.On
     private void startAlbumActivity() {
         Intent intent = new Intent(MainActivity.this, CustomAlbum.class);
         startActivity(intent);
+    }
+
+    private void takePhoto() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = CameraUtil.createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                Log.i("TAKE_PHOTO", ex.getMessage());
+
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        Uri.fromFile(photoFile));
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // TODO Auto-generated method stub
+        Log.i("TAKE_PHOTO", "onActivityResult: " + this);
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
+            //setPic();
+//			Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+//			if (bitmap != null) {
+//				mImageView.setImageBitmap(bitmap);
+//				try {
+//					sendPhoto(bitmap);
+//				} catch (Exception e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+
+        }
     }
 }
