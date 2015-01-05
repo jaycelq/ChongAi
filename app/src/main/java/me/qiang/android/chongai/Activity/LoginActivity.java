@@ -60,6 +60,22 @@ public class LoginActivity extends BaseLoginRegisterActivity {
             }
         });
 
+        Button mRegisterButton = (Button) findViewById(R.id.welcome_register);
+        mRegisterButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startRegisterActivity();
+            }
+        });
+
+        Button mAnonymousVisitButton = (Button) findViewById(R.id.anonymous_visit);
+        mAnonymousVisitButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startMainActivity();
+            }
+        });
+
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
         showProgress(false);
@@ -116,6 +132,17 @@ public class LoginActivity extends BaseLoginRegisterActivity {
             LoginHttpClient loginHttpClient = new LoginHttpClient(email, password);
             loginHttpClient.login();
         }
+    }
+
+    private void startRegisterActivity() {
+        Intent registerIntent = new Intent(this, RegisterActivity.class);
+        startActivity(registerIntent);
+    }
+
+    private void startMainActivity() {
+        Intent registerIntent = new Intent(this, MainActivity.class);
+        startActivity(registerIntent);
+        this.finish();
     }
 
 

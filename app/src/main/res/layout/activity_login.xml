@@ -5,7 +5,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@drawable/login_backgroud"
+    android:background="@drawable/login_background"
     tools:context="me.qiang.android.chongai.Activity.LoginActivity">
 
     <!-- Login progress -->
@@ -37,7 +37,7 @@
                     android:paddingTop="10dp"
                     android:paddingLeft="20dp"
                     android:paddingRight="60dp"
-                    android:paddingBottom="5dp"
+                    android:paddingBottom="8dp"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:background="@null"
@@ -58,7 +58,7 @@
                     android:paddingTop="10dp"
                     android:paddingLeft="20dp"
                     android:paddingRight="60dp"
-                    android:paddingBottom="5dp"
+                    android:paddingBottom="8dp"
                     android:imeActionId="@+id/login"
                     android:imeActionLabel="@string/action_sign_in_short"
                     android:imeOptions="actionUnspecified" android:inputType="textPassword"
@@ -78,8 +78,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingTop="15dp"
-                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="5dp"
                     android:layout_below="@id/password">
 
                     <LinearLayout
@@ -91,6 +91,7 @@
                         <CheckBox
                             android:id="@+id/remember_password"
                             android:text="@string/remember_password"
+                            android:textSize="13sp"
                             android:button="@drawable/checkbox_selector"
                             android:paddingLeft="5dp"
                             android:checked="true"
@@ -105,6 +106,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:text="@string/forget_password"
+                        android:textSize="13sp"
                         android:textColor="@android:color/white"
                         android:layout_weight="1"
                         android:gravity="center"
@@ -124,6 +126,7 @@
                 android:id="@+id/login_register_buttons"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:layout_centerHorizontal="true"
                 android:orientation="horizontal"
                 android:layout_below="@id/email_login_form">
@@ -135,7 +138,7 @@
                     android:layout_marginTop="10dp"
                     android:background="@drawable/login_button_backgroud"
                     android:text="@string/welcome_register"
-                    android:textSize="18sp"
+                    android:textSize="15sp"
                     android:textColor="@android:color/white"/>
 
                 <View
@@ -150,7 +153,7 @@
                     android:layout_marginTop="10dp"
                     android:background="@drawable/login_button_backgroud"
                     android:text="@string/action_sign_in"
-                    android:textSize="18sp"
+                    android:textSize="15sp"
                     android:textColor="@android:color/white"
                     android:textAllCaps="false"/>
             </LinearLayout>
@@ -164,35 +167,35 @@
                 android:layout_centerHorizontal="true"
                 android:background="@drawable/anonymous_login_background"
                 android:text="@string/action_anonymous_visit"
-                android:textSize="18sp"
+                android:textSize="15sp"
                 android:textColor="@color/loginInputBackGroundColor"
                 android:layout_below="@id/login_register_buttons"
                 android:textAllCaps="false"/>
 
-            <View
+
+            <RelativeLayout
                 android:id="@+id/login_divider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_below="@id/anonymous_visit"
+                android:layout_centerHorizontal="true">
+            <View
                 android:background="@drawable/login_divider"
                 android:layout_width="match_parent"
                 android:layout_height="4dp"
                 android:layout_marginTop="30dp"
-                android:layout_below="@id/anonymous_visit"
+                android:layout_centerVertical="true"
                 android:layerType="software" />
-
-            <RelativeLayout
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="10dp"
-                android:layout_below="@id/anonymous_visit"
-                android:layout_centerHorizontal="true"
-                android:background="@drawable/round_login_divider">
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_centerInParent="true"
+                android:background="@drawable/round_login_divider"
                 android:text="or"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
-                android:textStyle="bold"/>
+                android:gravity="center"/>
             </RelativeLayout>
 
             <LinearLayout
@@ -200,7 +203,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_below="@id/login_divider"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="17dp"
                 android:layout_centerHorizontal="true">
 
                 <LinearLayout
@@ -209,8 +212,9 @@
                     android:orientation="vertical"
                     android:layout_weight="1">
                 <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="2dp"
                     android:src="@drawable/weibo"
                     android:background="@drawable/third_party_backgroud"
                     android:layout_gravity="center"/>
@@ -218,6 +222,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="微博"
+                    android:textSize="13sp"
                     android:textColor="@color/loginInputBackGroundColor"
                     android:layout_gravity="center"/>
                 </LinearLayout>
@@ -228,8 +233,9 @@
                     android:orientation="vertical"
                     android:layout_weight="1">
                     <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:padding="2dp"
                         android:src="@drawable/weixin"
                         android:background="@drawable/third_party_backgroud"
                         android:layout_gravity="center"/>
@@ -237,6 +243,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="微信"
+                        android:textSize="13sp"
                         android:textColor="@color/loginInputBackGroundColor"
                         android:layout_gravity="center"/>
                 </LinearLayout>
@@ -247,8 +254,9 @@
                     android:orientation="vertical"
                     android:layout_weight="1">
                     <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:padding="2dp"
                         android:src="@drawable/qq"
                         android:background="@drawable/third_party_backgroud"
                         android:layout_gravity="center"/>
@@ -256,6 +264,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="QQ"
+                        android:textSize="13sp"
                         android:textColor="@color/loginInputBackGroundColor"
                         android:layout_gravity="center"/>
                 </LinearLayout>

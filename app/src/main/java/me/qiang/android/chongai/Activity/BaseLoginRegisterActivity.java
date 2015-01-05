@@ -3,7 +3,6 @@ package me.qiang.android.chongai.Activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
 import android.content.Loader;
@@ -12,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -25,7 +25,7 @@ import me.qiang.android.chongai.R;
 /**
  * A login screen that offers login via email/password.
  */
-public class BaseLoginRegisterActivity extends Activity implements LoaderCallbacks<Cursor> {
+public class BaseLoginRegisterActivity extends ActionBarActivity implements LoaderCallbacks<Cursor> {
 
     // UI references.
     protected AutoCompleteTextView mEmailView;
