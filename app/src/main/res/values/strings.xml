@@ -25,7 +25,8 @@
     <string name="title_activity_register">RegisterActivity</string>
     <string name="title_activity_state_explore">StateExploreActivity</string>
     <string name="title_activity_main">MainActivity</string>
-
     <string name="drawer_open">Menu opened</string>
     <string name="drawer_close">Menu closed</string>
+    <string name="title_activity_add_profile">AddProfileActivity</string>
+
 </resources>

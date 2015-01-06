@@ -9,9 +9,9 @@
     tools:context="me.qiang.android.chongai.Activity.LoginActivity">
 
     <!-- Login progress -->
-    <ProgressBar android:id="@+id/login_progress" style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_centerInParent="true"/>
+    <!--<ProgressBar android:id="@+id/login_progress" style="?android:attr/progressBarStyleLarge"-->
+        <!--android:layout_width="wrap_content" android:layout_height="wrap_content"-->
+        <!--android:layout_centerInParent="true"/>-->
 
     <ScrollView
         android:layout_width="match_parent"
@@ -153,6 +153,7 @@
                     android:layout_marginTop="10dp"
                     android:background="@drawable/login_button_backgroud"
                     android:text="@string/action_sign_in"
+                    android:fontFamily="sans-serif"
                     android:textSize="15sp"
                     android:textColor="@android:color/white"
                     android:textAllCaps="false"/>

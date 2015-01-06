@@ -77,8 +77,8 @@ public class LoginActivity extends BaseLoginRegisterActivity {
         });
 
         mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
-        showProgress(false);
+//        mProgressView = findViewById(R.id.login_progress);
+        showProgress(false, "");
         Log.i("Login", "onCreate");
     }
 
@@ -128,7 +128,7 @@ public class LoginActivity extends BaseLoginRegisterActivity {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
+            showProgress(true, "正在登录...");
             LoginHttpClient loginHttpClient = new LoginHttpClient(email, password);
             loginHttpClient.login();
         }
@@ -182,7 +182,7 @@ public class LoginActivity extends BaseLoginRegisterActivity {
                             startActivity(intent);
                         }
                         else
-                            showProgress(false);
+                            showProgress(false, "");
                     } catch (JSONException ex)
                     {}
                 }
@@ -190,7 +190,7 @@ public class LoginActivity extends BaseLoginRegisterActivity {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                     Log.i("JSON", "JSON FAIL");
-                    showProgress(false);
+                    showProgress(false, "");
                 }
             });
         }

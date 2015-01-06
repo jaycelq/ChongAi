@@ -2,6 +2,7 @@ package me.qiang.android.chongai.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -10,7 +11,6 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -20,6 +20,7 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import at.markushi.ui.CircleButton;
 import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.util.HttpClient;
 import me.qiang.android.chongai.util.MD5;
@@ -27,6 +28,7 @@ import me.qiang.android.chongai.util.MD5;
 public class RegisterActivity extends BaseLoginRegisterActivity {
 
     private EditText mPasswordConfirmView;
+    private TextView mRegisterResult;
     private Toolbar mToolbar;
 
     @Override
@@ -45,6 +47,8 @@ public class RegisterActivity extends BaseLoginRegisterActivity {
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
+        mRegisterResult = (TextView) findViewById(R.id.register_result);
+
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordConfirmView = (EditText) findViewById(R.id.password_confirm);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -58,7 +62,7 @@ public class RegisterActivity extends BaseLoginRegisterActivity {
             }
         });
 
-        ImageButton mEmailSignInButton = (ImageButton) findViewById(R.id.email_sign_in_button);
+        CircleButton mEmailSignInButton = (CircleButton) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -67,7 +71,7 @@ public class RegisterActivity extends BaseLoginRegisterActivity {
         });
 
         mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+//        mProgressView = findViewById(R.id.login_progress);
     }
 
 
@@ -147,7 +151,7 @@ public class RegisterActivity extends BaseLoginRegisterActivity {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
+            showProgress(true, "正在注册...");
             RegisterHttpClient registerHttpClient = new RegisterHttpClient(email, password);
             registerHttpClient.register();
         }
@@ -183,9 +187,16 @@ public class RegisterActivity extends BaseLoginRegisterActivity {
                     Log.i("JSON", response.toString());
                     try {
                         if(response.getInt("status") == 0) {
-                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                            mRegisterResult.setVisibility(View.VISIBLE);
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                public void run() {
+                                    startActivity(new Intent(RegisterActivity.this, AddProfileActivity.class));
+                                    finish();
+                                }
+                            }, 800);
                         }
-                        showProgress(false);
+                        showProgress(false, "");
                     } catch (JSONException ex)
                     {}
                 }
@@ -193,7 +204,7 @@ public class RegisterActivity extends BaseLoginRegisterActivity {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                     Log.i("JSON", "JSON FAIL");
-                    showProgress(false);
+                    showProgress(false, "");
                 }
             });
         }

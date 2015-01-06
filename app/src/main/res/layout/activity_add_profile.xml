@@ -1,0 +1,199 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:background="@drawable/add_profile_background"
+    tools:context="me.qiang.android.chongai.Activity.AddProfileActivity">
+
+    <!-- Login progress -->
+    <!--<ProgressBar android:id="@+id/login_progress" style="?android:attr/progressBarStyleLarge"-->
+    <!--android:layout_width="wrap_content" android:layout_height="wrap_content"-->
+    <!--android:layout_marginBottom="8dp" android:visibility="gone" />-->
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_actionbar"
+        style="@style/ToolBarStyle"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:elevation="1dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="@dimen/abc_action_bar_default_height_material"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="我的资料"
+            android:textSize="20sp"
+            android:textColor="@android:color/white"
+            android:layout_gravity="center"
+            android:id="@+id/toolbar_title" />
+    </android.support.v7.widget.Toolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin">
+        <RelativeLayout
+            android:id="@+id/profile_form"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout android:id="@+id/profile_input_form"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="120dp"
+                android:paddingBottom="25dp"
+                android:background="@drawable/add_profile_input_background">
+                
+                <RadioGroup
+                    android:id="@+id/profile_gender"
+                    android:layout_width="130dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:paddingRight="10dp"
+                    android:layout_centerHorizontal="true"
+                    android:orientation="horizontal"
+                    android:checkedButton="@+id/female">
+                    
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/female"/>
+
+                    <RadioButton
+                        android:id="@+id/female"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:button="@drawable/gender_selector"/>
+
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/male"/>
+
+                    <RadioButton
+                        android:id="@+id/male"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:button="@drawable/gender_selector"/>
+                </RadioGroup>
+
+                <EditText android:id="@+id/profile_name" android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:gravity="left|center_vertical"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingBottom="5dp"
+                    android:hint="主人名字"
+                    android:textColorHint="#6A9AC0"
+                    android:textSize="15sp"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:background="@null"
+                    android:layout_below="@id/profile_gender"/>
+
+                <View
+                    android:background="@drawable/dotted_line"
+                    android:layout_width="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_height="4dp"
+                    android:layout_below="@id/profile_name"
+                    android:layerType="software" />
+
+
+                <EditText android:id="@+id/profile_location" android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical|left"
+                    android:paddingTop="10dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingBottom="5dp"
+                    android:hint="我的位置"
+                    android:textColorHint="#6A9AC0"
+                    android:textSize="15sp"
+                    android:maxLines="1" android:singleLine="true"
+                    android:background="@null"
+                    android:layout_below="@id/profile_name"/>
+
+                <View
+                    android:background="@drawable/dotted_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_below="@id/profile_location"
+                    android:layerType="software" />
+
+                <EditText android:id="@+id/profile_signature" android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical|left"
+                    android:paddingTop="10dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingBottom="5dp"
+                    android:hint="签名"
+                    android:textColorHint="#6A9AC0"
+                    android:textSize="15sp"
+                    android:maxLines="1" android:singleLine="true"
+                    android:background="@null"
+                    android:layout_below="@id/profile_location"/>
+
+                <View
+                    android:background="@drawable/dotted_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_below="@id/profile_signature"
+                    android:layerType="software" />
+
+
+            </RelativeLayout>
+
+
+            <Button
+                android:id="@+id/profile_complete"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="20dp"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/login_button_backgroud"
+                android:text="确定"
+                android:fontFamily="sans-serif"
+                android:textSize="15sp"
+                android:textColor="@android:color/white"
+                android:layout_below="@id/profile_input_form"/>
+
+            <at.markushi.ui.CircleButton
+                android:id="@+id/profile_photo"
+                style="?android:textAppearanceSmall"
+                android:layout_width="85dp"
+                android:layout_height="85dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="80dp"
+                android:src="@drawable/profile_photo"
+                app:cb_color="#FF7761"
+                app:cb_pressedRingWidth="8dip"/>
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>

@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:gravity="center_horizontal"
     android:orientation="vertical"
@@ -6,9 +7,9 @@
     tools:context="me.qiang.android.chongai.Activity.LoginActivity">
 
     <!-- Login progress -->
-    <ProgressBar android:id="@+id/login_progress" style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp" android:visibility="gone" />
+    <!--<ProgressBar android:id="@+id/login_progress" style="?android:attr/progressBarStyleLarge"-->
+        <!--android:layout_width="wrap_content" android:layout_height="wrap_content"-->
+        <!--android:layout_marginBottom="8dp" android:visibility="gone" />-->
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar_actionbar"
@@ -148,17 +149,20 @@
                     android:background="@drawable/register_send_background"/>
             </LinearLayout>
 
-            <ImageButton android:id="@+id/email_sign_in_button"
+            <at.markushi.ui.CircleButton
+                android:id="@+id/email_sign_in_button"
                 style="?android:textAppearanceSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/verify_form"
                 android:src="@drawable/register"
-                android:background="@android:color/transparent"
-                android:layout_below="@id/verify_form"/>
+                app:cb_color="#FF7761"
+                app:cb_pressedRingWidth="8dip"/>
             
             <TextView
+                android:id="@+id/register_result"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -166,7 +170,8 @@
                 android:text="@string/register_success"
                 android:textColor="#FF7761"
                 android:textSize="15sp"
-                android:layout_below="@id/email_sign_in_button"/>
+                android:layout_below="@id/email_sign_in_button"
+                android:visibility="gone"/>
 
 
         </RelativeLayout>
