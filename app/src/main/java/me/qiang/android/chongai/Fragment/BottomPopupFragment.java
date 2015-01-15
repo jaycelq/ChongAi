@@ -2,6 +2,9 @@ package me.qiang.android.chongai.Fragment;
 
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -13,6 +16,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import me.qiang.android.chongai.R;
+import me.qiang.android.chongai.util.Blur;
+import me.qiang.android.chongai.util.ScreenShot;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,6 +26,7 @@ public class BottomPopupFragment extends Fragment implements View.OnClickListene
 
     private ImageView close;
     private OnFragmentInteractionListener mListener;
+    private Bitmap background;
 
     public BottomPopupFragment() {
         // Required empty public constructor
@@ -30,7 +36,13 @@ public class BottomPopupFragment extends Fragment implements View.OnClickListene
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        ScreenShot.takeScreenShot(container);
         View rootView = inflater.inflate(R.layout.bottom_navigation_popup, container, false);
+        background = ScreenShot.getScreenShot();
+        background = Blur.fastblur(getActivity(), background, 25);
+        BitmapDrawable ob = new BitmapDrawable(getResources(), background);
+        ob.setColorFilter(Color.rgb(150, 150, 150), android.graphics.PorterDuff.Mode.MULTIPLY);
+        rootView.setBackgroundDrawable(ob);
         close = (ImageView) rootView.findViewById(R.id.close);
         close.setOnClickListener(this);
         rootView.setOnClickListener(this);
@@ -97,7 +109,7 @@ public class BottomPopupFragment extends Fragment implements View.OnClickListene
 
             }
         });
-        close.setImageResource(R.drawable.ic_add_black_48dp);
+        close.setImageResource(R.drawable.plus);
         close.startAnimation(anim);
     }
 

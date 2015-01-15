@@ -115,15 +115,15 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.On
 //                .setAnimationStyle(R.style.anim_popup_dir);
 //        createNewStatePopupWindow.showAsDropDown(findViewById(R.id.toolbar_actionbar), 0, 0);
         FragmentTransaction ft =  getSupportFragmentManager().beginTransaction();
-        ft.setCustomAnimations(R.anim.slide_in, R.anim.fade_out, R.anim.fade_in, R.anim.slide_out);
+//        ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out);
+        ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out);
 
         CreateNewStateFragment newFragment = new CreateNewStateFragment();
-
-        ft.replace(R.id.full_screen_container, newFragment, "newFragment");
+        ft.add(R.id.full_screen_container, newFragment, "newFragment");
 
         ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out);
         BottomPopupFragment bottomPopupFragment = new BottomPopupFragment();
-        ft.replace(R.id.bottom_container, bottomPopupFragment, "bottomFragment");
+        ft.add(R.id.bottom_container, bottomPopupFragment, "bottomFragment");
         ft.addToBackStack(null);
 
         // Start the animated transition.

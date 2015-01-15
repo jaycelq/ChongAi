@@ -2,24 +2,47 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/pop_up_bg"
     android:orientation="vertical" android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:background="@android:color/black">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_marginTop="320dp"
         android:orientation="horizontal">
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_weight="1">
-            <ImageButton
+            <ImageView
+                android:id="@+id/pick_photo"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/pick_photo"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:textSize="15dp"
+                android:textColor="@android:color/white"
+                android:text="本地相册"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1">
+            <ImageView
                 android:id="@+id/take_photo"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
                 android:layout_gravity="center_horizontal"
-                android:background="@drawable/camera_round_button"
                 android:src="@drawable/camera"/>
 
             <TextView
@@ -28,6 +51,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
                 android:textSize="15dp"
+                android:textColor="@android:color/white"
                 android:text="拍照"/>
         </LinearLayout>
 
@@ -36,13 +60,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_weight="1">
-            <ImageButton
-                android:id="@+id/pick_photo"
+            <ImageView
+                android:id="@+id/take_video"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
                 android:layout_gravity="center_horizontal"
-                android:background="@drawable/album_round_button"
-                android:src="@drawable/ic_photo_library_white_24dp"/>
+                android:src="@drawable/take_video"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -50,7 +73,8 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
                 android:textSize="15dp"
-                android:text="相册"/>
+                android:textColor="@android:color/white"
+                android:text="拍视频"/>
         </LinearLayout>
     </LinearLayout>
 

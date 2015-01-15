@@ -7,10 +7,9 @@
 
     <ImageView
         android:id="@+id/close"
-        android:padding="13dp"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_close_black_48dp"/>
+        android:src="@drawable/close"/>
 
 </RelativeLayout>
