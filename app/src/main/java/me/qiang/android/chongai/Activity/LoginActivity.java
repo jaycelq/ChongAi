@@ -24,17 +24,24 @@ import me.qiang.android.chongai.GlobalApplication;
 import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.util.HttpClient;
 import me.qiang.android.chongai.util.MD5;
+import me.qiang.android.chongai.util.UserSessionManager;
 
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends BaseLoginRegisterActivity {
 
+    private UserSessionManager userSessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        userSessionManager = GlobalApplication.getUserSessionManager();
+
+        if(userSessionManager.isUserLoggedIn())
+            startMainActivity();
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -176,10 +183,8 @@ public class LoginActivity extends BaseLoginRegisterActivity {
                     Log.i("JSON", response.toString());
                     try {
                         if(response.getInt("status") == 0) {
-                            GlobalApplication.setLoginStatus(true, mEmail);
-                            Intent intent = new Intent(LoginActivity.this, StateEdit.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
+                            userSessionManager.createUserLoginSession(mEmail, mPassword);
+                            startMainActivity();
                         }
                         else
                             showProgress(false, "");

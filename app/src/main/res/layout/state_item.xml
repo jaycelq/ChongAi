@@ -3,17 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingBottom="15dp"
     android:orientation="vertical">
     <RelativeLayout
         android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:padding="@dimen/activity_horizontal_margin">
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="8dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/state_owner_photo"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/hugh"
-            app:border_width="2dp"
+            android:src="@drawable/profile_photo_nana"
+            app:border_width="0dp"
             app:border_color="#FF000000"/>
 
         <LinearLayout
@@ -31,6 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:text="NANA"
+                android:textColor="#8EB03A"
                 android:layout_weight="1"/>
 
             <TextView
@@ -40,6 +45,7 @@
                 android:layout_height="wrap_content"
                 android:text="上海市 长宁区"
                 android:textSize="11sp"
+                android:textColor="#8EB03A"
                 android:layout_weight="1"/>
 
             <TextView
@@ -49,6 +55,7 @@
                 android:layout_height="wrap_content"
                 android:text="1.5KM"
                 android:textSize="11sp"
+                android:textColor="#8EB03A"
                 android:layout_weight="1"/>
         </LinearLayout>
 
@@ -59,10 +66,40 @@
             android:layout_centerVertical="true"
             android:background="@drawable/rounded_rectangle_button"
             android:text="+关注"
+            android:textSize="15sp"
+            android:textColor="@android:color/white"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/pet_tag"
+        android:layout_width="match_parent"
+        android:layout_height="27dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="5dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/pet_tag_background"
+            android:text="Lucky"
             android:textSize="11sp"
+            android:gravity="center"
             android:textColor="@android:color/white"/>
 
-    </RelativeLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/pet_tag_background"
+            android:text="金色寻回犬"
+            android:textSize="11sp"
+            android:gravity="center"
+            android:textColor="@android:color/white"/>
+
+    </LinearLayout>
+
     <ImageView
         android:id="@+id/state_body_image"
         android:layout_width="match_parent"
@@ -70,14 +107,15 @@
         android:maxHeight="400dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/hugh"/>
+        android:src="@drawable/pet_dog"/>
     <TextView
         android:id="@+id/state_body_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        android:textSize="11sp"
-        android:text="主人，我细不细很可爱啊"/>
+        android:textSize="13sp"
+        android:text="主人，我细不细很可爱啊~! love you! love you !!!"
+        android:textColor="#9CCC64"/>
     
     <LinearLayout
         android:id="@+id/state_body_praise"
@@ -87,45 +125,85 @@
         android:paddingRight="10dp"
         android:orientation="horizontal">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="10sp"
-                android:text="10"/>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/like"/>
-        </LinearLayout>
-
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="28dp"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:orientation="horizontal">
-        <Button
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginLeft="130dp"
-            android:background="@drawable/round_button"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="评论"
-            android:textSize="13sp"
-            android:textColor="@android:color/black"/>
+        <LinearLayout
+            android:id="@+id/praise"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:background="@drawable/state_praise_background">
 
-        <Button
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center_vertical|left"
+                android:src="@drawable/like"/>
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical|right"
+                android:textColor="#FF6652"
+                android:text="20"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/comment"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:layout_marginLeft="20dp"
-            android:background="@drawable/round_button"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="评论"
-            android:textSize="13sp"
-            android:textColor="@android:color/black"/>
+            android:background="@drawable/anonymous_login_background">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center_vertical|left"
+                android:src="@drawable/comment"/>
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical|right"
+                android:textColor="@color/loginInputBackGroundColor"
+                android:text="56"/>
+
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/forward_background"
+            android:padding="5dp"
+            android:src="@drawable/forward"/>
+
+
     </LinearLayout>
 </LinearLayout>

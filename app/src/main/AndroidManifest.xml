@@ -48,7 +48,9 @@
         </activity>
         <activity
             android:name=".Activity.LoginActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_login"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -77,6 +79,22 @@
         <activity
             android:name=".Activity.AddProfileActivity"
             android:label="@string/title_activity_add_profile" >
+        </activity>
+        <activity
+            android:name=".Activity.LocationPikcerActivity"
+            android:label="@string/title_activity_location_pikcer" >
+        </activity>
+        <activity
+            android:name=".Activity.UserAcitivity"
+            android:label="@string/title_activity_user_acitivity" >
+        </activity>
+        <activity
+            android:name=".Activity.CommentActivity"
+            android:label="@string/title_activity_comment" >
+        </activity>
+        <activity
+            android:name=".Activity.PraiseActivity"
+            android:label="@string/title_activity_praise" >
         </activity>
     </application>
 

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/praise_user_photo"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/comment_user"/>
+
+    <LinearLayout
+        android:id="@+id/user_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/praise_user_photo"
+        android:paddingLeft="16dp"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:layout_centerVertical="true">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/praise_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:text="gugu"
+                android:textSize="15sp"
+                android:textColor="#7F7F7F"/>
+
+
+            <ImageView
+                android:id="@+id/praise_user_gender"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginLeft="5dp"
+                android:src="@drawable/female"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/praise_user_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="上海市 长宁区"
+            android:textSize="12sp"
+            android:textColor="#B0B0B0"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/praise_user_pets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_toRightOf="@id/user_desc"
+        android:gravity="center_vertical"
+        android:layout_centerVertical="true">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/profile_photo_nana"/>
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/profile_photo_nana"/>
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/profile_photo_nana"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/praise_user_relation"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginRight="10dp"
+        android:layout_gravity="center_vertical"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/followed"
+        android:layout_centerVertical="true" />
+
+</RelativeLayout>

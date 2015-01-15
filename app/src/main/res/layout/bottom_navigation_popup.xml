@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="50dp"
+    android:layout_height="56dp"
+    android:gravity="center_vertical"
     android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/close"
-        android:padding="10dp"
+        android:padding="13dp"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_centerHorizontal="true"

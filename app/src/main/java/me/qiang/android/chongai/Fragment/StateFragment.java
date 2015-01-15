@@ -1,6 +1,7 @@
 package me.qiang.android.chongai.Fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -19,6 +21,9 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import java.util.LinkedList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import me.qiang.android.chongai.Activity.CommentActivity;
+import me.qiang.android.chongai.Activity.PraiseActivity;
+import me.qiang.android.chongai.Activity.UserAcitivity;
 import me.qiang.android.chongai.R;
 
 /**
@@ -50,6 +55,9 @@ public class StateFragment extends BaseFragment {
     private PullToRefreshListView pullToRefreshView;
 
     private OnFragmentInteractionListener mListener;
+
+    private View mFooterView;
+    private ProgressBar footerLoading;
 
     // TODO: Rename and change types of parameters
     public static StateFragment newInstance(String param1, String param2) {
@@ -83,6 +91,13 @@ public class StateFragment extends BaseFragment {
         View rootView = inflater.inflate(R.layout.fr_state_list, container, false);
         pullToRefreshView = (PullToRefreshListView) rootView.findViewById(R.id.my_list);
 
+        mFooterView = inflater.inflate(R.layout.loading, null);
+        footerLoading = (ProgressBar) mFooterView.findViewById(R.id.loading);
+        pullToRefreshView.getRefreshableView().addFooterView(mFooterView);
+        footerLoading.getIndeterminateDrawable().setColorFilter(0xff7FB446,
+                android.graphics.PorterDuff.Mode.SRC_ATOP);
+        mFooterView.setVisibility(View.GONE);
+
         // TODO: Change Adapter to display your content
 //        pullToRefreshView.setAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
 //                android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS));
@@ -101,6 +116,15 @@ public class StateFragment extends BaseFragment {
                 new GetDataTask().execute();
             }
         });
+
+        pullToRefreshView.setOnLastItemVisibleListener(new PullToRefreshBase.OnLastItemVisibleListener() {
+
+            @Override
+            public void onLastItemVisible() {
+                mFooterView.setVisibility(View.VISIBLE);
+            }
+        });
+
         return rootView;
     }
 
@@ -196,16 +220,38 @@ public class StateFragment extends BaseFragment {
                 holder.stateCreateTime = (TextView) view.findViewById(R.id.state_create_distance);
                 holder.stateBodyImage = (ImageView) view.findViewById(R.id.state_body_image);
                 holder.stateBodyPraise = (LinearLayout) view.findViewById(R.id.state_body_praise);
+                holder.comment = (LinearLayout) view.findViewById(R.id.comment);
+                holder.praise = (LinearLayout) view.findViewById(R.id.praise);
                 view.setTag(holder);
             } else {
                 holder = (ViewHolder) view.getTag();
             }
 
-            holder.stateOwnerPhoto.setImageResource(R.drawable.hugh);
-            holder.stateBodyImage.setImageResource(R.drawable.hugh);
+            holder.stateOwnerPhoto.setImageResource(R.drawable.profile_photo_nana);
+            holder.stateOwnerPhoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(getActivity(), UserAcitivity.class));
+                }
+            });
+            holder.stateBodyImage.setImageResource(R.drawable.pet_dog);
 
             CircleImageView praisePhoto = (CircleImageView) inflater.inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
             holder.stateBodyPraise.addView(praisePhoto);
+
+            holder.comment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(getActivity(), CommentActivity.class));
+                }
+            });
+
+            holder.praise.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(getActivity(), PraiseActivity.class));
+                }
+            });
 
 
             return view;
@@ -218,5 +264,7 @@ public class StateFragment extends BaseFragment {
         TextView stateCreateTime;
         ImageView stateBodyImage;
         LinearLayout stateBodyPraise;
+        LinearLayout comment;
+        LinearLayout praise;
     }
 }

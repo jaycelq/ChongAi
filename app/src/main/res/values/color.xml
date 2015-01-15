@@ -9,4 +9,7 @@
     <color name="myNavigationColor">#000000</color>
     <color name="followColor">#3F51B5</color>
     <color name="loginInputBackGroundColor">#B7E078</color>
+
+    <color name="numberColor">#FB715B</color>
+    <color name="textColor">#B7E078</color>
 </resources>

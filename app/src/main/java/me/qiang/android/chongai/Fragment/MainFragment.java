@@ -77,6 +77,7 @@ public class MainFragment extends BaseFragment {
         mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar_actionbar);
         ((ActionBarActivity)getActivity()).setSupportActionBar(mToolbar);
         ((ActionBarActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ((ActionBarActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         drawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer);
         mActionBarDrawerToggle = new ActionBarDrawerToggle(getActivity(), drawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);

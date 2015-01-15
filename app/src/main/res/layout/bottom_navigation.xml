@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/tab_menu"
     android:layout_width="fill_parent"
-    android:layout_height="50dp"
+    android:layout_height="56dp"
     android:elevation="4dp"
+    android:gravity="center_vertical"
     android:background="@color/myPrimaryDarkColor"
     android:orientation="horizontal">
 
     <RadioButton
-        android:id="@+id/rbChat"
+        android:id="@+id/album"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="1"
-        android:drawableTop="@drawable/home"
+        android:drawableTop="@drawable/album"
         android:drawablePadding="5dp"
         android:button="@null"
         android:checked="true"
         android:gravity="center_horizontal|bottom"
         android:paddingTop="2dp"
-        android:text="微信" />
+        android:text="微信"
+        android:textColor="#F0F6D6"/>
 
     <RadioButton
         android:id="@+id/rbAddress"
@@ -27,12 +30,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="1"
-        android:drawableTop="@drawable/date"
+        android:drawableTop="@drawable/location"
         android:drawablePadding="5dp"
         android:button="@null"
         android:gravity="center_horizontal|bottom"
         android:paddingTop="2dp"
-        android:text="越遛" />
+        android:text="地图"
+        android:textColor="#F0F6D6" />
 
     <!--<RadioButton-->
         <!--android:id="@+id/addState"-->
@@ -46,14 +50,17 @@
         <!--android:gravity="center_horizontal|bottom"-->
         <!--android:paddingTop="2dp"-->
         <!--android:text="发布" />-->
-    <ImageView
+    <at.markushi.ui.CircleButton
         android:id="@+id/add_state"
-        android:padding="10dp"
+        android:padding="13dp"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="center"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:src="@drawable/plus"
-        android:background="?android:attr/selectableItemBackground"/>
+        app:cb_color="#EBFAD3"
+        app:cb_pressedRingWidth="4dip"/>
 
     <RadioButton
         android:id="@+id/rbFind"
@@ -61,12 +68,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="1"
-        android:drawableTop="@drawable/map"
+        android:drawableTop="@drawable/message"
         android:drawablePadding="5dp"
         android:button="@null"
         android:gravity="center_horizontal|bottom"
         android:paddingTop="2dp"
-        android:text="地图" />
+        android:text="消息"
+        android:textColor="#F0F6D6" />
 
     <RadioButton
         android:id="@+id/rbMe"
@@ -74,10 +82,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="1"
-        android:drawableTop="@drawable/question"
+        android:drawableTop="@drawable/me"
         android:drawablePadding="5dp"
         android:button="@null"
         android:gravity="center_horizontal|bottom"
         android:paddingTop="2dp"
-        android:text="我" />
+        android:text="我"
+        android:textColor="#F0F6D6"/>
 </RadioGroup>

@@ -11,12 +11,14 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
+import me.qiang.android.chongai.util.UserSessionManager;
+
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public class GlobalApplication extends Application {
     private static Context context;
-    public static LoginStatus loginStatus = new LoginStatus();
+    private static UserSessionManager userSessionManager;
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     @SuppressWarnings("unused")
@@ -29,6 +31,7 @@ public class GlobalApplication extends Application {
 
         super.onCreate();
         GlobalApplication.context = getApplicationContext();
+        GlobalApplication.userSessionManager = new UserSessionManager(getAppContext());
 
         initImageLoader(getApplicationContext());
     }
@@ -54,18 +57,5 @@ public class GlobalApplication extends Application {
         return GlobalApplication.context;
     }
 
-    public static class LoginStatus {
-        public boolean isLogin;
-        public String user_email;
-
-        LoginStatus() {
-            isLogin = false;
-            user_email = null;
-        }
-    }
-
-    public static void setLoginStatus(boolean isLogin, String user_email) {
-        loginStatus.isLogin = isLogin;
-        loginStatus.user_email = user_email;
-    }
+    public static UserSessionManager getUserSessionManager() {return GlobalApplication.userSessionManager;}
 }

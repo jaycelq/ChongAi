@@ -28,5 +28,9 @@
     <string name="drawer_open">Menu opened</string>
     <string name="drawer_close">Menu closed</string>
     <string name="title_activity_add_profile">AddProfileActivity</string>
+    <string name="title_activity_location_pikcer">LocationPikcerActivity</string>
+    <string name="title_activity_user_acitivity">UserAcitivity</string>
+    <string name="title_activity_comment">CommentActivity</string>
+    <string name="title_activity_praise">PraiseActivity</string>
 
 </resources>

@@ -1,103 +1,222 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <ImageView
-        android:id="@+id/header_imageview"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:scaleType="centerCrop"
-        android:adjustViewBounds="true"
-        />
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/informations_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_below="@+id/header_imageview"
-        android:gravity="center"
-        android:paddingTop="32dp"
-        android:paddingBottom="32dp">
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="姓名"
-            android:textStyle="bold"
-            android:textSize="17dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="center"
-            android:textColor="#FF707070"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="#FF909090" />
-
-    </LinearLayout>
-
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:scrollbars="none"
-        android:layout_below="@+id/informations_container"
-        android:background="#FFF0F0F0">
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="20dp"
+        android:background="#E0EFC6"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingLeft="10dp"
-            android:orientation="horizontal">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal">
+        
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/profile_photo_nana"/>
+        
+            <LinearLayout
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:orientation="vertical">
 
-            <!-- Here are the tabs, Just TextViews with a selector and a clickListener... -->
-            <!-- There is also two views at each edge with a gradient drawable making the fade effect. But I find this pretty ugly. -->
-            <TextView
-                android:id="@+id/introduce"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:paddingTop="5dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:textColor="@android:color/black"
-                android:text="简介"
-                android:background="@drawable/underline"/>
+                <LinearLayout
+                    android:id="@+id/my_statics"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:paddingTop="5dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:textColor="@android:color/black"
-                android:text="信息"
-                android:background="@drawable/underline"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:paddingTop="5dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:textColor="@android:color/black"
-                android:text="照片"
-                android:background="@drawable/underline"/>
+                        <TextView
+                            android:id="@+id/my_state_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="80"
+                            android:layout_gravity="center_horizontal"
+                            android:textSize="18sp"
+                            android:textColor="@color/numberColor"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="状态"
+                            android:layout_marginTop="3dp"
+                            android:layout_gravity="center_horizontal"
+                            android:textSize="18sp"
+                            android:textColor="@color/textColor"/>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_height="fill_parent"
+                        android:layout_width="2dp"
+                        android:background="@color/textColor" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:id="@+id/my_fans_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2230"
+                            android:layout_gravity="center_horizontal"
+                            android:textSize="18sp"
+                            android:textColor="@color/numberColor"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:text="粉丝"
+                            android:layout_gravity="center_horizontal"
+                            android:textSize="18sp"
+                            android:textColor="@color/textColor"/>
+
+                    </LinearLayout>
+                    <View
+                        android:layout_height="fill_parent"
+                        android:layout_width="2dp"
+                        android:background="@color/textColor" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:id="@+id/follow_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="96"
+                            android:layout_gravity="center_horizontal"
+                            android:textSize="18sp"
+                            android:textColor="@color/numberColor"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:text="关注"
+                            android:layout_gravity="center_horizontal"
+                            android:textSize="18sp"
+                            android:textColor="@color/textColor"/>
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:orientation="horizontal">
+                <Button
+                    android:layout_width="70dp"
+                    android:layout_height="25dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/login_button_backgroud"
+                    android:text="+ 关注"
+                    android:textSize="15sp"
+                    android:textColor="@android:color/white"/>
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
+                <Button
+                    android:layout_width="70dp"
+                    android:layout_height="25dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center_horizontal|right"
+                    android:drawableLeft="@drawable/send_message"
+                    android:background="@drawable/login_button_backgroud"
+                    android:text="私信"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:textSize="15sp"
+                    android:textColor="@android:color/white"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
         </LinearLayout>
-    </HorizontalScrollView>
 
-    <!-- cheat code: negative margin -->
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:src="@drawable/hugh"
-        android:layout_centerHorizontal="true"
-        android:layout_above="@+id/informations_container"
-        android:layout_marginBottom="-16dp" />
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
 
-</RelativeLayout>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/basic_profile"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/state_profile"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/photo_profile"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"
+            android:layout_weight="1"
+            android:src="@drawable/down_arrow"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"
+            android:layout_weight="1"
+            android:src="@drawable/down_arrow"
+            android:visibility="invisible"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"
+            android:layout_weight="1"
+            android:src="@drawable/down_arrow"
+            android:visibility="invisible"/>
+    </LinearLayout>
+
+</LinearLayout>

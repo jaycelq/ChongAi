@@ -1,18 +1,33 @@
 package me.qiang.android.chongai.Activity;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioGroup;
 
+import at.markushi.ui.CircleButton;
 import me.qiang.android.chongai.R;
 
 public class AddProfileActivity extends ActionBarActivity {
+
+    private RadioGroup genderRadioGroup;
+    private EditText profileName;
+    private EditText profileLocation;
+    private EditText profileSignature;
+    private CircleButton profilePhoto;
+    private Button saveProfile;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_profile);
+
+        genderRadioGroup = (RadioGroup) findViewById(R.id.profile_gender);
+
     }
 
 
