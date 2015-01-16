@@ -24,13 +24,15 @@
                 android:src="@drawable/pick_photo"/>
 
             <TextView
+                android:id="@+id/pick_photo_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
                 android:textSize="15dp"
                 android:textColor="@android:color/white"
-                android:text="本地相册"/>
+                android:text="本地相册"
+                android:visibility="gone"/>
         </LinearLayout>
 
         <LinearLayout
@@ -46,13 +48,15 @@
                 android:src="@drawable/camera"/>
 
             <TextView
+                android:id="@+id/take_photo_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
                 android:textSize="15dp"
                 android:textColor="@android:color/white"
-                android:text="拍照"/>
+                android:text="拍照"
+                android:visibility="gone"/>
         </LinearLayout>
 
         <LinearLayout
@@ -68,13 +72,15 @@
                 android:src="@drawable/take_video"/>
 
             <TextView
+                android:id="@+id/take_video_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
                 android:textSize="15dp"
                 android:textColor="@android:color/white"
-                android:text="拍视频"/>
+                android:text="拍视频"
+                android:visibility="gone"/>
         </LinearLayout>
     </LinearLayout>
 

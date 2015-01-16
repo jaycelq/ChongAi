@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.util.BlurBackground;
@@ -25,8 +26,11 @@ public class CreateNewStateFragment extends Fragment implements View.OnClickList
 
     private OnFragmentInteractionListener mListener;
     private ImageView takePhoto;
+    private TextView takePhotoText;
     private ImageView pickPhoto;
+    private TextView pickPhotoText;
     private ImageView takeVideo;
+    private TextView takeVideoText;
 
     public CreateNewStateFragment() {
         // Required empty public constructor
@@ -44,8 +48,11 @@ public class CreateNewStateFragment extends Fragment implements View.OnClickList
         ob.setColorFilter(Color.rgb(150, 150, 150), android.graphics.PorterDuff.Mode.MULTIPLY);
         rootView.setBackgroundDrawable(ob);
         takePhoto = (ImageView) rootView.findViewById(R.id.take_photo);
+        takePhotoText = (TextView) rootView.findViewById(R.id.take_photo_text);
         pickPhoto = (ImageView) rootView.findViewById(R.id.pick_photo);
+        pickPhotoText = (TextView) rootView.findViewById(R.id.pick_photo_text);
         takeVideo = (ImageView) rootView.findViewById(R.id.take_video);
+        takeVideoText = (TextView) rootView.findViewById(R.id.take_video_text);
 
         rootView.setOnClickListener(this);
         takePhoto.setOnClickListener(this);
@@ -77,7 +84,6 @@ public class CreateNewStateFragment extends Fragment implements View.OnClickList
         if (enter) {
             anim = AnimationUtils.loadAnimation(getActivity(), R.anim.bottom_fade_in);
         } else {
-            Log.i("POPUP", "leaving");
             anim = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_out);
         }
 
@@ -89,12 +95,50 @@ public class CreateNewStateFragment extends Fragment implements View.OnClickList
 
             public void onAnimationStart(Animation animation) {
                 if(enter) {
-                    takePhoto.startAnimation(
-                            AnimationUtils.loadAnimation(getActivity(), R.anim.zoom_in));
-                    pickPhoto.startAnimation(
-                            AnimationUtils.loadAnimation(getActivity(), R.anim.zoom_in));
-                    takeVideo.startAnimation(
-                            AnimationUtils.loadAnimation(getActivity(), R.anim.zoom_in));
+                    Animation zoomInAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.zoom_in);
+
+                    zoomInAnimation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                            Animation fadeInAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.bottom_fade_in);
+                            fadeInAnimation.setDuration(200);
+                            takePhotoText.startAnimation(fadeInAnimation);
+                            pickPhotoText.startAnimation(fadeInAnimation);
+                            takeVideoText.startAnimation(fadeInAnimation);
+                            takePhotoText.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    takePhotoText.setVisibility(View.VISIBLE);
+                                }
+                            });
+                            pickPhotoText.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    pickPhotoText.setVisibility(View.VISIBLE);
+                                }
+                            });
+                            takeVideoText.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    takeVideoText.setVisibility(View.VISIBLE);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+
+                    takePhoto.startAnimation(zoomInAnimation);
+                    pickPhoto.startAnimation(zoomInAnimation);
+                    takeVideo.startAnimation(zoomInAnimation);
                 }
             }
         });
