@@ -16,8 +16,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import me.qiang.android.chongai.R;
-import me.qiang.android.chongai.util.Blur;
-import me.qiang.android.chongai.util.ScreenShot;
+import me.qiang.android.chongai.util.BlurBackground;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,7 +27,6 @@ public class CreateNewStateFragment extends Fragment implements View.OnClickList
     private ImageView takePhoto;
     private ImageView pickPhoto;
     private ImageView takeVideo;
-    Bitmap background;
 
     public CreateNewStateFragment() {
         // Required empty public constructor
@@ -39,10 +37,9 @@ public class CreateNewStateFragment extends Fragment implements View.OnClickList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ScreenShot.takeScreenShot(container);
+        Bitmap background = BlurBackground.getBitmapFromView(container);
         View rootView = inflater.inflate(R.layout.create_new_popup, container, false);
-        background = ScreenShot.getScreenShot();
-        background = Blur.fastblur(getActivity(), background, 5);
+        background = BlurBackground.fastblur(getActivity(), background, 5);
         BitmapDrawable ob = new BitmapDrawable(getResources(), background);
         ob.setColorFilter(Color.rgb(150, 150, 150), android.graphics.PorterDuff.Mode.MULTIPLY);
         rootView.setBackgroundDrawable(ob);

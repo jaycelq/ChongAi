@@ -16,8 +16,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import me.qiang.android.chongai.R;
-import me.qiang.android.chongai.util.Blur;
-import me.qiang.android.chongai.util.ScreenShot;
+import me.qiang.android.chongai.util.BlurBackground;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,7 +25,6 @@ public class BottomPopupFragment extends Fragment implements View.OnClickListene
 
     private ImageView close;
     private OnFragmentInteractionListener mListener;
-    private Bitmap background;
 
     public BottomPopupFragment() {
         // Required empty public constructor
@@ -36,10 +34,9 @@ public class BottomPopupFragment extends Fragment implements View.OnClickListene
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ScreenShot.takeScreenShot(container);
+        Bitmap background = BlurBackground.getBitmapFromView(container);
         View rootView = inflater.inflate(R.layout.bottom_navigation_popup, container, false);
-        background = ScreenShot.getScreenShot();
-        background = Blur.fastblur(getActivity(), background, 25);
+        background = BlurBackground.fastblur(getActivity(), background, 25);
         BitmapDrawable ob = new BitmapDrawable(getResources(), background);
         ob.setColorFilter(Color.rgb(150, 150, 150), android.graphics.PorterDuff.Mode.MULTIPLY);
         rootView.setBackgroundDrawable(ob);
