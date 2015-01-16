@@ -132,7 +132,8 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.On
 
     @Override
     public void onCloseButtonClicked() {
-        getSupportFragmentManager().popBackStack();
+        BottomPopupFragment bottomPopupFragment = (BottomPopupFragment) getSupportFragmentManager().findFragmentByTag("bottomFragment");
+        bottomPopupFragment.startCloseAnimation();
     }
 
     @Override
@@ -197,5 +198,16 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.On
 //			}
 
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        // if there is a fragment and the back stack of this fragment is not empty,
+        // then emulate 'onBackPressed' behaviour, because in default, it is not working
+        BottomPopupFragment bottomPopupFragment = (BottomPopupFragment) getSupportFragmentManager().findFragmentByTag("bottomFragment");
+        if(bottomPopupFragment != null && bottomPopupFragment.isVisible())
+            onCloseButtonClicked();
+        else
+            super.onBackPressed();
     }
 }

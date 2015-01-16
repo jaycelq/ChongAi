@@ -88,6 +88,10 @@ public class BottomPopupFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
+       mListener.onCloseButtonClicked();
+    }
+
+    public void startCloseAnimation() {
         Animation anim;
         anim = AnimationUtils.loadAnimation(getActivity(), R.anim.close_button_rotate_reverse);
         anim.setAnimationListener(new Animation.AnimationListener() {
@@ -98,7 +102,7 @@ public class BottomPopupFragment extends Fragment implements View.OnClickListene
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                mListener.onCloseButtonClicked();
+                getActivity().getSupportFragmentManager().popBackStack();
             }
 
             @Override
