@@ -42,6 +42,7 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.On
     private final String MAINFRAGEMENT = "MAINFRAGEMENT";
 
     static final int REQUEST_TAKE_PHOTO = 1;
+    private File photoFile = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,7 +164,6 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.On
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go
-            File photoFile = null;
             try {
                 photoFile = CameraUtil.createImageFile();
             } catch (IOException ex) {
@@ -183,21 +183,23 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
-        Log.i("TAKE_PHOTO", "onActivityResult: " + this);
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
-            //setPic();
-//			Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-//			if (bitmap != null) {
-//				mImageView.setImageBitmap(bitmap);
-//				try {
-//					sendPhoto(bitmap);
-//				} catch (Exception e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
+            try {
+                startStateEditActivity(photoFile.getCanonicalPath());
+            }
+            catch (IOException ex) {
+                // Error occurred while creating the File
+                Log.i("TAKE_PHOTO", ex.getMessage());
 
+            }
         }
+    }
+
+    private void startStateEditActivity(String imageFile) {
+        Intent intent = new Intent(this, StateEdit.class);
+        intent.putExtra("STATE_PHOTO", imageFile);
+        Log.i("CAMERA_CAPTURE", imageFile);
+        startActivity(intent);
     }
 
     @Override
