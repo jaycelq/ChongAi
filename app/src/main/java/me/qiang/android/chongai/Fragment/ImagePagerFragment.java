@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,9 @@ import java.util.List;
 
 import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.R;
+import me.qiang.android.chongai.widget.ViewPagerFixed;
 import uk.co.senab.photoview.PhotoView;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class ImagePagerFragment extends BaseFragment {
 
@@ -55,7 +56,7 @@ public class ImagePagerFragment extends BaseFragment {
     }
 
     private void init(View rootView) {
-        ViewPager pager = (ViewPager) rootView.findViewById(R.id.pager);
+        ViewPagerFixed pager = (ViewPagerFixed) rootView.findViewById(R.id.pager);
         Bundle bundle = getActivity().getIntent().getExtras();
         imageUrls = bundle.getStringArrayList(Constants.Extra.IMAGE_TO_SHOW);
         pager.setAdapter(new ImageAdapter());
@@ -123,7 +124,12 @@ public class ImagePagerFragment extends BaseFragment {
                     spinner.setVisibility(View.GONE);
                 }
             });
-
+            imageView.setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
+                @Override
+                public void onViewTap(View view, float x, float y) {
+                    getActivity().finish();
+                }
+            });
             view.addView(imageLayout, 0);
             return imageLayout;
         }

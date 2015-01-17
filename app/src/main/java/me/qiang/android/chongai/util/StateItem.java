@@ -45,4 +45,8 @@ public class StateItem {
     public void setStateImage(String stateImage) {
         this.stateImage = stateImage;
     }
+
+    public boolean isFollowedStateOwner() {return stateOwner.isFollowed();}
+
+    public int getStateOwnerId() {return stateOwner.getUserId();}
 }

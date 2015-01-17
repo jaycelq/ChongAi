@@ -7,10 +7,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -45,6 +48,9 @@ public class StateEdit extends ActionBarActivity implements View.OnClickListener
 
     private Button sendState;
 
+    private EditText stateText;
+    private String stateTextContent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +81,10 @@ public class StateEdit extends ActionBarActivity implements View.OnClickListener
             }
         });
 
+        stateText = (EditText) findViewById(R.id.state_text);
+
         imageView = (ImageView) findViewById(R.id.state_photo);
-        Button sendState = (Button) findViewById(R.id.send_state);
+        sendState = (Button) findViewById(R.id.send_state);
         sendState.setOnClickListener(this);
 
         photoUrl = getIntent().getStringExtra("STATE_PHOTO");
@@ -90,15 +98,27 @@ public class StateEdit extends ActionBarActivity implements View.OnClickListener
 
         switch (id) {
             case R.id.send_state:
-                new CompressUploadTask().execute(photoUrl);
-                StateItem newStateItem = new StateItem();
-                newStateItem.setStateImage("file://" + photoUrl);
-                StateExploreManager.getStateExploreManager().push(newStateItem);
-                startMainActivity();
+                attemptSendState();
                 break;
             default:
                 break;
         }
+    }
+
+    private void attemptSendState() {
+
+        stateTextContent = stateText.getText().toString();
+
+        if(TextUtils.isEmpty(stateTextContent)) {
+            Toast.makeText(this, "还是说点什么吧～", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        new CompressUploadTask().execute(photoUrl);
+        StateItem newStateItem = new StateItem();
+        newStateItem.setStateImage("file://" + photoUrl);
+        StateExploreManager.getStateExploreManager().push(newStateItem);
+        startMainActivity();
     }
 
     private void startMainActivity() {
@@ -135,8 +155,9 @@ public class StateEdit extends ActionBarActivity implements View.OnClickListener
         public void sendState(){
             RequestParams params = new RequestParams();
             File photo = new File(photoUrl);
-            params.put("photoFile", photoFileStream, photo.getName());
-            HttpClient.post("login", params, new JsonHttpResponseHandler() {
+            params.put("photo", photoFileStream, photo.getName());
+            params.put("content", stateTextContent);
+            HttpClient.post("post/index", params, new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     // If the response is JSONObject instead of expected JSONArray

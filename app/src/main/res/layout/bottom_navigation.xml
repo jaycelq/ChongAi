@@ -6,7 +6,7 @@
     android:layout_height="56dp"
     android:elevation="4dp"
     android:gravity="center_vertical"
-    android:background="@color/myPrimaryDarkColor"
+    android:background="@color/myPrimaryColor"
     android:orientation="horizontal">
 
     <RadioButton
@@ -21,7 +21,7 @@
         android:checked="true"
         android:gravity="center_horizontal|bottom"
         android:paddingTop="2dp"
-        android:text="微信"
+        android:text="相册"
         android:textColor="#F0F6D6"/>
 
     <RadioButton

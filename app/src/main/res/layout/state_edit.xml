@@ -46,12 +46,12 @@
             android:layout_gravity="center_horizontal"
             android:orientation="vertical">
 
-            <EditText xmlns:android="http://schemas.android.com/apk/res/android"
+            <EditText
+                android:id="@+id/state_text"
                 android:layout_width="match_parent" android:layout_height="100dp"
                 android:gravity="start|top"
                 android:hint="@string/state_edit_hint"
                 android:textSize="14sp"
-                android:id="@+id/edit_state"
                 android:background="@null"
                 android:padding="10dp"/>
             <LinearLayout

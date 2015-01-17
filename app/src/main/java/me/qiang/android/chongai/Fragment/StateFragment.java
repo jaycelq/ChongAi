@@ -1,6 +1,7 @@
 package me.qiang.android.chongai.Fragment;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -18,16 +19,27 @@ import android.widget.TextView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
+import org.apache.http.Header;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.qiang.android.chongai.Activity.CommentActivity;
+import me.qiang.android.chongai.Activity.ImagePager;
 import me.qiang.android.chongai.Activity.PraiseActivity;
 import me.qiang.android.chongai.Activity.UserAcitivity;
+import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.R;
+import me.qiang.android.chongai.util.HttpClient;
 import me.qiang.android.chongai.util.StateExploreManager;
 import me.qiang.android.chongai.util.StateItem;
 
@@ -52,6 +64,10 @@ public class StateFragment extends BaseFragment {
     private StateExploreManager stateExploreManager;
     private DisplayImageOptions options;
 
+    private FollowHttpClient followHttpClient;
+
+    protected ProgressDialog barProgressDialog;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -75,6 +91,10 @@ public class StateFragment extends BaseFragment {
                 .considerExifParams(true)
                 .displayer(new FadeInBitmapDisplayer(300))
                 .build();
+
+        followHttpClient = new FollowHttpClient();
+        barProgressDialog = new ProgressDialog(getActivity());
+        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_SPINNER);
     }
 
     @Override
@@ -142,6 +162,18 @@ public class StateFragment extends BaseFragment {
         public void onFragmentInteraction(String id);
     }
 
+    private void startImagePagerActivity(String imageUrl){
+        Intent intent = new Intent(getActivity(), ImagePager.class);
+        List<String> imageUrls = new ArrayList<>();
+        imageUrls.add(imageUrl);
+        Bundle bundle=new Bundle();
+        bundle.putInt(Constants.Extra.IMAGE_POSITION, 0);
+        bundle.putStringArrayList(Constants.Extra.IMAGE_TO_SHOW, (ArrayList)imageUrls);
+        intent.putExtras(bundle);
+        startActivity(intent);
+        getActivity().overridePendingTransition(R.anim.zoom_enter, 0);
+    }
+
     private class GetDataTask extends AsyncTask<Void, Void, String[]> {
 
         @Override
@@ -200,6 +232,7 @@ public class StateFragment extends BaseFragment {
                 holder.stateOwnerPhoto = (CircleImageView) view.findViewById(R.id.state_owner_photo);
                 holder.stateOwnerName = (TextView) view.findViewById(R.id.state_owner_name);
                 holder.stateCreateTime = (TextView) view.findViewById(R.id.state_create_distance);
+                holder.isFollowed = (TextView) view.findViewById(R.id.follow);
                 holder.stateBodyImage = (ImageView) view.findViewById(R.id.state_body_image);
                 holder.stateBodyPraise = (LinearLayout) view.findViewById(R.id.state_body_praise);
                 holder.comment = (LinearLayout) view.findViewById(R.id.comment);
@@ -209,7 +242,7 @@ public class StateFragment extends BaseFragment {
                 holder = (ViewHolder) view.getTag();
             }
 
-            StateItem stateItem = stateExploreManager.get(position);
+            final StateItem stateItem = stateExploreManager.get(position);
 
             ImageLoader.getInstance().displayImage(stateItem.getStateOwnerPhoto(), holder.stateOwnerPhoto, options);
             holder.stateOwnerPhoto.setOnClickListener(new View.OnClickListener() {
@@ -220,6 +253,30 @@ public class StateFragment extends BaseFragment {
             });
 
             ImageLoader.getInstance().displayImage(stateItem.getStateImage(), holder.stateBodyImage, options);
+            holder.stateBodyImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startImagePagerActivity(stateItem.getStateImage());
+                }
+            });
+
+            if(stateItem.isFollowedStateOwner())
+                holder.isFollowed.setText("√ 已关注");
+            else
+                holder.isFollowed.setText("+ 关注");
+
+            holder.isFollowed.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!stateItem.isFollowedStateOwner()) {
+                        Log.i("Follow", "onclick");
+                        barProgressDialog.setMessage("正在处理...");
+                        barProgressDialog.show();
+                        followHttpClient.follow(stateItem.getStateOwnerId(), holder.isFollowed);
+                    }
+                    //TODO: deal with cancel follow action
+                }
+            });
 
             for (int i = 0; i < Math.min(8, stateItem.getStatePraisedNum()); i++) {
                 CircleImageView praisePhoto = (CircleImageView) inflater.inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
@@ -250,9 +307,39 @@ public class StateFragment extends BaseFragment {
         CircleImageView stateOwnerPhoto;
         TextView stateOwnerName;
         TextView stateCreateTime;
+        TextView isFollowed;
         ImageView stateBodyImage;
         LinearLayout stateBodyPraise;
         LinearLayout comment;
         LinearLayout praise;
     }
+
+    public class FollowHttpClient {
+
+        FollowHttpClient() {
+        }
+
+        public void follow(int userId, final TextView follow){
+            RequestParams params = new RequestParams();
+            params.setUseJsonStreamer(true);
+            params.put("act", "follow");
+            params.put("userId", userId);
+            HttpClient.post("login", params, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    // If the response is JSONObject instead of expected JSONArray
+                    Log.i("JSON", response.toString());
+                    barProgressDialog.dismiss();
+                    follow.setText("√ 已关注");
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    Log.i("JSON", "JSON FAIL");
+                    barProgressDialog.dismiss();
+                }
+            });
+        }
+    }
+
 }

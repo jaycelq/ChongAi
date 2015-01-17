@@ -14,11 +14,14 @@ public class ImagePager extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_pager);
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new ImagePagerFragment())
                     .commit();
         }
+        getWindow().setStatusBarColor(getResources().getColor(android.R.color.black));
+
     }
 
 
