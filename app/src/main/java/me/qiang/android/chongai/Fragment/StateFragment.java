@@ -2,6 +2,7 @@ package me.qiang.android.chongai.Fragment;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,14 +18,18 @@ import android.widget.TextView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-
-import java.util.LinkedList;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.qiang.android.chongai.Activity.CommentActivity;
 import me.qiang.android.chongai.Activity.PraiseActivity;
 import me.qiang.android.chongai.Activity.UserAcitivity;
 import me.qiang.android.chongai.R;
+import me.qiang.android.chongai.util.StateExploreManager;
+import me.qiang.android.chongai.util.StateItem;
 
 /**
  * A fragment representing a list of Items.
@@ -35,22 +40,7 @@ import me.qiang.android.chongai.R;
  */
 public class StateFragment extends BaseFragment {
 
-    private String[] mStrings = { "Abbaye de Belloc", "Abbaye du Mont des Cats", "Abertam", "Abondance", "Ackawi",
-            "Acorn", "Adelost", "Affidelice au Chablis", "Afuega'l Pitu", "Airag", "Airedale", "Aisy Cendre",
-            "Allgauer Emmentaler", "Abbaye de Belloc", "Abbaye du Mont des Cats", "Abertam", "Abondance", "Ackawi",
-            "Acorn", "Adelost", "Affidelice au Chablis", "Afuega'l Pitu", "Airag", "Airedale", "Aisy Cendre",
-            "Allgauer Emmentaler" };
-    private LinkedList<String> mListItems;
     private StateAdapter mAdapter;
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private PullToRefreshListView pullToRefreshView;
 
@@ -59,15 +49,8 @@ public class StateFragment extends BaseFragment {
     private View mFooterView;
     private ProgressBar footerLoading;
 
-    // TODO: Rename and change types of parameters
-    public static StateFragment newInstance(String param1, String param2) {
-        StateFragment fragment = new StateFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private StateExploreManager stateExploreManager;
+    private DisplayImageOptions options;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -80,10 +63,18 @@ public class StateFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        stateExploreManager = StateExploreManager.getStateExploreManager();
+
+        options = new DisplayImageOptions.Builder()
+                .showImageForEmptyUri(R.drawable.ic_empty)
+                .showImageOnFail(R.drawable.ic_error)
+                .resetViewBeforeLoading(true)
+                .cacheOnDisk(true)
+                .imageScaleType(ImageScaleType.EXACTLY)
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .considerExifParams(true)
+                .displayer(new FadeInBitmapDisplayer(300))
+                .build();
     }
 
     @Override
@@ -98,21 +89,12 @@ public class StateFragment extends BaseFragment {
                 android.graphics.PorterDuff.Mode.SRC_ATOP);
         mFooterView.setVisibility(View.GONE);
 
-        // TODO: Change Adapter to display your content
-//        pullToRefreshView.setAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-//                android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS));
-
-//        mListItems = new LinkedList<String>();
-//        mListItems.addAll(Arrays.asList(mStrings));
-//
-//        mAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, mListItems);
         mAdapter = new StateAdapter();
         pullToRefreshView.setAdapter(mAdapter);
 
         pullToRefreshView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
             @Override
             public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-                // Do work to refresh the list here.
                 new GetDataTask().execute();
             }
         });
@@ -170,7 +152,7 @@ public class StateFragment extends BaseFragment {
                 Thread.sleep(4000);
             } catch (InterruptedException e) {
             }
-            return mStrings;
+            return null;
         }
 
         @Override
@@ -194,7 +176,7 @@ public class StateFragment extends BaseFragment {
 
         @Override
         public int getCount() {
-            return 9;
+            return stateExploreManager.stateCount();
         }
 
         @Override
@@ -227,17 +209,23 @@ public class StateFragment extends BaseFragment {
                 holder = (ViewHolder) view.getTag();
             }
 
-            holder.stateOwnerPhoto.setImageResource(R.drawable.profile_photo_nana);
+            StateItem stateItem = stateExploreManager.get(position);
+
+            ImageLoader.getInstance().displayImage(stateItem.getStateOwnerPhoto(), holder.stateOwnerPhoto, options);
             holder.stateOwnerPhoto.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     startActivity(new Intent(getActivity(), UserAcitivity.class));
                 }
             });
-            holder.stateBodyImage.setImageResource(R.drawable.pet_dog);
 
-            CircleImageView praisePhoto = (CircleImageView) inflater.inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
-            holder.stateBodyPraise.addView(praisePhoto);
+            ImageLoader.getInstance().displayImage(stateItem.getStateImage(), holder.stateBodyImage, options);
+
+            for (int i = 0; i < Math.min(8, stateItem.getStatePraisedNum()); i++) {
+                CircleImageView praisePhoto = (CircleImageView) inflater.inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
+                holder.stateBodyPraise.addView(praisePhoto);
+                ImageLoader.getInstance().displayImage(stateItem.getPraiseUserPhoto(i), praisePhoto, options);
+            }
 
             holder.comment.setOnClickListener(new View.OnClickListener() {
                 @Override

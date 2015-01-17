@@ -16,7 +16,7 @@ public class StateExploreActivity extends ActionBarActivity implements StateFrag
         setContentView(R.layout.activity_state_explore);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, StateFragment.newInstance("1", "2"))
+                    .add(R.id.container, new StateFragment())
                     .commit();
         }
     }

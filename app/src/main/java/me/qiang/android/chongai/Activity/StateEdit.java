@@ -1,6 +1,5 @@
 package me.qiang.android.chongai.Activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,24 +8,18 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import org.apache.http.Header;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
@@ -36,7 +29,8 @@ import java.io.InputStream;
 
 import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.util.HttpClient;
-import me.qiang.android.chongai.util.MD5;
+import me.qiang.android.chongai.util.StateExploreManager;
+import me.qiang.android.chongai.util.StateItem;
 
 
 public class StateEdit extends ActionBarActivity implements View.OnClickListener{
@@ -97,6 +91,9 @@ public class StateEdit extends ActionBarActivity implements View.OnClickListener
         switch (id) {
             case R.id.send_state:
                 new CompressUploadTask().execute(photoUrl);
+                StateItem newStateItem = new StateItem();
+                newStateItem.setStateImage("file://" + photoUrl);
+                StateExploreManager.getStateExploreManager().push(newStateItem);
                 startMainActivity();
                 break;
             default:
