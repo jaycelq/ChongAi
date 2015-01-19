@@ -1,5 +1,7 @@
 package me.qiang.android.chongai.util;
 
+import com.google.gson.annotations.SerializedName;
+
 import me.qiang.android.chongai.R;
 
 /**
@@ -8,12 +10,25 @@ import me.qiang.android.chongai.R;
 public class User {
     public enum Gender {MALE, FEMALE}
 
+    @SerializedName("user_id")
     public int userId;
+
+    @SerializedName("user_name")
     public String nickName;
+
+    @SerializedName("user_location")
     public String location;
-    public String photo;
+
+    @SerializedName("sex")
     public Gender gender;
+
+    @SerializedName("avatar")
+    public String photo;
+
+    @SerializedName("intro")
     public String signature;
+
+    @SerializedName("if_follow")
     public boolean isFollowed;
 
     //TODO: remove the defaults constructor

@@ -115,7 +115,7 @@ public class StateFragment extends BaseFragment {
         pullToRefreshView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
             @Override
             public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-                new GetDataTask().execute();
+                stateExploreManager.getNewStates(mAdapter, pullToRefreshView);
             }
         });
 
@@ -278,6 +278,8 @@ public class StateFragment extends BaseFragment {
                 }
             });
 
+            if(holder.stateBodyPraise.getChildCount() > 0)
+                holder.stateBodyPraise.removeAllViews();
             for (int i = 0; i < Math.min(8, stateItem.getStatePraisedNum()); i++) {
                 CircleImageView praisePhoto = (CircleImageView) inflater.inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
                 holder.stateBodyPraise.addView(praisePhoto);
