@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,6 +41,7 @@ import me.qiang.android.chongai.Activity.UserAcitivity;
 import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.util.HttpClient;
+import me.qiang.android.chongai.util.Pet;
 import me.qiang.android.chongai.util.StateExploreManager;
 import me.qiang.android.chongai.util.StateItem;
 
@@ -231,12 +233,18 @@ public class StateFragment extends BaseFragment {
                 assert view != null;
                 holder.stateOwnerPhoto = (CircleImageView) view.findViewById(R.id.state_owner_photo);
                 holder.stateOwnerName = (TextView) view.findViewById(R.id.state_owner_name);
+                holder.stateOwnerLocation = (TextView) view.findViewById(R.id.state_owner_location);
                 holder.stateCreateTime = (TextView) view.findViewById(R.id.state_create_distance);
                 holder.isFollowed = (TextView) view.findViewById(R.id.follow);
+                holder.statePetName = (TextView) view.findViewById(R.id.state_pet_name);
+                holder.statePetType = (TextView) view.findViewById(R.id.state_pet_type);
                 holder.stateBodyImage = (ImageView) view.findViewById(R.id.state_body_image);
+                holder.stateBodyText = (TextView) view.findViewById(R.id.state_body_text);
                 holder.stateBodyPraise = (LinearLayout) view.findViewById(R.id.state_body_praise);
                 holder.comment = (LinearLayout) view.findViewById(R.id.comment);
+                holder.stateCommentNum = (TextView) view.findViewById(R.id.state_comment_num);
                 holder.praise = (LinearLayout) view.findViewById(R.id.praise);
+                holder.statePraiseNum = (TextView) view.findViewById(R.id.state_praise_num);
                 view.setTag(holder);
             } else {
                 holder = (ViewHolder) view.getTag();
@@ -252,13 +260,9 @@ public class StateFragment extends BaseFragment {
                 }
             });
 
-            ImageLoader.getInstance().displayImage(stateItem.getStateImage(), holder.stateBodyImage, options);
-            holder.stateBodyImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startImagePagerActivity(stateItem.getStateImage());
-                }
-            });
+            holder.stateOwnerName.setText(stateItem.getStateOwnerName());
+
+            holder.stateOwnerLocation.setText(stateItem.getStateOwnerLocation());
 
             if(stateItem.isFollowedStateOwner())
                 holder.isFollowed.setText("√ 已关注");
@@ -278,8 +282,27 @@ public class StateFragment extends BaseFragment {
                 }
             });
 
+            holder.statePetName.setText(stateItem.getStatePetName());
+            holder.statePetType.setText(stateItem.getStatePetType());
+
+            if(stateItem.getStatePetGender() == Pet.Gender.FEMALE) {
+                ((GradientDrawable)holder.statePetName.getBackground()).setColor(0xFFFF939A);
+                ((GradientDrawable)holder.statePetType.getBackground()).setColor(0xFFFF939A);
+            }
+
+            ImageLoader.getInstance().displayImage(stateItem.getStateImage(), holder.stateBodyImage, options);
+            holder.stateBodyImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startImagePagerActivity(stateItem.getStateImage());
+                }
+            });
+
+            holder.stateBodyText.setText(stateItem.getStateContent());
+
             if(holder.stateBodyPraise.getChildCount() > 0)
                 holder.stateBodyPraise.removeAllViews();
+
             for (int i = 0; i < Math.min(8, stateItem.getStatePraisedNum()); i++) {
                 CircleImageView praisePhoto = (CircleImageView) inflater.inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
                 holder.stateBodyPraise.addView(praisePhoto);
@@ -300,6 +323,9 @@ public class StateFragment extends BaseFragment {
                 }
             });
 
+            holder.statePraiseNum.setText(stateItem.getStatePraisedNum() + "");
+
+            holder.stateCommentNum.setText(stateItem.getStateCommentsNum() + "");
 
             return view;
         }
@@ -308,12 +334,18 @@ public class StateFragment extends BaseFragment {
     static class ViewHolder {
         CircleImageView stateOwnerPhoto;
         TextView stateOwnerName;
+        TextView stateOwnerLocation;
         TextView stateCreateTime;
         TextView isFollowed;
+        TextView statePetName;
+        TextView statePetType;
         ImageView stateBodyImage;
+        TextView stateBodyText;
         LinearLayout stateBodyPraise;
         LinearLayout comment;
+        TextView stateCommentNum;
         LinearLayout praise;
+        TextView statePraiseNum;
     }
 
     public class FollowHttpClient {

@@ -47,6 +47,20 @@ public class AlbumHelper {
         return albumMap.get(folder);
     }
 
+    public void reloadImages() {
+        Iterator iter = albumMap.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            List<String> val = (List<String>) entry.getValue();
+            val.clear();
+        }
+        albumMap.clear();
+        albumItemList.clear();
+        List<String> imageList = new ArrayList<String>();
+        albumMap.put(ALLIMAGE, imageList);
+        GetImages();
+    }
+
     public List<AlbumItem> getAlbumItemList() {
         if (albumMap.size() == 1)
             GetImages();

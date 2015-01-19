@@ -28,4 +28,16 @@ public class Pet {
         petType = "金色寻回犬";
         petGender = Gender.FEMALE;
     }
+
+    public String getPetName() {
+        return petName;
+    }
+
+    public Gender getPetGender() {
+        return petGender;
+    }
+
+    public String getPetType() {
+        return petType;
+    }
 }

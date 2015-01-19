@@ -39,7 +39,7 @@
                 android:layout_weight="1"/>
 
             <TextView
-                android:id="@+id/state_create_location"
+                android:id="@+id/state_owner_location"
                 android:layout_alignParentBottom="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -81,6 +81,7 @@
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/state_pet_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/pet_tag_background"
@@ -90,6 +91,7 @@
             android:textColor="@android:color/white"/>
 
         <TextView
+            android:id="@+id/state_pet_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -143,23 +145,24 @@
             android:paddingRight="8dp"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
+            android:gravity="center_horizontal"
             android:background="@drawable/state_praise_background">
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="18dp"
-                android:layout_gravity="center_vertical|left"
+                android:layout_gravity="center_vertical"
                 android:src="@drawable/like"/>
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"/>
+
             <TextView
+                android:id="@+id/state_praise_num"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_vertical|right"
+                android:layout_marginLeft="8dp"
+                android:layout_gravity="center_vertical"
                 android:textColor="#FF6652"
-                android:text="20"/>
+                android:text="20"
+                android:visibility="gone"/>
 
         </LinearLayout>
 
@@ -172,23 +175,24 @@
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:layout_marginLeft="20dp"
+            android:gravity="center_horizontal"
             android:background="@drawable/anonymous_login_background">
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="18dp"
-                android:layout_gravity="center_vertical|left"
+                android:layout_gravity="center_vertical"
                 android:src="@drawable/comment"/>
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"/>
+
             <TextView
+                android:id="@+id/state_comment_num"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_vertical|right"
+                android:layout_marginLeft="8dp"
+                android:layout_gravity="center_vertical"
                 android:textColor="@color/loginInputBackGroundColor"
-                android:text="56"/>
+                android:text="56"
+                android:visibility="gone"/>
 
         </LinearLayout>
 

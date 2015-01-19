@@ -17,25 +17,19 @@ package me.qiang.android.chongai.Fragment;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentTransaction;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -43,12 +37,10 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.qiang.android.chongai.Activity.ImagePager;
+import me.qiang.android.chongai.Activity.StateEdit;
 import me.qiang.android.chongai.Constants;
-import me.qiang.android.chongai.PopUpWindow.ListImageDirPopupWindow;
 import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.util.AlbumHelper;
-import me.qiang.android.chongai.util.AlbumItem;
 
 
 /**
@@ -63,16 +55,10 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
 	DisplayImageOptions options;
     private AlbumHelper helper;
     private ImageAdapter adapter;
-    private ListImageDirPopupWindow albumPopUpWindow;
-    private int mScreenHeight;
-    private List<AlbumItem> albumList;
-    private ListView albumListView;
     private RelativeLayout mBottomLy;
     private TextView albumChoosed;
     private TextView albumImageCount;
-    private ImageView select;
 
-    // TODO: remove it
     private ListDirFragment listDirFragment;
     private int positionSelected;
 
@@ -84,49 +70,11 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
                 case SCAN_OK:
                     adapter = new ImageAdapter();
                     listView.setAdapter(adapter);
-                    if(albumPopUpWindow == null)
-                        initPopUpWindow();
                     break;
             }
         }
 
     };
-
-    private void initPopUpWindow() {
-        View container = LayoutInflater.from(getActivity())
-                .inflate(R.layout.list_dir, null);
-        albumPopUpWindow = new ListImageDirPopupWindow(container,
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (mScreenHeight * 0.7),
-                albumList);
-        albumPopUpWindow.setPositionSelected(0);
-        albumPopUpWindow.setOnDismissListener(new PopupWindow.OnDismissListener()
-        {
-
-            @Override
-            public void onDismiss()
-            {
-                // 设置背景颜色变暗
-//                WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
-//                lp.alpha = 1.0f;
-//                getActivity().getWindow().setAttributes(lp);
-                listView.setAlpha(1.0f);
-            }
-        });
-        albumListView = (ListView) container.findViewById(R.id.id_list_dir);
-        albumListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                albumPopUpWindow.setPositionSelected(position);
-                ImageView album_select = (ImageView)view.findViewById(R.id.album_select);
-                album_select.setImageResource(R.drawable.dir_choose);
-                getImages(albumList.get(position).getFolderName());
-                albumChoosed.setText(albumList.get(position).getFolderName());
-                albumImageCount.setText(albumList.get(position).getImageCounts() + "张");
-                albumPopUpWindow.dismiss();
-            }
-        });
-
-    }
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -154,8 +102,8 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
         new Thread(new Runnable() {
             @Override
             public void run() {
+                helper.reloadImages();
                 imageUrls = helper.getImageList(folder);
-                albumList = helper.getAlbumItemList();
                 mHandler.sendEmptyMessage(SCAN_OK);
             }
         }).start();
@@ -170,77 +118,41 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
 	}
 
     private void initView(View rootView) {
-//        ActionBarActivity actionBarActivity = (ActionBarActivity)getActivity();
-//        ActionBar actionBar = actionBarActivity.getSupportActionBar();
-//        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-//        actionBar.setCustomView(R.layout.actionbar);
         listView = (GridView) rootView.findViewById(R.id.grid);
         mBottomLy = (RelativeLayout) rootView.findViewById(R.id.id_bottom_ly);
         albumChoosed = (TextView) rootView.findViewById(R.id.id_choose_dir);
         albumImageCount = (TextView) rootView.findViewById(R.id.id_total_count);
-        select = (ImageView) getActivity().findViewById(R.id.state_edit_send);
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(outMetrics);
-        mScreenHeight = outMetrics.heightPixels;
-//        mSelectedImage = getActivity().getIntent().getStringArrayListExtra(Constants.Extra.IMAGE_SELECTED);
-//        mSelectedImage.remove(mSelectedImage.size() - 1);
-//        test = (ImageView) rootView.findViewById(R.id.test);
     }
 
     private void initEvent()
     {
-        /**
-         * 为底部的布局设置点击事件，弹出popupWindow
-         */
         mBottomLy.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                if(albumPopUpWindow != null) {
-                    //albumPopUpWindow
-                    //        .setAnimationStyle(R.style.anim_popup_dir);
-                    //albumPopUpWindow.showAsDropDown(mBottomLy, 0, 0);
-                            // 设置背景颜色变暗
-//                    WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
-//                    lp.alpha = .3f;
-//                    getActivity().getWindow().setAttributes(lp);
-                    //listView.setAlpha(0.3f);
-//                    test.startAnimation(slide_in);
-//                    test.setVisibility(View.VISIBLE);
-//                    test.startAnimation(slide_in);
-                    listDirFragment = (ListDirFragment) getChildFragmentManager().findFragmentByTag("DIRLIST");
-                    if (listDirFragment != null && listDirFragment.isVisible()) {
-                        getActivity().onBackPressed();
+                listDirFragment = (ListDirFragment) getChildFragmentManager().findFragmentByTag("DIRLIST");
+                if (listDirFragment != null && listDirFragment.isVisible()) {
+                    getActivity().onBackPressed();
+                }
+                else {
+                    FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+                    ft.setCustomAnimations(R.anim.dir_list_slide_in, 0, 0, R.anim.dir_list_slide_out);
+
+                    if (listDirFragment == null) {
+                        Log.i("TAG", "CREATE NEW FRAGMENT");
+                        listDirFragment = ListDirFragment.newInstance(positionSelected);
                     }
-                    else {
-                        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-                        ft.setCustomAnimations(R.anim.dir_list_slide_in, 0, 0, R.anim.dir_list_slide_out);
+                    listDirFragment.setOnListDirSelectedListener(ImageGridFragment.this);
+                    ft.add(R.id.list_dir_container, listDirFragment, "DIRLIST");
 
-                        if (listDirFragment == null) {
-                            Log.i("TAG", "CREATE NEW FRAGMENT");
-                            listDirFragment = ListDirFragment.newInstance(positionSelected);
-                        }
-                        listDirFragment.setOnListDirSelectedListener(ImageGridFragment.this);
-                        ft.add(R.id.list_dir_container, listDirFragment, "DIRLIST");
+                    ft.addToBackStack(null);
 
-                        ft.addToBackStack(null);
-
-                        // Start the animated transition.
-                        ft.commit();
-                    }
+                    // Start the animated transition.
+                    ft.commit();
                 }
             }
         });
-
-//        select.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent data = new Intent().putStringArrayListExtra(Constants.Extra.IMAGE_SELECTED, (ArrayList)mSelectedImage);
-//                getActivity().setResult(Activity.RESULT_OK, data);
-//                getActivity().finish();
-//            }
-//        });
     }
 
     @Override
@@ -251,6 +163,13 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
         albumImageCount.setText(folderCount+ "张");
         positionSelected = position;
         getActivity().onBackPressed();
+    }
+
+    private void startStateEditActivity(String imageFile) {
+        Intent intent = new Intent(getActivity(), StateEdit.class);
+        intent.putExtra("STATE_PHOTO", imageFile);
+        Log.i("CAMERA_CAPTURE", imageFile);
+        startActivity(intent);
     }
 
     public class ImageAdapter extends BaseAdapter {
@@ -277,7 +196,7 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
 		}
 
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
+		public View getView(final int position, View convertView, ViewGroup parent) {
 			final ViewHolder holder;
 			View view = convertView;
 			if (view == null) {
@@ -285,74 +204,27 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
 				holder = new ViewHolder();
 				assert view != null;
 				holder.imageView = (ImageView) view.findViewById(R.id.image);
-				holder.item_select = (ImageView) view.findViewById(R.id.id_item_select);
 				view.setTag(holder);
 			} else {
 				holder = (ViewHolder) view.getTag();
 			}
 
-            final ImageView item_select = holder.item_select;
             final ImageView imageView = holder.imageView;
 
             ImageLoader.getInstance()
                     .displayImage(imageUrls.get(position), holder.imageView, options);
-            item_select.setImageResource(R.drawable.picture_unselected);
-
 
             imageView.setColorFilter(null);
-            imageView.setTag(position);
+
             //设置ImageView的点击事件
             imageView.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
                 {
-                    Intent intent = new Intent(getActivity(), ImagePager.class);
-                    Bundle bundle=new Bundle();
-                    bundle.putInt(Constants.Extra.IMAGE_POSITION, (Integer)v.getTag());
-                    bundle.putStringArrayList(Constants.Extra.IMAGE_TO_SHOW, (ArrayList)imageUrls);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
+                    startStateEditActivity(imageUrls.get(position));
                 }
             });
-
-            item_select.setColorFilter(null);
-            item_select.setTag(position);
-            item_select.setOnClickListener(new View.OnClickListener()
-            {
-                //选择，则将图片变暗，反之则反之
-                @Override
-                public void onClick(View v)
-                {
-                    int position = (int) v.getTag();
-                    if (mSelectedImage.contains(imageUrls.get(position)))
-                    {
-                        mSelectedImage.remove(imageUrls.get(position));
-                        item_select.setImageResource(R.drawable.picture_unselected);
-                        imageView.setColorFilter(null);
-                    } else
-                    // 未选择该图片
-                    {
-                        if(mSelectedImage.size() < 9) {
-                            mSelectedImage.add(imageUrls.get(position));
-                            item_select.setImageResource(R.drawable.pictures_selected);
-                            imageView.setColorFilter(Color.parseColor("#77000000"));
-                        }
-                        else {
-                            Toast.makeText(getActivity(), "最多只能选择9张图片", Toast.LENGTH_LONG).show();
-                        }
-                    }
-
-                }
-            });
-
-            if (mSelectedImage.contains(imageUrls.get(position)))
-            {
-                holder.item_select.setImageResource(R.drawable.pictures_selected);
-                imageView.setColorFilter(Color.parseColor("#77000000"));
-            }
-
-
 
 			return view;
 		}
@@ -360,6 +232,6 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
 
 	static class ViewHolder {
 		ImageView imageView;
-		ImageView item_select;
+//		ImageView item_select;
 	}
 }

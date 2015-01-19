@@ -49,4 +49,8 @@ public class User {
     public int getUserId() {
         return userId;
     }
+
+    public String getUserName() {return nickName;}
+
+    public String getUserLocation() {return location;}
 }

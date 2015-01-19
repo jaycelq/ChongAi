@@ -63,6 +63,8 @@ public class StateItem {
         return statePraisedNum;
     }
 
+    public int getStateCommentsNum() { return stateCommentsNum;}
+
     public String getPraiseUserPhoto(int i) {
         return statePraised.get(i).photo;
     }
@@ -74,6 +76,18 @@ public class StateItem {
     public boolean isFollowedStateOwner() {return stateOwner.isFollowed();}
 
     public int getStateOwnerId() {return stateOwner.getUserId();}
+
+    public String getStateOwnerName() {return stateOwner.getUserName();}
+
+    public String getStateOwnerLocation() {return stateOwner.getUserLocation();}
+
+    public String getStatePetName() {return statePet.getPetName();}
+
+    public Pet.Gender getStatePetGender() {return statePet.getPetGender();}
+
+    public String getStatePetType() {return statePet.getPetType();}
+
+    public String getStateContent() {return stateContent;}
 
     public class StateLocation {
         @SerializedName("location_x")

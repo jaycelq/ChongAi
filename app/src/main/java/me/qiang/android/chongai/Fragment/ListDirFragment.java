@@ -34,7 +34,7 @@ public class ListDirFragment extends Fragment {
     private List<AlbumItem> albumList;
     private int positionSelected;
     private GridView parentGrid;
-    private ListDirApdater listDirApdater;
+    private ListDirAdapter listDirAdapter;
 
     private OnListDirSelectedListener listDirSelectedListener;
 
@@ -75,17 +75,17 @@ public class ListDirFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.list_dir, container, false);
         parentGrid = (GridView) getActivity().findViewById(R.id.grid);
         mListDir = (ListView) rootView.findViewById(R.id.id_list_dir);
-        listDirApdater = new ListDirApdater(getActivity());
+        listDirAdapter = new ListDirAdapter(getActivity());
         mListDir.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 List<String> imageUrls =  AlbumHelper.getHelper().getImageList(albumList.get(position).getFolderName());
                 positionSelected = position;
-                listDirApdater.notifyDataSetChanged();
+                listDirAdapter.notifyDataSetChanged();
                 listDirSelectedListener.setSelectedImages(imageUrls, albumList.get(position).getFolderName(), albumList.get(position).getImageCounts(), position);
             }
         });
-        mListDir.setAdapter(listDirApdater);
+        mListDir.setAdapter(listDirAdapter);
         return rootView;
     }
 
@@ -111,12 +111,12 @@ public class ListDirFragment extends Fragment {
         public void setSelectedImages(List<String> imageUrls, String folderName, int folderCount, int position);
     }
 
-    public class ListDirApdater extends BaseAdapter {
+    public class ListDirAdapter extends BaseAdapter {
 
         private Context mContext;
         private LayoutInflater inflater;
 
-        ListDirApdater(Context context) {
+        ListDirAdapter(Context context) {
             mContext = context;
             inflater = LayoutInflater.from(mContext);
         }

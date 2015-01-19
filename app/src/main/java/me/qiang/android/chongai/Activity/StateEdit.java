@@ -24,6 +24,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 import org.apache.http.Header;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
@@ -101,7 +102,7 @@ public class StateEdit extends ActionBarActivity implements View.OnClickListener
 
         photoUrl = getIntent().getStringExtra("STATE_PHOTO");
 
-        ImageLoader.getInstance().displayImage("file://" + photoUrl, imageView, options);
+        ImageLoader.getInstance().displayImage(photoUrl, imageView, options);
     }
 
     @Override
@@ -164,16 +165,30 @@ public class StateEdit extends ActionBarActivity implements View.OnClickListener
 
     public class SendStateHttpClient {
         InputStream photoFileStream;
+        private JSONObject stateInfo = new JSONObject();
 
         SendStateHttpClient(InputStream inputStream) {
             photoFileStream = inputStream;
+
+            try {
+                stateInfo.put("content", stateTextContent);
+                stateInfo.put("pet_id", 1);
+                JSONObject location = new JSONObject();
+                location.put("location_x", 0.0);
+                location.put("location_y", 0.0);
+                stateInfo.put("location", location);
+
+            } catch (JSONException ex) {
+                // 键为null或使用json不支持的数字格式(NaN, infinities)
+                throw new RuntimeException(ex);
+            }
         }
 
         public void sendState(){
             RequestParams params = new RequestParams();
             File photo = new File(photoUrl);
             params.put("photo", photoFileStream, photo.getName());
-            params.put("content", stateTextContent);
+            params.put("content", stateInfo);
             HttpClient.post("post/index", params, new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
