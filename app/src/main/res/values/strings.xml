@@ -32,5 +32,6 @@
     <string name="title_activity_user_acitivity">UserAcitivity</string>
     <string name="title_activity_comment">CommentActivity</string>
     <string name="title_activity_praise">PraiseActivity</string>
+    <string name="title_activity_choose_pet">ChoosePetActivity</string>
 
 </resources>

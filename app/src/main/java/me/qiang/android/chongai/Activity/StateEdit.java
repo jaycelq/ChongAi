@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -51,6 +52,8 @@ public class StateEdit extends ActionBarActivity implements View.OnClickListener
     private EditText stateText;
     private String stateTextContent;
 
+    private LinearLayout changePet;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,8 +87,17 @@ public class StateEdit extends ActionBarActivity implements View.OnClickListener
         stateText = (EditText) findViewById(R.id.state_text);
 
         imageView = (ImageView) findViewById(R.id.state_photo);
+
         sendState = (Button) findViewById(R.id.send_state);
         sendState.setOnClickListener(this);
+
+        changePet = (LinearLayout) findViewById(R.id.change_pet);
+        changePet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startChoosePetActivity();
+            }
+        });
 
         photoUrl = getIntent().getStringExtra("STATE_PHOTO");
 
@@ -125,6 +137,11 @@ public class StateEdit extends ActionBarActivity implements View.OnClickListener
         Intent registerIntent = new Intent(this, MainActivity.class);
         startActivity(registerIntent);
         this.finish();
+    }
+
+    private void startChoosePetActivity() {
+        Intent choosePetIntent = new Intent(this, ChoosePetActivity.class);
+        startActivity(choosePetIntent);
     }
 
     private class CompressUploadTask extends AsyncTask<String, Void, InputStream > {

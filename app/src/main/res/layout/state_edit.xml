@@ -90,6 +90,7 @@
                         android:visibility="gone"/>
 
                     <LinearLayout
+                        android:id="@+id/change_pet"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_marginRight="20dp"
@@ -105,7 +106,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="5dp"
                             android:layout_gravity="center_vertical"
-                            android:text="宠物信息"
+                            android:text="更改宠物信息"
                             android:textColor="#FF6652"/>
                     </LinearLayout>
 
