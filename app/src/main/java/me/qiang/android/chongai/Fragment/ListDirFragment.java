@@ -154,7 +154,7 @@ public class ListDirFragment extends Fragment {
             }
 
             ImageLoader.getInstance()
-                    .displayImage(albumList.get(position).getTopImagePath(), holder.album_item_image, options);
+                    .displayImage("file://" + albumList.get(position).getTopImagePath(), holder.album_item_image, options);
             holder.album_name.setText(albumList.get(position).getFolderName());
             holder.album_item_count.setText(""+albumList.get(position).getImageCounts());
             if(position == positionSelected) {

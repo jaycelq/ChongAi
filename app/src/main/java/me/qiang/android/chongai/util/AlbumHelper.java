@@ -84,7 +84,6 @@ public class AlbumHelper {
             //获取图片的路径
             String path = mCursor.getString(mCursor
                     .getColumnIndex(MediaStore.Images.Media.DATA));
-            path = "file://" + path;
 
             String parentPath = new File(path).getParentFile().getName();
             //根据父路径名将图片放入到mGruopMap中

@@ -15,11 +15,14 @@
  *******************************************************************************/
 package me.qiang.android.chongai.Fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,6 +37,8 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +46,7 @@ import me.qiang.android.chongai.Activity.StateEdit;
 import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.util.AlbumHelper;
+import me.qiang.android.chongai.util.CameraUtil;
 
 
 /**
@@ -58,9 +64,13 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
     private RelativeLayout mBottomLy;
     private TextView albumChoosed;
     private TextView albumImageCount;
+    private boolean allImage;
 
     private ListDirFragment listDirFragment;
     private int positionSelected;
+
+    private File photoFile;
+    static final int REQUEST_TAKE_PHOTO = 1;
 
     private Handler mHandler = new Handler(){
         @Override
@@ -96,6 +106,7 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
         helper = AlbumHelper.getHelper();
         helper.init(getActivity());
         getImages(Constants.ALLIMAGE);
+        allImage = true;
     }
 
     private void getImages(final String folder) {
@@ -162,6 +173,10 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
         albumChoosed.setText(folderName);
         albumImageCount.setText(folderCount+ "张");
         positionSelected = position;
+        if(folderName.equals(Constants.ALLIMAGE))
+            allImage = true;
+        else
+            allImage = false;
         getActivity().onBackPressed();
     }
 
@@ -170,6 +185,42 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
         intent.putExtra("STATE_PHOTO", imageFile);
         Log.i("CAMERA_CAPTURE", imageFile);
         startActivity(intent);
+    }
+
+    private void takePhoto() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            // Create the File where the photo should go
+            try {
+                photoFile = CameraUtil.createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                Log.i("TAKE_PHOTO", ex.getMessage());
+
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        Uri.fromFile(photoFile));
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // TODO Auto-generated method stub
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
+            try {
+                startStateEditActivity(photoFile.getCanonicalPath());
+            }
+            catch (IOException ex) {
+                // Error occurred while creating the File
+                Log.i("TAKE_PHOTO", ex.getMessage());
+
+            }
+        }
     }
 
     public class ImageAdapter extends BaseAdapter {
@@ -182,10 +233,28 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
 
 		@Override
 		public int getCount() {
-			return imageUrls.size();
+			return allImage ? imageUrls.size() + 1 : imageUrls.size();
 		}
 
-		@Override
+        @Override
+        public int getViewTypeCount() {
+            Log.i("AllImage", allImage + "");
+            return allImage ? 2 : 1;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if(allImage) {
+                if(position == 0)
+                    return 1;
+                else
+                    return 0;
+            }
+            else
+                return 0;
+        }
+
+        @Override
 		public Object getItem(int position) {
 			return null;
 		}
@@ -196,42 +265,70 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
 		}
 
 		@Override
-		public View getView(final int position, View convertView, ViewGroup parent) {
-			final ViewHolder holder;
-			View view = convertView;
-			if (view == null) {
-				view = inflater.inflate(R.layout.item_grid_image, parent, false);
-				holder = new ViewHolder();
-				assert view != null;
-				holder.imageView = (ImageView) view.findViewById(R.id.image);
-				view.setTag(holder);
-			} else {
-				holder = (ViewHolder) view.getTag();
-			}
-
-            final ImageView imageView = holder.imageView;
-
-            ImageLoader.getInstance()
-                    .displayImage(imageUrls.get(position), holder.imageView, options);
-
-            imageView.setColorFilter(null);
-
-            //设置ImageView的点击事件
-            imageView.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    startStateEditActivity(imageUrls.get(position));
+		public View getView(int position, View convertView, ViewGroup parent) {
+            ImageViewHolder imageViewHolder;
+            final CameraViewHolder cameraViewHolder;
+            View view = convertView;
+            int viewType = getItemViewType(position);
+            Log.i("getadapter", position+"");
+            if (view == null) {
+                if (viewType == 0) {
+                    view = inflater.inflate(R.layout.item_grid_image, parent, false);
+                    imageViewHolder = new ImageViewHolder();
+                    assert view != null;
+                    imageViewHolder.imageView = (ImageView) view.findViewById(R.id.image);
+                    view.setTag(imageViewHolder);
+                } else {
+                    view = inflater.inflate(R.layout.item_grid_camera, parent, false);
+                    cameraViewHolder = new CameraViewHolder();
+                    assert view != null;
+                    view.setTag(cameraViewHolder);
                 }
-            });
+            }
 
-			return view;
-		}
+            if (viewType == 0) {
+                Log.i("ImageGrid", allImage + " " + imageUrls.get(0));
+                imageViewHolder = (ImageViewHolder) view.getTag();
+
+                final ImageView imageView = imageViewHolder.imageView;
+
+                if(allImage)
+                    position -= 1;
+
+                ImageLoader.getInstance()
+                        .displayImage("file://" + imageUrls.get(position), imageViewHolder.imageView, options);
+
+                imageView.setColorFilter(null);
+                imageView.setTag(position);
+
+                //设置ImageView的点击事件
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startStateEditActivity(imageUrls.get((int) v.getTag()));
+                    }
+                });
+
+            }
+            else {
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        takePhoto();
+                    }
+                });
+            }
+            return  view;
+        }
 	}
 
-	static class ViewHolder {
+	static class ImageViewHolder {
 		ImageView imageView;
 //		ImageView item_select;
 	}
+
+    static class CameraViewHolder {
+        ImageView cameraView;
+        TextView cameraText;
+    }
 }

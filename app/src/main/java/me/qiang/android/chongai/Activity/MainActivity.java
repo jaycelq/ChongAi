@@ -185,7 +185,7 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.On
         // TODO Auto-generated method stub
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
             try {
-                startStateEditActivity("file://"+photoFile.getCanonicalPath());
+                startStateEditActivity(photoFile.getCanonicalPath());
             }
             catch (IOException ex) {
                 // Error occurred while creating the File

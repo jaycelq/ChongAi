@@ -323,9 +323,17 @@ public class StateFragment extends BaseFragment {
                 }
             });
 
-            holder.statePraiseNum.setText(stateItem.getStatePraisedNum() + "");
+            holder.statePraiseNum.setVisibility(View.GONE);
+            if(stateItem.getStatePraisedNum() > 0) {
+                holder.statePraiseNum.setVisibility(View.VISIBLE);
+                holder.statePraiseNum.setText(stateItem.getStatePraisedNum() + "");
+            }
 
-            holder.stateCommentNum.setText(stateItem.getStateCommentsNum() + "");
+            holder.stateCommentNum.setVisibility(View.GONE);
+            if(stateItem.getStateCommentsNum() > 0) {
+                holder.stateCommentNum.setVisibility(View.VISIBLE);
+                holder.stateCommentNum.setText(stateItem.getStateCommentsNum() + "");
+            }
 
             return view;
         }
