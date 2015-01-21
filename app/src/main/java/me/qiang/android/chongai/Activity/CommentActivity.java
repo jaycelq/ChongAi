@@ -2,15 +2,17 @@ package me.qiang.android.chongai.Activity;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.view.ViewTreeObserver;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -25,6 +27,7 @@ public class CommentActivity extends ActionBarActivity {
     private EditText commentEditText;
     private TextView sendComment;
     private ImageView commentEditExpression;
+    private LinearLayout mainLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,20 +38,24 @@ public class CommentActivity extends ActionBarActivity {
 
         commentList = (PullToRefreshListView) findViewById(R.id.list);
 
-        commentEditText.setOnClickListener(new View.OnClickListener() {
+        mainLayout = (LinearLayout) findViewById(R.id.main_layout);
+
+        mainLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
-            public void onClick(View v) {
-                int[] coords = {0, 0};
-                commentEditText.requestFocus();
-                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-                commentHeader.getLocationOnScreen(coords);
-                int commentHeaderBottom = coords[1] + commentHeader.getHeight();
+            public void onGlobalLayout() {
+                int heightDiff = mainLayout.getRootView().getHeight() - mainLayout.getHeight();
+                Log.i("ViewTreeObserver", mainLayout.getRootView().getHeight() + " " + mainLayout.getHeight());
+                if (heightDiff > 300) {
+                    Log.i("ViewTreeObserver", "layoutchange");
+                    int[] coords = {0, 0};
+                    commentHeader.getLocationOnScreen(coords);
+                    int commentHeaderBottom = coords[1] + commentHeader.getHeight();
 
-                commentEditText.getLocationOnScreen(coords);
-                int commentEditTextTop = coords[1];
+                    commentEditText.getLocationOnScreen(coords);
+                    int commentEditTextTop = coords[1];
 
-                commentList.getRefreshableView().smoothScrollBy(commentHeaderBottom - commentEditTextTop, 600);
-
+                    commentList.getRefreshableView().smoothScrollBy(commentHeaderBottom - commentEditTextTop, 600);
+                }
             }
         });
 
@@ -105,7 +112,7 @@ public class CommentActivity extends ActionBarActivity {
 
         @Override
         public int getCount() {
-            return 9;
+            return 0;
         }
 
         @Override
