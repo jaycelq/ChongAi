@@ -7,7 +7,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,13 +22,35 @@ public class CommentActivity extends ActionBarActivity {
 
     private PullToRefreshListView commentList;
     private View commentHeader;
+    private EditText commentEditText;
+    private TextView sendComment;
+    private ImageView commentEditExpression;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comment);
 
+        commentEditText = (EditText) findViewById(R.id.comment_edit_text);
+
         commentList = (PullToRefreshListView) findViewById(R.id.list);
+
+        commentEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int[] coords = {0, 0};
+                commentEditText.requestFocus();
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                commentHeader.getLocationOnScreen(coords);
+                int commentHeaderBottom = coords[1] + commentHeader.getHeight();
+
+                commentEditText.getLocationOnScreen(coords);
+                int commentEditTextTop = coords[1];
+
+                commentList.getRefreshableView().smoothScrollBy(commentHeaderBottom - commentEditTextTop, 600);
+
+            }
+        });
 
         commentHeader = getLayoutInflater().inflate(R.layout.state_item, null);
 
@@ -72,6 +96,11 @@ public class CommentActivity extends ActionBarActivity {
 
         CommentAdapter() {
             inflater = getLayoutInflater();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
         }
 
         @Override
