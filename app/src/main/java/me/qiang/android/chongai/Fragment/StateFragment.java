@@ -94,9 +94,10 @@ public class StateFragment extends BaseFragment {
                 .displayer(new FadeInBitmapDisplayer(300))
                 .build();
 
-        followHttpClient = new FollowHttpClient();
         barProgressDialog = new ProgressDialog(getActivity());
         barProgressDialog.setProgressStyle(barProgressDialog.STYLE_SPINNER);
+
+        followHttpClient = new FollowHttpClient(barProgressDialog);
     }
 
     @Override
@@ -224,7 +225,7 @@ public class StateFragment extends BaseFragment {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             final ViewHolder holder;
             View view = convertView;
             if (view == null) {
@@ -312,7 +313,7 @@ public class StateFragment extends BaseFragment {
             holder.comment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(new Intent(getActivity(), CommentActivity.class));
+                    startCommentActivity(position);
                 }
             });
 
@@ -339,26 +340,33 @@ public class StateFragment extends BaseFragment {
         }
     }
 
-    static class ViewHolder {
-        CircleImageView stateOwnerPhoto;
-        TextView stateOwnerName;
-        TextView stateOwnerLocation;
-        TextView stateCreateTime;
-        TextView isFollowed;
-        TextView statePetName;
-        TextView statePetType;
-        ImageView stateBodyImage;
-        TextView stateBodyText;
-        LinearLayout stateBodyPraise;
-        LinearLayout comment;
-        TextView stateCommentNum;
-        LinearLayout praise;
-        TextView statePraiseNum;
+    private void startCommentActivity(int pos) {
+        Intent intent = new Intent(getActivity(), CommentActivity.class);
+        intent.putExtra("STATE_POS", pos);
+        startActivity(intent);
     }
 
-    public class FollowHttpClient {
+    public static class ViewHolder {
+        public CircleImageView stateOwnerPhoto;
+        public TextView stateOwnerName;
+        public TextView stateOwnerLocation;
+        public TextView stateCreateTime;
+        public TextView isFollowed;
+        public TextView statePetName;
+        public TextView statePetType;
+        public ImageView stateBodyImage;
+        public TextView stateBodyText;
+        public LinearLayout stateBodyPraise;
+        public LinearLayout comment;
+        public TextView stateCommentNum;
+        public LinearLayout praise;
+        public TextView statePraiseNum;
+    }
 
-        FollowHttpClient() {
+    public static class FollowHttpClient {
+        ProgressDialog barProgressDialog;
+        public FollowHttpClient(ProgressDialog dialog) {
+            barProgressDialog = dialog;
         }
 
         public void follow(int userId, final TextView follow){

@@ -91,7 +91,8 @@
         </activity>
         <activity
             android:name=".Activity.CommentActivity"
-            android:label="@string/title_activity_comment" >
+            android:label="@string/title_activity_comment"
+            android:windowSoftInputMode="adjustResize|stateHidden">
         </activity>
         <activity
             android:name=".Activity.PraiseActivity"
