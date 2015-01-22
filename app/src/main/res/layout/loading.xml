@@ -1,21 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:gravity="center"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:padding="10dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ProgressBar
-        android:id="@+id/loading"
-        android:layout_width="25dp"
-        android:layout_height="35dp"/>
+    <LinearLayout
+        android:id="@+id/loading_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+        <ProgressBar
+            android:id="@+id/loading"
+            android:layout_width="25dp"
+            android:layout_height="35dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:textSize="13sp"
+            android:text="加载中..."/>
+    </LinearLayout>
 
     <TextView
+        android:id="@+id/loading_nomore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
+        android:layout_centerInParent="true"
         android:textSize="13sp"
-        android:text="加载中..."/>
+        android:text="没有更多了。"
+        android:visibility="invisible"/>
 
-</LinearLayout>
+</RelativeLayout>

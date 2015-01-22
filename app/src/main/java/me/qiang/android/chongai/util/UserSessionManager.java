@@ -37,6 +37,9 @@ public class UserSessionManager {
     // Email address (make variable public to access from outside)
     public static final String KEY_EMAIL = "email";
 
+    // Gender (make variable public to access from outside)
+    public static final String KEY_GENDER = "gender";
+
     // Constructor
     public UserSessionManager(Context context){
         this._context = context;
@@ -103,6 +106,10 @@ public class UserSessionManager {
 
         // return user
         return user;
+    }
+
+    public User getUser() {
+        return new User();
     }
 
     /**

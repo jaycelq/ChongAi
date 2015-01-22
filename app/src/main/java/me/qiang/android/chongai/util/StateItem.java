@@ -51,6 +51,8 @@ public class StateItem {
         stateCommentsNum = 0;
     }
 
+    public int getStateId() { return stateId;}
+
     public String getStateOwnerPhoto() {
         return stateOwner.photo;
     }

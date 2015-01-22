@@ -6,7 +6,12 @@ import com.google.gson.annotations.SerializedName;
  * Created by LiQiang on 17/1/15.
  */
 public class Pet {
-    public enum Gender {MALE, FEMALE}
+    public enum Gender {
+        @SerializedName("0")
+        MALE,
+        @SerializedName("1")
+        FEMALE
+    }
 
     @SerializedName("pet_id")
     public int petId;

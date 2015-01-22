@@ -8,7 +8,12 @@ import me.qiang.android.chongai.R;
  * Created by qiang on 1/8/2015.
  */
 public class User {
-    public enum Gender {MALE, FEMALE}
+    public enum Gender {
+        @SerializedName("0")
+        MALE,
+        @SerializedName("1")
+        FEMALE
+    }
 
     @SerializedName("user_id")
     public int userId;
@@ -34,10 +39,10 @@ public class User {
     //TODO: remove the defaults constructor
     public User() {
         userId = 0;
-        nickName = "NANA";
-        location = "上海市 长宁区";
+        nickName = "李强";
+        location = "上海市 闵行区";
         photo = "drawable://" + R.drawable.profile_photo_nana;
-        gender = Gender.FEMALE;
+        gender = Gender.MALE;
         signature = "Love me~ Love my pet!~";
         isFollowed = false;
     }
@@ -53,4 +58,10 @@ public class User {
     public String getUserName() {return nickName;}
 
     public String getUserLocation() {return location;}
+
+    public String getUserPhoto() {return photo;}
+
+    public Gender getUserGender() {
+        return gender;
+    }
 }
