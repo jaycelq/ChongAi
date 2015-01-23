@@ -332,13 +332,13 @@ public class StateFragment extends BaseFragment {
                         LikeHttpClient.like(inflater, stateItem.getStateId(), holder, stateItem, options);
                         CircleImageView praisePhoto = (CircleImageView) inflater.inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
                         praisePhoto.setTag(4);
-                        ImageLoader.getInstance().displayImage(GlobalApplication.getUserSessionManager().getUser().getUserPhoto(), praisePhoto, options);
+                        ImageLoader.getInstance().displayImage(GlobalApplication.getUserSessionManager().getCurrentUser().getUserPhoto(), praisePhoto, options);
                         holder.stateBodyPraise.addView(praisePhoto, 0);
                         holder.likeState.setImageResource(R.drawable.like);
                         holder.statePraiseNum.setVisibility(View.VISIBLE);
                         holder.statePraiseNum.setText(stateItem.getStatePraisedNum() + 1 + "");
                         stateItem.setLikeState(true);
-                        stateItem.addPraiseUser(GlobalApplication.getUserSessionManager().getUser());
+                        stateItem.addPraiseUser(GlobalApplication.getUserSessionManager().getCurrentUser());
                         return;
                     }
                     else if(stateItem.getLikeState() == true) {
@@ -350,12 +350,12 @@ public class StateFragment extends BaseFragment {
                         for(int i = 0; i < holder.stateBodyPraise.getChildCount(); i++) {
                             if(holder.stateBodyPraise.getChildAt(i).getTag() != null &&
                                     (int) holder.stateBodyPraise.getChildAt(i).getTag() ==
-                                    GlobalApplication.getUserSessionManager().getUser().getUserId()) {
+                                    GlobalApplication.getUserSessionManager().getCurrentUser().getUserId()) {
                                 holder.stateBodyPraise.removeViewAt(i);
                             }
                         }
                         stateItem.setLikeState(false);
-                        stateItem.decreasePraiseUser(GlobalApplication.getUserSessionManager().getUser().getUserId());
+                        stateItem.decreasePraiseUser(GlobalApplication.getUserSessionManager().getCurrentUser().getUserId());
                         return;
                     }
                 }

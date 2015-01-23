@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.Toolbar
+    android:id="@+id/toolbar_actionbar"
     style="@style/ToolBarStyle"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/colorPrimary"
-    android:minHeight="50dp"
-    >
-    <!--<TextView-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:text="Toolbar Title"-->
-    <!--android:layout_gravity="center"-->
-    <!--android:id="@+id/toolbar_title" />-->
+    android:minHeight="@dimen/toolbar_height">
+
+    <ImageView
+        android:id="@+id/toolbar_back_button"
+        android:layout_width="@dimen/toolbar_back_button_width"
+        android:layout_height="@dimen/toolbar_back_button_height"
+        android:scaleType="fitXY"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/back_button"/>
+
+    <TextView
+        android:id="@+id/toolbar_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/toolbar_title_size"
+        android:textColor="@color/toolbar_title_color"
+        android:layout_gravity="center" />
 </android.support.v7.widget.Toolbar>

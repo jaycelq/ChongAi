@@ -6,30 +6,10 @@
     android:background="@drawable/add_profile_background"
     tools:context="me.qiang.android.chongai.Activity.AddProfileActivity">
 
-    <!-- Login progress -->
-    <!--<ProgressBar android:id="@+id/login_progress" style="?android:attr/progressBarStyleLarge"-->
-    <!--android:layout_width="wrap_content" android:layout_height="wrap_content"-->
-    <!--android:layout_marginBottom="8dp" android:visibility="gone" />-->
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar_actionbar"
-        style="@style/ToolBarStyle"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:elevation="1dp"
+    <include
+        layout="@layout/toolbar_default"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:minHeight="50dp"
-        >
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="我的资料"
-            android:textSize="20sp"
-            android:textColor="@android:color/white"
-            android:layout_gravity="center"
-            android:id="@+id/toolbar_title" />
-    </android.support.v7.widget.Toolbar>
+        android:layout_height="wrap_content"/>
 
     <ScrollView
         android:layout_width="match_parent"

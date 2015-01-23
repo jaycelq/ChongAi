@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.Layout;
 import android.text.Spannable;
@@ -63,7 +62,7 @@ import me.qiang.android.chongai.util.StateExploreManager;
 import me.qiang.android.chongai.util.StateItem;
 import me.qiang.android.chongai.util.User;
 
-public class CommentActivity extends ActionBarActivity {
+public class CommentActivity extends BaseToolbarActivity {
 
     private StateExploreManager stateExploreManager;
 
@@ -103,6 +102,9 @@ public class CommentActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comment);
+
+        setToolbarTile("评论");
+        enableBackButton();
 
         options = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.ic_empty)
@@ -599,7 +601,7 @@ public class CommentActivity extends ActionBarActivity {
                     Log.i("JSON", response.toString());
                     try {
                         int commentId = response.getJSONObject("body").getInt("comment_id");
-                        User commentUser = GlobalApplication.getUserSessionManager().getUser();
+                        User commentUser = GlobalApplication.getUserSessionManager().getCurrentUser();
                         Comment newComment = new Comment(commentId,stateItem.getStateId(), commentUser,
                                 toUser, content);
                         commentsManager.pushComment(newComment);

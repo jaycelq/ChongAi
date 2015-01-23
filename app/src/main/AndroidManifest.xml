@@ -65,6 +65,7 @@
         </activity>
         <activity
             android:name=".Activity.RegisterActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_register"
             android:windowSoftInputMode="adjustResize|stateHidden" >
         </activity>
@@ -92,7 +93,7 @@
         <activity
             android:name=".Activity.CommentActivity"
             android:label="@string/title_activity_comment"
-            android:windowSoftInputMode="adjustResize|stateHidden">
+            android:windowSoftInputMode="adjustResize|stateHidden" >
         </activity>
         <activity
             android:name=".Activity.PraiseActivity"
@@ -101,6 +102,10 @@
         <activity
             android:name=".Activity.ChoosePetActivity"
             android:label="@string/title_activity_choose_pet" >
+        </activity>
+        <activity
+            android:name=".Activity.BaseToolbarActivity"
+            android:label="@string/title_activity_base_toolbar" >
         </activity>
     </application>
 

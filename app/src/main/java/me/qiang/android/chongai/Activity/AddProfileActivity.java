@@ -1,7 +1,6 @@
 package me.qiang.android.chongai.Activity;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -11,7 +10,7 @@ import android.widget.RadioGroup;
 import at.markushi.ui.CircleButton;
 import me.qiang.android.chongai.R;
 
-public class AddProfileActivity extends ActionBarActivity {
+public class AddProfileActivity extends BaseToolbarActivity {
 
     private RadioGroup genderRadioGroup;
     private EditText profileName;
@@ -26,6 +25,7 @@ public class AddProfileActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_profile);
 
+        setToolbarTile("我的资料");
         genderRadioGroup = (RadioGroup) findViewById(R.id.profile_gender);
 
     }

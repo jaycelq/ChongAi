@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import java.util.HashMap;
+import com.google.gson.Gson;
 
 import me.qiang.android.chongai.Activity.LoginActivity;
 
@@ -25,20 +25,25 @@ public class UserSessionManager {
     // Shared pref mode
     int PRIVATE_MODE = 0;
 
+    private User currentUser = null;
+
     // Sharedpref file name
-    private static final String PREFER_NAME = "PiPiChongPref";
+    private static final String PREFER_NAME = "app_user_session";
 
     // All Shared Preferences Keys
-    private static final String IS_USER_LOGIN = "IsUserLoggedIn";
+    private static final String IS_USER_LOGIN = "is_user_login";
 
-    // User name (make variable public to access from outside)
-    public static final String KEY_NAME = "name";
+    // Has User Entered Profile
+    private static final String HAS_USER_PROFILE = "has_user_profile";
+
+    // Phone number (make variable public to access from outside)
+    public static final String KEY_PHONE_NUMBER = "phone_number";
 
     // Email address (make variable public to access from outside)
-    public static final String KEY_EMAIL = "email";
+    public static final String KEY_MD5_PASSWORD = "md5_password";
 
-    // Gender (make variable public to access from outside)
-    public static final String KEY_GENDER = "gender";
+    // User id (make variable public to access from outside)
+    public static final String KEY_USER_PROFILE = "user_details";
 
     // Constructor
     public UserSessionManager(Context context){
@@ -48,68 +53,57 @@ public class UserSessionManager {
     }
 
     //Create login session
-    public void createUserLoginSession(String name, String email){
+    public void createUserLoginSession(String phoneNumber, String md5Password,
+                                       boolean hasProfile, User user){
+        Gson gson = new Gson();
+        String currentUserDetails = gson.toJson(user, User.class);
+
         // Storing login value as TRUE
         editor.putBoolean(IS_USER_LOGIN, true);
 
+        // Storing profile value as it is
+        editor.putBoolean(HAS_USER_PROFILE, hasProfile);
+
         // Storing name in pref
-        editor.putString(KEY_NAME, name);
+        editor.putString(KEY_PHONE_NUMBER, phoneNumber);
 
         // Storing email in pref
-        editor.putString(KEY_EMAIL, email);
+        editor.putString(KEY_MD5_PASSWORD, md5Password);
+
+        // Storing profile in pref
+        editor.putString(KEY_USER_PROFILE, currentUserDetails);
+
+        currentUser = user;
 
         // commit changes
         editor.commit();
     }
 
-    /**
-     * Check login method will check user login status
-     * If false it will redirect user to login page
-     * Else do anything
-     * */
-    public boolean checkLogin(){
-        // Check login status
-        if(!this.isUserLoggedIn()){
+    public void updateUserProfile(boolean hasProfile, User user) {
+        Gson gson = new Gson();
+        String currentUserDetails = gson.toJson(user, User.class);
 
-            // user is not logged in redirect him to Login Activity
-            Intent i = new Intent(_context, LoginActivity.class);
+        // Storing profile value as it is
+        editor.putBoolean(HAS_USER_PROFILE, hasProfile);
 
-            // Closing all the Activities from stack
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        // Storing profile in pref
+        editor.putString(KEY_USER_PROFILE, currentUserDetails);
 
-            // Add new Flag to start new Activity
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        currentUser = user;
 
-            // Staring Login Activity
-            _context.startActivity(i);
+        // commit changes
+        editor.commit();
+    }
 
-            return true;
+    public User getCurrentUser() {
+        Gson gson = new Gson();
+
+        if(currentUser == null) {
+            String userDetails = pref.getString(KEY_USER_PROFILE, "");
+            currentUser = gson.fromJson(userDetails, User.class);
         }
-        return false;
-    }
 
-
-
-    /**
-     * Get stored session data
-     * */
-    public HashMap<String, String> getUserDetails(){
-
-        //Use hashmap to store user credentials
-        HashMap<String, String> user = new HashMap<String, String>();
-
-        // user name
-        user.put(KEY_NAME, pref.getString(KEY_NAME, null));
-
-        // user email id
-        user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, null));
-
-        // return user
-        return user;
-    }
-
-    public User getUser() {
-        return new User();
+        return currentUser;
     }
 
     /**
@@ -138,5 +132,10 @@ public class UserSessionManager {
     // Check for login
     public boolean isUserLoggedIn(){
         return pref.getBoolean(IS_USER_LOGIN, false);
+    }
+
+    // Check for profile
+    public boolean hasProfile() {
+        return pref.getBoolean(HAS_USER_PROFILE, false);
     }
 }
