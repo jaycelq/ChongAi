@@ -32,6 +32,9 @@ public class StateItem {
     @SerializedName("add_time")
     public long stateAddTime;
 
+    @SerializedName("if_like")
+    public boolean stateLike;
+
     @SerializedName("like_num")
     public int statePraisedNum;
 
@@ -49,6 +52,7 @@ public class StateItem {
         statePraised = new LinkedList<>();
         statePraisedNum = 0;
         stateCommentsNum = 0;
+        stateLike = false;
     }
 
     public int getStateId() { return stateId;}
@@ -71,6 +75,10 @@ public class StateItem {
         return statePraised.get(i).photo;
     }
 
+    public int getPraiseUserId(int i) {
+        return statePraised.get(i).getUserId();
+    }
+
     public void setStateImage(String stateImage) {
         this.stateImage = stateImage;
     }
@@ -90,6 +98,26 @@ public class StateItem {
     public String getStatePetType() {return statePet.getPetType();}
 
     public String getStateContent() {return stateContent;}
+
+    public boolean getLikeState() {return stateLike;}
+
+    public void setLikeState(boolean likeState) {
+        stateLike = likeState;
+    }
+
+    public void addPraiseUser(User user) {
+        statePraised.add(0, user);
+        statePraisedNum += 1;
+    }
+
+    public void decreasePraiseUser(int userId) {
+        statePraisedNum -= 1;
+
+        for(int i = 0; i < statePraised.size(); i++) {
+            if(statePraised.get(i).getUserId() == userId)
+                statePraised.remove(i);
+        }
+    }
 
     public class StateLocation {
         @SerializedName("location_x")

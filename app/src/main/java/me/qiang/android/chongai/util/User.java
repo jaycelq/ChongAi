@@ -38,7 +38,7 @@ public class User {
 
     //TODO: remove the defaults constructor
     public User() {
-        userId = 0;
+        userId = 4;
         nickName = "李强";
         location = "上海市 闵行区";
         photo = "drawable://" + R.drawable.profile_photo_nana;

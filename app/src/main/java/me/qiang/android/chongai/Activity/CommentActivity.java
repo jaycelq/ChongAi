@@ -674,8 +674,9 @@ public class CommentActivity extends ActionBarActivity {
         public void getCommentsMore() {
             RequestParams params = new RequestParams();
             params.setUseJsonStreamer(true);
-            Log.i("comment_id", commentList.get(commentList.size() -1).getCommentId() + " " + isRefreshing);
-            params.put("comment_id", commentList.get(commentList.size() -1).getCommentId());
+            int comment_id = commentList.size() == 0 ? 0 :commentList.get(commentList.size() -1).getCommentId();
+            Log.i("comment_id", comment_id + " " + isRefreshing);
+            params.put("comment_id", comment_id);
             params.put("post_id", stateId);
 
             HttpClient.post("comment/getComment", params, new JsonHttpResponseHandler() {

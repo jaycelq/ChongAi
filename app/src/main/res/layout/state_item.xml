@@ -124,6 +124,7 @@
         android:id="@+id/state_body_praise"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:orientation="horizontal">
@@ -149,10 +150,11 @@
             android:background="@drawable/state_praise_background">
 
             <ImageView
+                android:id="@+id/like_state"
                 android:layout_width="20dp"
                 android:layout_height="18dp"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/like"/>
+                android:src="@drawable/not_like"/>
 
             <TextView
                 android:id="@+id/state_praise_num"

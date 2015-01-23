@@ -28,6 +28,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 import org.apache.http.Header;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -36,9 +37,9 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.qiang.android.chongai.Activity.CommentActivity;
 import me.qiang.android.chongai.Activity.ImagePager;
-import me.qiang.android.chongai.Activity.PraiseActivity;
 import me.qiang.android.chongai.Activity.UserAcitivity;
 import me.qiang.android.chongai.Constants;
+import me.qiang.android.chongai.GlobalApplication;
 import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.util.HttpClient;
 import me.qiang.android.chongai.util.Pet;
@@ -225,7 +226,7 @@ public class StateFragment extends BaseFragment {
         }
 
         @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, final ViewGroup parent) {
             final ViewHolder holder;
             View view = convertView;
             if (view == null) {
@@ -246,6 +247,7 @@ public class StateFragment extends BaseFragment {
                 holder.stateCommentNum = (TextView) view.findViewById(R.id.state_comment_num);
                 holder.praise = (LinearLayout) view.findViewById(R.id.praise);
                 holder.statePraiseNum = (TextView) view.findViewById(R.id.state_praise_num);
+                holder.likeState = (ImageView) view.findViewById(R.id.like_state);
                 view.setTag(holder);
             } else {
                 holder = (ViewHolder) view.getTag();
@@ -304,10 +306,16 @@ public class StateFragment extends BaseFragment {
             if(holder.stateBodyPraise.getChildCount() > 0)
                 holder.stateBodyPraise.removeAllViews();
 
-            for (int i = 0; i < Math.min(8, stateItem.getStatePraisedNum()); i++) {
+            for (int i = 0; i < Math.min(7, stateItem.getStatePraisedNum()); i++) {
                 CircleImageView praisePhoto = (CircleImageView) inflater.inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
+                praisePhoto.setTag(stateItem.getPraiseUserId(i));
                 holder.stateBodyPraise.addView(praisePhoto);
                 ImageLoader.getInstance().displayImage(stateItem.getPraiseUserPhoto(i), praisePhoto, options);
+            }
+
+            if(stateItem.getStatePraisedNum() > 7) {
+                ImageView praisePhoto = (ImageView) inflater.inflate(R.layout.icon_more, holder.stateBodyPraise, false);
+                holder.stateBodyPraise.addView(praisePhoto);
             }
 
             holder.comment.setOnClickListener(new View.OnClickListener() {
@@ -320,7 +328,36 @@ public class StateFragment extends BaseFragment {
             holder.praise.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(new Intent(getActivity(), PraiseActivity.class));
+                    if(stateItem.getLikeState() == false) {
+                        LikeHttpClient.like(inflater, stateItem.getStateId(), holder, stateItem, options);
+                        CircleImageView praisePhoto = (CircleImageView) inflater.inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
+                        praisePhoto.setTag(4);
+                        ImageLoader.getInstance().displayImage(GlobalApplication.getUserSessionManager().getUser().getUserPhoto(), praisePhoto, options);
+                        holder.stateBodyPraise.addView(praisePhoto, 0);
+                        holder.likeState.setImageResource(R.drawable.like);
+                        holder.statePraiseNum.setVisibility(View.VISIBLE);
+                        holder.statePraiseNum.setText(stateItem.getStatePraisedNum() + 1 + "");
+                        stateItem.setLikeState(true);
+                        stateItem.addPraiseUser(GlobalApplication.getUserSessionManager().getUser());
+                        return;
+                    }
+                    else if(stateItem.getLikeState() == true) {
+                        LikeHttpClient.unlike(inflater, stateItem.getStateId(), holder, stateItem, options);
+                        holder.likeState.setImageResource(R.drawable.not_like);
+                        holder.statePraiseNum.setText(stateItem.getStatePraisedNum() - 1 + "");
+                        if (stateItem.getStatePraisedNum() <= 1)
+                            holder.statePraiseNum.setVisibility(View.GONE);
+                        for(int i = 0; i < holder.stateBodyPraise.getChildCount(); i++) {
+                            if(holder.stateBodyPraise.getChildAt(i).getTag() != null &&
+                                    (int) holder.stateBodyPraise.getChildAt(i).getTag() ==
+                                    GlobalApplication.getUserSessionManager().getUser().getUserId()) {
+                                holder.stateBodyPraise.removeViewAt(i);
+                            }
+                        }
+                        stateItem.setLikeState(false);
+                        stateItem.decreasePraiseUser(GlobalApplication.getUserSessionManager().getUser().getUserId());
+                        return;
+                    }
                 }
             });
 
@@ -328,6 +365,13 @@ public class StateFragment extends BaseFragment {
             if(stateItem.getStatePraisedNum() > 0) {
                 holder.statePraiseNum.setVisibility(View.VISIBLE);
                 holder.statePraiseNum.setText(stateItem.getStatePraisedNum() + "");
+            }
+
+            if(stateItem.getLikeState()) {
+                holder.likeState.setImageResource(R.drawable.like);
+            }
+            else {
+                holder.likeState.setImageResource(R.drawable.not_like);
             }
 
             holder.stateCommentNum.setVisibility(View.GONE);
@@ -361,6 +405,7 @@ public class StateFragment extends BaseFragment {
         public TextView stateCommentNum;
         public LinearLayout praise;
         public TextView statePraiseNum;
+        public ImageView likeState;
     }
 
     public static class FollowHttpClient {
@@ -387,6 +432,66 @@ public class StateFragment extends BaseFragment {
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                     Log.i("JSON", "JSON FAIL");
                     barProgressDialog.dismiss();
+                }
+            });
+        }
+    }
+
+    public static class LikeHttpClient {
+        public static void like(final LayoutInflater inflater,
+                                int stateId, final ViewHolder holder, final StateItem stateItem, final DisplayImageOptions options) {
+            RequestParams params = new RequestParams();
+            params.setUseJsonStreamer(true);
+            params.put("post_id", stateId);
+            HttpClient.post("like", params, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    // If the response is JSONObject instead of expected JSONArray
+                    Log.i("JSON", response.toString());
+                    try {
+                        if (response.getInt("status") == 0) {
+
+                        }
+                    } catch (JSONException ex) {
+                        Log.i("JSON", ex.toString());
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    Log.i("JSON", "JSON FAIL");
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    Log.i("JSON", responseString);
+                }
+            });
+        }
+
+        public static void unlike(final LayoutInflater inflater,
+                                  int stateId, final ViewHolder holder, final StateItem stateItem,
+                                  final DisplayImageOptions options) {
+            RequestParams params = new RequestParams();
+            params.setUseJsonStreamer(true);
+            params.put("post_id", stateId);
+            HttpClient.post("like/unlike", params, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    // If the response is JSONObject instead of expected JSONArray
+                    Log.i("JSON", response.toString());
+                    try {
+                        if (response.getInt("status") == 0) {
+
+                        }
+                    } catch (JSONException ex) {
+                        Log.i("JSON", ex.toString());
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    Log.i("JSON", "JSON FAIL");
                 }
             });
         }
