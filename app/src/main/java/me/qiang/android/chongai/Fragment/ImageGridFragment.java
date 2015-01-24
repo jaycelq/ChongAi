@@ -211,14 +211,19 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
-        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
-            try {
-                startStateEditActivity(photoFile.getCanonicalPath());
-            }
-            catch (IOException ex) {
-                // Error occurred while creating the File
-                Log.i("TAKE_PHOTO", ex.getMessage());
+        if (requestCode == REQUEST_TAKE_PHOTO) {
+            if(resultCode == Activity.RESULT_OK) {
+                try {
+                    //startStateEditActivity(photoFile.getCanonicalPath());
+                    Intent intent = new Intent();
+                    intent.putExtra("IMAGE_PHOTO", photoFile.getCanonicalPath());
+                    getActivity().setResult(Activity.RESULT_OK, intent);
+                    getActivity().finish();
+                } catch (IOException ex) {
+                    // Error occurred while creating the File
+                    Log.i("TAKE_PHOTO", ex.getMessage());
 
+                }
             }
         }
     }
@@ -305,7 +310,11 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        startStateEditActivity(imageUrls.get((int) v.getTag()));
+                        //startStateEditActivity(imageUrls.get((int) v.getTag()));
+                        Intent intent = new Intent();
+                        intent.putExtra("img_url", imageUrls.get((int) v.getTag()));
+                        getActivity().setResult(Activity.RESULT_OK, intent);
+                        getActivity().finish();
                     }
                 });
 

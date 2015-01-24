@@ -80,7 +80,9 @@
         </activity>
         <activity
             android:name=".Activity.AddProfileActivity"
-            android:label="@string/title_activity_add_profile" >
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_add_profile"
+            android:windowSoftInputMode="adjustResize|stateHidden">
         </activity>
         <activity
             android:name=".Activity.LocationPikcerActivity"

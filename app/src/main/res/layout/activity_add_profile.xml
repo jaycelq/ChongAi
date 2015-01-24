@@ -163,16 +163,14 @@
                 android:textColor="@android:color/white"
                 android:layout_below="@id/profile_input_form"/>
 
-            <at.markushi.ui.CircleButton
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profile_photo"
                 style="?android:textAppearanceSmall"
                 android:layout_width="85dp"
                 android:layout_height="85dp"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="80dp"
-                android:src="@drawable/profile_photo"
-                app:cb_color="#FF7761"
-                app:cb_pressedRingWidth="8dip"/>
+                android:src="@drawable/profile_photo"/>
         </RelativeLayout>
     </ScrollView>
 

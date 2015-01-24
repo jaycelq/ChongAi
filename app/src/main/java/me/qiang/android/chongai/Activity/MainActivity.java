@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import java.io.File;
 import java.io.IOException;
 
+import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.Fragment.BottomNavigationFragment;
 import me.qiang.android.chongai.Fragment.BottomPopupFragment;
 import me.qiang.android.chongai.Fragment.CreateNewStateFragment;
@@ -156,7 +157,7 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.On
 
     private void startAlbumActivity() {
         Intent intent = new Intent(MainActivity.this, CustomAlbum.class);
-        startActivity(intent);
+        startActivityForResult(intent, Constants.Album.PICK_IMAGE);
     }
 
     private void takePhoto() {
@@ -183,14 +184,21 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
-        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
-            try {
-                startStateEditActivity(photoFile.getCanonicalPath());
-            }
-            catch (IOException ex) {
-                // Error occurred while creating the File
-                Log.i("TAKE_PHOTO", ex.getMessage());
+        if (requestCode == REQUEST_TAKE_PHOTO) {
+            if (resultCode == Activity.RESULT_OK) {
+                try {
+                    startStateEditActivity(photoFile.getCanonicalPath());
+                } catch (IOException ex) {
+                    // Error occurred while creating the File
+                    Log.i("TAKE_PHOTO", ex.getMessage());
 
+                }
+            }
+        }
+        else if(requestCode == Constants.Album.PICK_IMAGE) {
+            if(resultCode == RESULT_OK) {
+                String photoUrl = data.getExtras().getString("img_url");
+                startStateEditActivity(photoUrl);
             }
         }
     }

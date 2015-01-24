@@ -9,7 +9,6 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,27 +33,16 @@ import me.qiang.android.chongai.util.UserSessionManager;
 /**
  * A login screen that offers login via phone/password.
  */
-// TODO: change UI to adapter phone and password satisfaction
 public class LoginActivity extends BaseLoginRegisterActivity implements TextWatcher{
 
     private UserSessionManager userSessionManager;
 
     private Button signInButton;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-
-        userSessionManager = GlobalApplication.getUserSessionManager();
-
-        if(userSessionManager.isUserLoggedIn() && userSessionManager.hasProfile())
-            startMainActivity();
-        else if(userSessionManager.isUserLoggedIn() && !userSessionManager.hasProfile())
-            startAddProfileActivity();
-
+    private void setupUI() {
         // Set up the login form.
         mPhoneNumberView = (EditText) findViewById(R.id.phone);
+        mPhoneNumberView.addTextChangedListener(this);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -67,17 +55,19 @@ public class LoginActivity extends BaseLoginRegisterActivity implements TextWatc
                 return false;
             }
         });
+        mPasswordView.addTextChangedListener(this);
 
         signInButton = (Button) findViewById(R.id.sign_in_button);
-        signInButton.setOnClickListener(new OnClickListener() {
+        signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
             }
         });
+        signInButton.setClickable(false);
 
         Button mRegisterButton = (Button) findViewById(R.id.welcome_register);
-        mRegisterButton.setOnClickListener(new OnClickListener() {
+        mRegisterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startRegisterActivity();
@@ -85,7 +75,7 @@ public class LoginActivity extends BaseLoginRegisterActivity implements TextWatc
         });
 
         Button mAnonymousVisitButton = (Button) findViewById(R.id.anonymous_visit);
-        mAnonymousVisitButton.setOnClickListener(new OnClickListener() {
+        mAnonymousVisitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startMainActivity();
@@ -93,9 +83,25 @@ public class LoginActivity extends BaseLoginRegisterActivity implements TextWatc
         });
 
         showProgress(false, "");
+    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+
+        userSessionManager = GlobalApplication.getUserSessionManager();
+
+        if(userSessionManager.isUserLoggedIn() && userSessionManager.hasProfile())
+            startMainActivity();
+        else if(userSessionManager.isUserLoggedIn() && !userSessionManager.hasProfile())
+            startAddProfileActivity();
+
+        setupUI();
+
         Log.i("Login", "onCreate");
     }
 
+    // TODO: deal with ui change when button clicked or not
     @Override
     public void afterTextChanged(Editable s) {
         if(isInputValid() == null)
@@ -142,7 +148,7 @@ public class LoginActivity extends BaseLoginRegisterActivity implements TextWatc
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password))
+        if (TextUtils.isEmpty(password) || !isPasswordValid(password))
             focusView = mPasswordView;
 
         // Check for a valid email address.
@@ -205,6 +211,7 @@ public class LoginActivity extends BaseLoginRegisterActivity implements TextWatc
                         userSessionManager.createUserLoginSession(phoneNumber, md5Password,
                                 false, currentUser);
                         Log.i("JSON", "" + userSessionManager.getCurrentUser().getUserId());
+                        startAddProfileActivity();
                     }
                     else {
                         new AlertDialog.Builder(LoginActivity.this).setMessage("手机号或密码错误").
@@ -226,6 +233,9 @@ public class LoginActivity extends BaseLoginRegisterActivity implements TextWatc
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 Log.i("JSON", responseString);
+                showProgress(false, "");
+                new AlertDialog.Builder(LoginActivity.this).setMessage("服务器故障").
+                        setPositiveButton("确定", null).show();
             }
         });
     }

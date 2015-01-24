@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
 
 import me.qiang.android.chongai.util.MobileNumber;
@@ -17,7 +16,6 @@ public class BaseLoginRegisterActivity extends BaseToolbarActivity {
     // UI references.
     protected EditText mPhoneNumberView;
     protected EditText mPasswordView;
-    protected View mLoginFormView;
     protected ProgressDialog barProgressDialog;
 
 

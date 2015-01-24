@@ -44,4 +44,8 @@ public final class Constants {
         public static final int NO_SUCH_USER = 4002;
         public static final int WRONG_PASSWORD = 4003;
     }
+
+    public static class Album {
+        public static final int PICK_IMAGE = 1001;
+    }
 }

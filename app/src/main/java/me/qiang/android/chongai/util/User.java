@@ -47,6 +47,16 @@ public class User {
         isFollowed = false;
     }
 
+    public User(String userName, Gender userGender, String userLocation,
+                String userSignature, String userLocalPhoto) {
+        nickName = userName;
+        location = userLocation;
+        photo = userLocalPhoto;
+        gender = userGender;
+        signature = userSignature;
+        isFollowed = false;
+    }
+
     public boolean isFollowed() {
         return isFollowed;
     }
