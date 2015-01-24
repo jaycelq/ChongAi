@@ -1,7 +1,6 @@
 package me.qiang.android.chongai.Activity;
 
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -25,8 +23,9 @@ import org.json.JSONObject;
 import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.GlobalApplication;
 import me.qiang.android.chongai.R;
-import me.qiang.android.chongai.util.HttpClient;
+import me.qiang.android.chongai.util.ActivityTransition;
 import me.qiang.android.chongai.util.MD5;
+import me.qiang.android.chongai.util.RequestServer;
 import me.qiang.android.chongai.util.User;
 import me.qiang.android.chongai.util.UserSessionManager;
 
@@ -35,9 +34,9 @@ import me.qiang.android.chongai.util.UserSessionManager;
  */
 public class LoginActivity extends BaseLoginRegisterActivity implements TextWatcher{
 
-    private UserSessionManager userSessionManager;
-
     private Button signInButton;
+
+    private UserSessionManager userSessionManager;
 
     private void setupUI() {
         // Set up the login form.
@@ -70,7 +69,7 @@ public class LoginActivity extends BaseLoginRegisterActivity implements TextWatc
         mRegisterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startRegisterActivity();
+                ActivityTransition.startRegisterActivity(LoginActivity.this);
             }
         });
 
@@ -78,12 +77,11 @@ public class LoginActivity extends BaseLoginRegisterActivity implements TextWatc
         mAnonymousVisitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startMainActivity();
+                ActivityTransition.startMainActivity(LoginActivity.this);
             }
         });
-
-        showProgress(false, "");
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,17 +89,19 @@ public class LoginActivity extends BaseLoginRegisterActivity implements TextWatc
 
         userSessionManager = GlobalApplication.getUserSessionManager();
 
-        if(userSessionManager.isUserLoggedIn() && userSessionManager.hasProfile())
-            startMainActivity();
-        else if(userSessionManager.isUserLoggedIn() && !userSessionManager.hasProfile())
-            startAddProfileActivity();
+        if(userSessionManager.isUserLoggedIn() && userSessionManager.hasProfile()) {
+            ActivityTransition.startMainActivity(this);
+            finish();
+        }
+        else if(userSessionManager.isUserLoggedIn() && !userSessionManager.hasProfile()) {
+            ActivityTransition.startAddProfileActivity(this);
+            finish();
+        }
 
         setupUI();
-
-        Log.i("Login", "onCreate");
     }
 
-    // TODO: deal with ui change when button clicked or not
+    //TODO: deal with ui change when button clicked or not
     @Override
     public void afterTextChanged(Editable s) {
         if(isInputValid() == null)
@@ -118,92 +118,23 @@ public class LoginActivity extends BaseLoginRegisterActivity implements TextWatc
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
     }
 
-    /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
-    public void attemptLogin() {
-        String phoneNumber = mPhoneNumberView.getText().toString();
-        String password = mPasswordView.getText().toString();
 
-        View focusView = isInputValid();
-
-        if (focusView != null) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            showProgress(true, "正在登录...");
-            login(phoneNumber, MD5.md5(password));
-        }
-    }
-
-    private View isInputValid() {
-        String phoneNumber = mPhoneNumberView.getText().toString();
-        String password = mPasswordView.getText().toString();
-
-        View focusView = null;
-
-        // Check for a valid password, if the user entered one.
-        if (TextUtils.isEmpty(password) || !isPasswordValid(password))
-            focusView = mPasswordView;
-
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(phoneNumber))
-            focusView = mPhoneNumberView;
-        else if (!isPhoneNumberValid(phoneNumber))
-            focusView = mPhoneNumberView;
-
-        return focusView;
-    }
-
-    private void startRegisterActivity() {
-        Intent registerIntent = new Intent(this, RegisterActivity.class);
-        startActivity(registerIntent);
-    }
-
-    private void startMainActivity() {
-        Intent registerIntent = new Intent(this, MainActivity.class);
-        startActivity(registerIntent);
-        this.finish();
-    }
-
-    private void startAddProfileActivity() {
-        Intent addProfileIntent = new Intent(this, AddProfileActivity.class);
-        startActivity(addProfileIntent);
-        this.finish();
-    }
-
-    public void login(final String phoneNumber, final String md5Password){
-        JSONObject userInfo = new JSONObject();
-        try {
-            userInfo.put("phone_number", phoneNumber);
-            userInfo.put("password", md5Password);
-        } catch (JSONException ex) {
-            // 键为null或使用json不支持的数字格式(NaN, infinities)
-            throw new RuntimeException(ex);
-        }
-        RequestParams params = new RequestParams();
-        params.setUseJsonStreamer(true);
-        params.put("act", "login");
-        params.put("userinfo", userInfo);
-        HttpClient.post("login", params, new JsonHttpResponseHandler() {
+    private JsonHttpResponseHandler newLoginCallback(final String phoneNumber, final String md5Password) {
+        return new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 // If the response is JSONObject instead of expected JSONArray
                 Log.i("JSON", response.toString());
                 Gson gson = new Gson();
-                showProgress(false, "");
+                hideProgressDialog();
                 try {
                     if(response.getInt("status") == 0) {
                         JSONObject userJsonObject = response.getJSONObject("body");
                         User currentUser = gson.fromJson(userJsonObject.toString(), User.class);
                         userSessionManager.createUserLoginSession(phoneNumber, md5Password,
                                 true, currentUser);
-                        startMainActivity();
+                        ActivityTransition.startMainActivity(LoginActivity.this);
+                        LoginActivity.this.finish();
                     }
                     else if(response.getInt("status") == Constants.Login.NO_USER_PROFILE) {
                         JSONObject userJsonObject = response.getJSONObject("error");
@@ -211,7 +142,8 @@ public class LoginActivity extends BaseLoginRegisterActivity implements TextWatc
                         userSessionManager.createUserLoginSession(phoneNumber, md5Password,
                                 false, currentUser);
                         Log.i("JSON", "" + userSessionManager.getCurrentUser().getUserId());
-                        startAddProfileActivity();
+                        ActivityTransition.startAddProfileActivity(LoginActivity.this);
+                        LoginActivity.this.finish();
                     }
                     else {
                         new AlertDialog.Builder(LoginActivity.this).setMessage("手机号或密码错误").
@@ -225,7 +157,7 @@ public class LoginActivity extends BaseLoginRegisterActivity implements TextWatc
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Log.i("JSON", "JSON FAIL");
-                showProgress(false, "");
+                hideProgressDialog();
                 new AlertDialog.Builder(LoginActivity.this).setMessage("网络连接出现问题").
                         setPositiveButton("确定", null).show();
             }
@@ -233,12 +165,48 @@ public class LoginActivity extends BaseLoginRegisterActivity implements TextWatc
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 Log.i("JSON", responseString);
-                showProgress(false, "");
+                hideProgressDialog();
                 new AlertDialog.Builder(LoginActivity.this).setMessage("服务器故障").
                         setPositiveButton("确定", null).show();
             }
-        });
+        };
     }
+
+
+    public void attemptLogin() {
+        String phoneNumber = mPhoneNumberView.getText().toString();
+        String password = mPasswordView.getText().toString();
+
+        View focusView = isInputValid();
+
+        if (focusView != null) {
+            focusView.requestFocus();
+        } else {
+            showProgressDialog("正在登录...");
+            RequestServer.login(phoneNumber, MD5.md5(password), newLoginCallback(phoneNumber, password));
+        }
+    }
+
+    private View isInputValid() {
+        String phoneNumber = mPhoneNumberView.getText().toString();
+        String password = mPasswordView.getText().toString();
+
+        View focusView = null;
+
+        // Check for a valid password, if the user entered one.
+        if (TextUtils.isEmpty(password) || !isPasswordValid(password))
+            focusView = mPasswordView;
+
+        // Check for a valid phone number.
+        if (TextUtils.isEmpty(phoneNumber))
+            focusView = mPhoneNumberView;
+        else if (!isPhoneNumberValid(phoneNumber))
+            focusView = mPhoneNumberView;
+
+        return focusView;
+    }
+
+
 }
 
 

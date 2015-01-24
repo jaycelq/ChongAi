@@ -100,7 +100,7 @@ public class StateEdit extends ActionBarActivity implements View.OnClickListener
             }
         });
 
-        photoUrl = getIntent().getStringExtra("STATE_PHOTO");
+        photoUrl = getIntent().getStringExtra("img_url");
 
         ImageLoader.getInstance().displayImage("file://" + photoUrl, imageView, options);
     }

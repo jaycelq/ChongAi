@@ -1,5 +1,6 @@
 package me.qiang.android.chongai.Activity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -14,7 +15,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -25,25 +25,20 @@ import java.util.regex.Pattern;
 
 import at.markushi.ui.CircleButton;
 import me.qiang.android.chongai.R;
-import me.qiang.android.chongai.util.HttpClient;
-import me.qiang.android.chongai.util.MD5;
 import me.qiang.android.chongai.util.MobileNumber;
+import me.qiang.android.chongai.util.RequestServer;
 
 //TODO: deal with resend verify code in UI
 public class RegisterActivity extends BaseLoginRegisterActivity implements TextWatcher{
 
+    // UI widget
     private EditText mPasswordConfirmView;
     private EditText verifyCodeView;
     private TextView mRegisterResult;
     private Button sendVerifyCodeButton;
     private CircleButton registerButton;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_register);
-        setToolbarTile("注册");
+    private void setupUI() {
 
         // Set up the login form.
         mPhoneNumberView = (EditText) findViewById(R.id.phone);
@@ -54,6 +49,7 @@ public class RegisterActivity extends BaseLoginRegisterActivity implements TextW
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
+            //TODO: deal with sendVerifyButton ui change
             @Override
             public void afterTextChanged(Editable s) {
                 if(MobileNumber.isMobileNO(s.toString())) {
@@ -62,8 +58,6 @@ public class RegisterActivity extends BaseLoginRegisterActivity implements TextW
             }
         });
         mPhoneNumberView.addTextChangedListener(this);
-
-        mRegisterResult = (TextView) findViewById(R.id.register_result);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.addTextChangedListener(this);
@@ -80,7 +74,7 @@ public class RegisterActivity extends BaseLoginRegisterActivity implements TextW
             public void onClick(View v) {
                 String phoneNumber = mPhoneNumberView.getText().toString();
                 v.setClickable(false);
-                verifyPhoneNumber(phoneNumber);
+                RequestServer.verifyPhoneNumber(phoneNumber, newVerfiyCodeCallback());
                 new CountDownTimer(60000, 1000){
                     @Override
                     public void onTick(long millisUntilFinished) {
@@ -105,19 +99,82 @@ public class RegisterActivity extends BaseLoginRegisterActivity implements TextW
             }
         });
         registerButton.setClickable(false);
+
+        mRegisterResult = (TextView) findViewById(R.id.register_result);
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_register);
+        setToolbarTile("注册");
 
-    /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
+        setupUI();
+    }
+
+    private JsonHttpResponseHandler newVerfiyCodeCallback() {
+        return new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.i("JSON", response.toString());
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.i("JSON", "JSON FAIL");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Log.i("JSON", responseString);
+            }
+        };
+    }
+
+    private JsonHttpResponseHandler newRegisterCallback() {
+        return new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.i("JSON", response.toString());
+                try {
+                    if (response.getInt("status") == 0) {
+                        mRegisterResult.setVisibility(View.VISIBLE);
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+                                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                                finish();
+                            }
+                        }, 800);
+                    }
+                    hideProgressDialog();
+                } catch (JSONException ex) {
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.i("JSON", "JSON FAIL");
+                hideProgressDialog();
+                new AlertDialog.Builder(RegisterActivity.this).setMessage("网络连接出现问题").
+                        setPositiveButton("确定", null).show();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Log.i("JSON", responseString);
+                hideProgressDialog();
+                new AlertDialog.Builder(RegisterActivity.this).setMessage("服务器故障").
+                        setPositiveButton("确定", null).show();
+            }
+        };
+    }
+
     public void attemptRegister() {
-        // Store values at the time of the login attempt.
         String phoneNumber = mPhoneNumberView.getText().toString();
         String password = mPasswordView.getText().toString();
-        String passwordConfirm = mPasswordConfirmView.getText().toString();
         String verifyCode = verifyCodeView.getText().toString();
 
         View focusView = isInputValid();
@@ -129,8 +186,8 @@ public class RegisterActivity extends BaseLoginRegisterActivity implements TextW
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true, "正在注册...");
-            register(phoneNumber, password, verifyCode);
+            showProgressDialog("正在注册...");
+            RequestServer.register(phoneNumber, password, verifyCode, newRegisterCallback());
         }
     }
 
@@ -157,8 +214,6 @@ public class RegisterActivity extends BaseLoginRegisterActivity implements TextW
         if(!TextUtils.equals(password, passwordConfirm))
             focusView = mPasswordConfirmView;
 
-
-
         // Check for a valid email address.
         if (TextUtils.isEmpty(phoneNumber))
             focusView = mPhoneNumberView;
@@ -169,71 +224,6 @@ public class RegisterActivity extends BaseLoginRegisterActivity implements TextW
             focusView = verifyCodeView;
 
         return focusView;
-    }
-
-
-    public void register(String phoneNumber, String password, String verifyCode){
-        RequestParams params = new RequestParams();
-        params.setUseJsonStreamer(true);
-        params.put("phone_number", phoneNumber);
-        params.put("password", MD5.md5(password));
-        params.put("verify_sms", verifyCode);
-        HttpClient.post("login/verify", params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                // If the response is JSONObject instead of expected JSONArray
-                Log.i("JSON", response.toString());
-                try {
-                    if(response.getInt("status") == 0) {
-                        mRegisterResult.setVisibility(View.VISIBLE);
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            public void run() {
-                                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                                finish();
-                            }
-                        }, 800);
-                    }
-                    showProgress(false, "");
-                } catch (JSONException ex)
-                {}
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.i("JSON", "JSON FAIL");
-                showProgress(false, "");
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Log.i("JSON", responseString);
-            }
-        });
-    }
-
-    public void verifyPhoneNumber(String phoneNumber) {
-        RequestParams params = new RequestParams();
-        params.setUseJsonStreamer(true);
-        params.put("phone_number", phoneNumber);
-        params.put("verify_sms", 0);
-        HttpClient.post("login/verify", params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                // If the response is JSONObject instead of expected JSONArray
-                Log.i("JSON", response.toString());
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.i("JSON", "JSON FAIL");
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Log.i("JSON", responseString);
-            }
-        });
     }
 
     @Override

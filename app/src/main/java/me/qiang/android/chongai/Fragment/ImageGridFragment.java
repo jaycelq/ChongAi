@@ -216,7 +216,7 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
                 try {
                     //startStateEditActivity(photoFile.getCanonicalPath());
                     Intent intent = new Intent();
-                    intent.putExtra("IMAGE_PHOTO", photoFile.getCanonicalPath());
+                    intent.putExtra("img_url", photoFile.getCanonicalPath());
                     getActivity().setResult(Activity.RESULT_OK, intent);
                     getActivity().finish();
                 } catch (IOException ex) {

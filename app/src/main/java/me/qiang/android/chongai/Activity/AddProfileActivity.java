@@ -1,5 +1,6 @@
 package me.qiang.android.chongai.Activity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -165,6 +166,7 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
         if (focusView != null) {
             focusView.requestFocus();
         } else {
+            showProgressDialog("正在处理...");
             CompressUploadTask compressUploadTask = new CompressUploadTask() {
                 @Override
                 protected void onPostExecute(InputStream inputStream) {
@@ -246,16 +248,23 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
                     }
                 } catch (JSONException ex) {
                 }
+                hideProgressDialog();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Log.i("JSON", "JSON FAIL");
+                hideProgressDialog();
+                new AlertDialog.Builder(AddProfileActivity.this).setMessage("网络连接出现问题").
+                        setPositiveButton("确定", null).show();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 Log.i("JSON", responseString);
+                hideProgressDialog();
+                new AlertDialog.Builder(AddProfileActivity.this).setMessage("服务器故障").
+                        setPositiveButton("确定", null).show();
             }
         });
     }

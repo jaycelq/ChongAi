@@ -8,7 +8,7 @@ import android.view.MenuItem;
 import me.qiang.android.chongai.Fragment.StateFragment;
 import me.qiang.android.chongai.R;
 
-public class StateExploreActivity extends ActionBarActivity implements StateFragment.OnFragmentInteractionListener{
+public class StateExploreActivity extends ActionBarActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +44,4 @@ public class StateExploreActivity extends ActionBarActivity implements StateFrag
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onFragmentInteraction(String id) {
-        //Log.i("Test", id);
-    }
 }

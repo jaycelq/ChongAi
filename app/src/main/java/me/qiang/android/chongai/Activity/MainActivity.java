@@ -25,13 +25,11 @@ import me.qiang.android.chongai.Fragment.BottomPopupFragment;
 import me.qiang.android.chongai.Fragment.CreateNewStateFragment;
 import me.qiang.android.chongai.Fragment.DrawerFragment;
 import me.qiang.android.chongai.Fragment.MainFragment;
-import me.qiang.android.chongai.Fragment.StateFragment;
 import me.qiang.android.chongai.PopUpWindow.CreateNewStatePopupWindow;
 import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.util.CameraUtil;
 
-public class MainActivity extends ActionBarActivity implements DrawerFragment.OnFragmentInteractionListener,
-        StateFragment.OnFragmentInteractionListener, BottomNavigationFragment.OnFragmentInteractionListener,
+public class MainActivity extends ActionBarActivity implements DrawerFragment.OnFragmentInteractionListener, BottomNavigationFragment.OnFragmentInteractionListener,
         BottomPopupFragment.OnFragmentInteractionListener, CreateNewStateFragment.OnFragmentInteractionListener {
 
     private Toolbar mToolbar;
@@ -101,11 +99,6 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.On
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-        //Log.i("Test", id);
-    }
-
-    @Override
-    public void onFragmentInteraction(String uri) {
         //Log.i("Test", id);
     }
 
