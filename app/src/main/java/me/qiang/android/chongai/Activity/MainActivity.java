@@ -188,6 +188,9 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.On
 
                 }
             }
+            else {
+                photoFile.delete();
+            }
         }
         else if(requestCode == Constants.Album.PICK_IMAGE) {
             if(resultCode == RESULT_OK) {

@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,8 +32,6 @@ public class CreateNewStateFragment extends Fragment implements View.OnClickList
     private TextView takeVideoText;
 
     public CreateNewStateFragment() {
-        // Required empty public constructor
-
     }
 
 
