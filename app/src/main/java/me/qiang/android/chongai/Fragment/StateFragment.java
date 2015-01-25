@@ -16,6 +16,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -25,9 +27,11 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 import org.apache.http.Header;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -68,6 +72,7 @@ public class StateFragment extends BaseFragment {
                 .showImageForEmptyUri(R.drawable.ic_empty)
                 .showImageOnFail(R.drawable.ic_error)
                 .resetViewBeforeLoading(true)
+                .cacheInMemory(true)
                 .cacheOnDisk(true)
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .bitmapConfig(Bitmap.Config.RGB_565)
@@ -97,7 +102,7 @@ public class StateFragment extends BaseFragment {
         pullToRefreshView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
             @Override
             public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-                stateExploreManager.getNewStates(mAdapter, pullToRefreshView);
+                getNewStates();
             }
         });
 
@@ -110,6 +115,42 @@ public class StateFragment extends BaseFragment {
         });
 
         return rootView;
+    }
+
+    public void getNewStates(){
+        RequestServer.getStates(0, newGetNewStatesCallback());
+    }
+
+    private JsonHttpResponseHandler newGetNewStatesCallback() {
+        return new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.i("JSON", response.toString());
+                Gson gson = new Gson();
+                try {
+                    Log.i("JSON", "" + response.getInt("status"));
+                    if(response.getInt("status") == 0) {
+                        JSONArray body = response.getJSONArray("body");
+                        Type stateItemListType = new TypeToken<ArrayList<StateItem>>(){}.getType();
+                        ArrayList<StateItem> newStatesList =
+                                gson.fromJson(body.toString(), stateItemListType);
+                        Log.i("GSON", newStatesList.size() + "");
+                        stateExploreManager.updateStatesList(newStatesList);
+                        pullToRefreshView.onRefreshComplete();
+                        mAdapter.notifyDataSetChanged();
+                    }
+                } catch (JSONException ex) {
+                    Log.i("JSON", ex.toString());
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.i("JSON", "JSON FAIL");
+                pullToRefreshView.onRefreshComplete();
+            }
+        };
     }
 
     private JsonHttpResponseHandler newFollowCallback(final TextView follow) {
@@ -284,7 +325,7 @@ public class StateFragment extends BaseFragment {
                     if(stateItem.getLikeState() == false) {
                         RequestServer.like(stateItem.getStateId(), newLikeCallback());
                         CircleImageView praisePhoto = (CircleImageView) inflater.inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
-                        praisePhoto.setTag(4);
+                        praisePhoto.setTag(GlobalApplication.getUserSessionManager().getCurrentUser().getUserId());
                         ImageLoader.getInstance().displayImage(GlobalApplication.getUserSessionManager().getCurrentUser().getUserPhoto(), praisePhoto, options);
                         holder.stateBodyPraise.addView(praisePhoto, 0);
                         holder.likeState.setImageResource(R.drawable.like);

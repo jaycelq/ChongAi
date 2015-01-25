@@ -69,4 +69,11 @@ public class RequestServer {
         HttpClient.post("like/unlike", params, jsonHttpResponseHandler);
     }
 
+    public static void getStates(int stateId, JsonHttpResponseHandler jsonHttpResponseHandler){
+        RequestParams params = new RequestParams();
+        params.setUseJsonStreamer(true);
+        params.put("post_id", stateId);
+        HttpClient.post("post/getPosts", params, jsonHttpResponseHandler);
+    }
+
 }

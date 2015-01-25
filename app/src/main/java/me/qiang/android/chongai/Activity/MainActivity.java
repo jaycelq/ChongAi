@@ -180,6 +180,7 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.On
         if (requestCode == REQUEST_TAKE_PHOTO) {
             if (resultCode == Activity.RESULT_OK) {
                 try {
+                    Log.i("TAKE_PHOTO", photoFile.getCanonicalPath());
                     startStateEditActivity(photoFile.getCanonicalPath());
                 } catch (IOException ex) {
                     // Error occurred while creating the File
@@ -198,7 +199,7 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.On
 
     private void startStateEditActivity(String imageFile) {
         Intent intent = new Intent(this, StateEdit.class);
-        intent.putExtra("STATE_PHOTO", imageFile);
+        intent.putExtra("img_url", imageFile);
         Log.i("CAMERA_CAPTURE", imageFile);
         startActivity(intent);
     }

@@ -2,23 +2,15 @@ package me.qiang.android.chongai.Model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
+import com.google.gson.reflect.TypeToken;
 
-import org.apache.http.Header;
-import org.json.JSONObject;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.qiang.android.chongai.Fragment.StateFragment;
 import me.qiang.android.chongai.GlobalApplication;
-import me.qiang.android.chongai.util.HttpClient;
 
 /**
  * Created by LiQiang on 17/1/15.
@@ -44,7 +36,8 @@ public class StateExploreManager {
 
     private List<StateItem> statesList;
     private static StateExploreManager stateExploreManager;
-    private GetNewStatesHttpClient getNewStatesHttpClient;
+
+    private Type stateItemListType;
 
     private StateExploreManager(Context context) {
         this._context = context;
@@ -52,13 +45,13 @@ public class StateExploreManager {
         editor = pref.edit();
 
         statesList = new ArrayList<>();
-        getNewStatesHttpClient = new GetNewStatesHttpClient();
 
         Gson gson = new Gson();
+        stateItemListType = new TypeToken<ArrayList<StateItem>>(){}.getType();
+
         String lastStatesExplored = pref.getString(LAST_STATES_EXPLORED, null);
         if(lastStatesExplored != null) {
-            StateRefreshResults stateRefreshResults = gson.fromJson(lastStatesExplored, StateRefreshResults.class);
-            statesList = stateRefreshResults.newStatesList;
+            statesList = gson.fromJson(lastStatesExplored, stateItemListType);
         }
         else {
             for (int i = 0; i < 9; i++) {
@@ -85,49 +78,8 @@ public class StateExploreManager {
         statesList.add(0, stateItem);
     }
 
-    public void getNewStates(StateFragment.StateAdapter listViewAdapter, PullToRefreshListView listView) {
-        getNewStatesHttpClient.getNewStates(listViewAdapter, listView);
+    public void updateStatesList(ArrayList<StateItem> statesList) {
+        this.statesList = statesList;
     }
 
-    public class StateRefreshResults {
-        public int status;
-
-        @SerializedName("body")
-        public List<StateItem> newStatesList;
-    }
-
-    public class GetNewStatesHttpClient {
-
-        GetNewStatesHttpClient() {
-        }
-
-        public void getNewStates(final StateFragment.StateAdapter listViewAdapter, final PullToRefreshListView listView){
-            RequestParams params = new RequestParams();
-            HttpClient.get("post/getNewPosts", params, new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    // If the response is JSONObject instead of expected JSONArray
-                    Log.i("JSON", response.toString());
-
-                    Gson gson = new Gson();
-                    StateRefreshResults stateRefreshResults = gson.fromJson(response.toString(), StateRefreshResults.class);
-
-                    Log.i("GSON", stateRefreshResults.newStatesList.size() + "");
-                    statesList = stateRefreshResults.newStatesList;
-
-                    listViewAdapter.notifyDataSetChanged();
-                    listView.onRefreshComplete();
-                    editor.putString(LAST_STATES_EXPLORED, response.toString());
-                    editor.commit();
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    Log.i("JSON", "JSON FAIL");
-
-                    listView.onRefreshComplete();
-                }
-            });
-        }
-    }
 }

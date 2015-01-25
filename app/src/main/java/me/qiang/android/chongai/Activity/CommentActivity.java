@@ -61,6 +61,7 @@ import me.qiang.android.chongai.Model.Pet;
 import me.qiang.android.chongai.Model.StateExploreManager;
 import me.qiang.android.chongai.Model.StateItem;
 import me.qiang.android.chongai.Model.User;
+import me.qiang.android.chongai.util.RequestServer;
 
 public class CommentActivity extends BaseToolbarActivity {
 
@@ -273,11 +274,28 @@ public class CommentActivity extends BaseToolbarActivity {
         });
     }
 
+    private JsonHttpResponseHandler newFollowCallback(final TextView follow) {
+        return new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.i("JSON", response.toString());
+                barProgressDialog.dismiss();
+                follow.setText("√ 已关注");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.i("JSON", "JSON FAIL");
+                barProgressDialog.dismiss();
+            }
+
+        };
+    }
+
     private void initHeader(int position) {
         final StateFragment.ViewHolder holder = new StateFragment.ViewHolder();
         View view = commentHeader;
-        final StateFragment.FollowHttpClient followHttpClient =
-                new StateFragment.FollowHttpClient(barProgressDialog);
 
         holder.stateOwnerPhoto = (CircleImageView) view.findViewById(R.id.state_owner_photo);
         holder.stateOwnerName = (TextView) view.findViewById(R.id.state_owner_name);
@@ -321,7 +339,7 @@ public class CommentActivity extends BaseToolbarActivity {
                     Log.i("Follow", "onclick");
                     barProgressDialog.setMessage("正在处理...");
                     barProgressDialog.show();
-                    followHttpClient.follow(stateItem.getStateOwnerId(), holder.isFollowed);
+                    RequestServer.follow(stateItem.getStateOwnerId(), newFollowCallback(holder.isFollowed));
                 }
                 //TODO: deal with cancel follow action
             }
