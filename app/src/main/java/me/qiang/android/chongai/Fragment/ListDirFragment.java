@@ -2,7 +2,6 @@ package me.qiang.android.chongai.Fragment;
 
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -15,8 +14,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -29,7 +27,6 @@ import me.qiang.android.chongai.util.AlbumItem;
  */
 public class ListDirFragment extends Fragment {
 
-    private DisplayImageOptions options;
     private ListView mListDir;
     private List<AlbumItem> albumList;
     private int positionSelected;
@@ -37,6 +34,7 @@ public class ListDirFragment extends Fragment {
     private ListDirAdapter listDirAdapter;
 
     private OnListDirSelectedListener listDirSelectedListener;
+    private Context context;
 
     private static final String ARG_PARAM= "positionSelected";
 
@@ -55,16 +53,7 @@ public class ListDirFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        options = new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.ic_stub)
-                .showImageForEmptyUri(R.drawable.ic_empty)
-                .showImageOnFail(R.drawable.ic_error)
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .considerExifParams(true)
-                .bitmapConfig(Bitmap.Config.RGB_565)
-               .build();
+        context = getActivity();
         positionSelected = getArguments().getInt(ARG_PARAM);
         albumList = AlbumHelper.getHelper().getAlbumItemList();
     }
@@ -153,8 +142,11 @@ public class ListDirFragment extends Fragment {
                 holder = (ViewHolder) view.getTag();
             }
 
-            ImageLoader.getInstance()
-                    .displayImage("file://" + albumList.get(position).getTopImagePath(), holder.album_item_image, options);
+            Picasso.with(context)
+                    .load("file://" + albumList.get(position).getTopImagePath())
+                    .fit()
+                    .centerCrop()
+                    .into(holder.album_item_image);
             holder.album_name.setText(albumList.get(position).getFolderName());
             holder.album_item_count.setText(""+albumList.get(position).getImageCounts());
             if(position == positionSelected) {

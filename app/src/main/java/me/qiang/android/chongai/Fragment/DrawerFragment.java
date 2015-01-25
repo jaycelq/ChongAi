@@ -2,7 +2,6 @@ package me.qiang.android.chongai.Fragment;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,8 +14,7 @@ import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,14 +43,14 @@ public class DrawerFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private DisplayImageOptions options;
-
     private ExpandableListView listView;
     private ArrayAdapter<String> mAdapter;
     private String[] mStrings = { "我的资料", "我的宠物", "我的消息", "我的设置" };
 
     List<String> listDataHeader;
     HashMap<String, List<String>> listDataChild;
+
+    private Context context;
 
     /**
      * Use this factory method to create a new instance of
@@ -83,15 +81,7 @@ public class DrawerFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-        options = new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(R.drawable.ic_empty)
-                .showImageOnFail(R.drawable.ic_error)
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .considerExifParams(true)
-                .bitmapConfig(Bitmap.Config.RGB_565)
-                .build();
+        context = getActivity();
     }
 
     @Override
@@ -103,9 +93,17 @@ public class DrawerFragment extends Fragment {
         listView = (ExpandableListView) rootView.findViewById(R.id.drawer_list);
         View mHeader = inflater.inflate(R.layout.drawer_header, null, false);
         ImageView headerBackground = (ImageView) mHeader.findViewById(R.id.header_background);
-        ImageLoader.getInstance().displayImage("drawable://" + R.drawable.drawer_background, headerBackground);
+        Picasso.with(context)
+                .load(R.drawable.drawer_background)
+                .fit()
+                .centerCrop()
+                .into(headerBackground);
         ImageView userPhoto = (ImageView) mHeader.findViewById(R.id.user_photo);
-        ImageLoader.getInstance().displayImage("drawable://" + R.drawable.hugh, userPhoto);
+        Picasso.with(context)
+                .load(R.drawable.hugh)
+                .fit()
+                .centerCrop()
+                .into(userPhoto);
         listView.addHeaderView(mHeader);
         listView.setHeaderDividersEnabled(false);
         //mAdapter = new ArrayAdapter<String>(getActivity(), R.layout.drawer_group_item, mStrings);

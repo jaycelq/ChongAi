@@ -1,8 +1,8 @@
 package me.qiang.android.chongai.Activity;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -17,10 +17,7 @@ import android.widget.RadioGroup;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.squareup.picasso.Picasso;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -41,7 +38,7 @@ import me.qiang.android.chongai.util.RequestServer;
 public class AddProfileActivity extends BaseToolbarActivity implements TextWatcher{
     private UserSessionManager userSessionManager;
 
-    private DisplayImageOptions options;
+    Context context;
 
     // UI widget
     private RadioGroup genderRadioGroup;
@@ -60,17 +57,6 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
 
         setToolbarTile("我的资料");
         enableBackButton();
-
-        options = new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(R.drawable.ic_empty)
-                .showImageOnFail(R.drawable.ic_error)
-                .resetViewBeforeLoading(true)
-                .cacheOnDisk(true)
-                .imageScaleType(ImageScaleType.EXACTLY)
-                .bitmapConfig(Bitmap.Config.RGB_565)
-                .considerExifParams(true)
-                .displayer(new FadeInBitmapDisplayer(300))
-                .build();
 
         genderRadioGroup = (RadioGroup) findViewById(R.id.profile_gender);
 
@@ -101,6 +87,7 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
         saveProfile.setClickable(false);
 
         userSessionManager = GlobalApplication.getUserSessionManager();
+        context = this;
     }
 
     @Override
@@ -110,8 +97,11 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
                 if(resultCode == RESULT_OK) {
                     avatarUrl = data.getExtras().getString(Constants.Image.IMAGE_RESULT);
                     Log.i("PHOTO_URL", avatarUrl);
-                    ImageLoader.getInstance()
-                            .displayImage("file://" + avatarUrl, profilePhoto, options);
+                    Picasso.with(context)
+                            .load(avatarUrl)
+                            .fit()
+                            .centerCrop()
+                            .into(profilePhoto);
                     if(isInputValid() == null)
                         saveProfile.setClickable(true);
                 }

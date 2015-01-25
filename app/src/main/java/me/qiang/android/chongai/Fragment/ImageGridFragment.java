@@ -16,8 +16,8 @@
 package me.qiang.android.chongai.Fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -26,14 +26,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,7 +56,6 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
 	List<String> imageUrls = new ArrayList<String>();
     public  List<String> mSelectedImage = new ArrayList<String>();
 
-	DisplayImageOptions options;
     private AlbumHelper helper;
     private ImageAdapter adapter;
     private RelativeLayout mBottomLy;
@@ -69,6 +68,8 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
 
     private File photoFile;
     static final int REQUEST_TAKE_PHOTO = 1;
+
+    private Context context;
 
     private Handler mHandler = new Handler(){
         @Override
@@ -88,15 +89,7 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		options = new DisplayImageOptions.Builder()
-				.showImageOnLoading(R.drawable.ic_stub)
-				.showImageForEmptyUri(R.drawable.ic_empty)
-				.showImageOnFail(R.drawable.ic_error)
-				.cacheInMemory(true)
-				.cacheOnDisk(true)
-				.considerExifParams(true)
-				.bitmapConfig(Bitmap.Config.RGB_565)
-				.build();
+        context = getActivity();
         init();
 	}
 
@@ -128,6 +121,22 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
 
     private void initView(View rootView) {
         listView = (GridView) rootView.findViewById(R.id.grid);
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                final Picasso picasso = Picasso.with(context);
+                if (scrollState == SCROLL_STATE_IDLE || scrollState == SCROLL_STATE_TOUCH_SCROLL) {
+                    picasso.resumeTag(context);
+                } else {
+                    picasso.pauseTag(context);
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
         mBottomLy = (RelativeLayout) rootView.findViewById(R.id.id_bottom_ly);
         albumChoosed = (TextView) rootView.findViewById(R.id.id_choose_dir);
         albumImageCount = (TextView) rootView.findViewById(R.id.id_total_count);
@@ -271,9 +280,11 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
                 if(allImage)
                     position -= 1;
 
-                ImageLoader.getInstance()
-                        .displayImage("file://" + imageUrls.get(position), imageViewHolder.imageView, options);
-
+                Picasso.with(context)
+                        .load("file://" + imageUrls.get(position))
+                        .fit()
+                        .centerCrop()
+                        .into(imageViewHolder.imageView);
                 imageView.setColorFilter(null);
                 imageView.setTag(position);
 

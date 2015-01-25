@@ -25,8 +25,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-
 import java.lang.reflect.Field;
 
 import me.qiang.android.chongai.R;
@@ -51,10 +49,9 @@ public abstract class BaseFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.item_clear_memory_cache:
-				ImageLoader.getInstance().clearMemoryCache();
+
 				return true;
 			case R.id.item_clear_disc_cache:
-				ImageLoader.getInstance().clearDiskCache();
 				return true;
 			default:
 				return false;

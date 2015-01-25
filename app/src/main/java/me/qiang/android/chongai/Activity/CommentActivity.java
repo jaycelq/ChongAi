@@ -3,7 +3,6 @@ package me.qiang.android.chongai.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Editable;
@@ -37,10 +36,6 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.squareup.picasso.Picasso;
 
 import org.apache.http.Header;
@@ -71,13 +66,13 @@ public class CommentActivity extends BaseToolbarActivity {
     private UserSessionManager userSessionManager;
     private User currentUser;
 
+    private Context context;
+
     // CommentsManger to manage the comments attached to stateItem
     private CommentsManager commentsManager;
 
     // The current stateItem
     private StateItem stateItem;
-
-    private DisplayImageOptions options;
 
     // UI widget and adapter
     private View commentHeader;
@@ -121,24 +116,13 @@ public class CommentActivity extends BaseToolbarActivity {
         setToolbarTile("评论");
         enableBackButton();
 
-        options = new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(R.drawable.ic_empty)
-                .showImageOnFail(R.drawable.ic_error)
-                .resetViewBeforeLoading(true)
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .imageScaleType(ImageScaleType.EXACTLY)
-                .bitmapConfig(Bitmap.Config.RGB_565)
-                .considerExifParams(true)
-                .displayer(new FadeInBitmapDisplayer(300))
-                .build();
-
         int position = getIntent().getIntExtra(Constants.StateManager.STATE_INDEX, 0);
         stateItem = StateExploreManager.getStateExploreManager().get(position);
 
         userSessionManager = GlobalApplication.getUserSessionManager();
         currentUser = userSessionManager.getCurrentUser();
         commentsManager = new CommentsManager(stateItem.getStateId());
+        context = this;
 
         initCommentList();
 
@@ -271,6 +255,13 @@ public class CommentActivity extends BaseToolbarActivity {
 
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
+                final Picasso picasso = Picasso.with(context);
+                if(scrollState == SCROLL_STATE_IDLE || scrollState == SCROLL_STATE_TOUCH_SCROLL) {
+                    picasso.resumeTag(context);
+                }
+                else {
+                    picasso.pauseTag(context);
+                }
             }
         });
 
@@ -319,9 +310,11 @@ public class CommentActivity extends BaseToolbarActivity {
         holder.statePraiseNum = (TextView) view.findViewById(R.id.state_praise_num);
         holder.likeState = (ImageView) view.findViewById(R.id.like_state);
 
-//        ImageLoader.getInstance().
-//                displayImage(stateItem.getStateOwnerPhoto(), holder.stateOwnerPhoto, options);
-        Picasso.with(CommentActivity.this).load(stateItem.getStateOwnerPhoto()).into(holder.stateOwnerPhoto);
+        Picasso.with(context).
+                load(stateItem.getStateOwnerPhoto())
+                .fit()
+                .centerCrop()
+                .into(holder.stateOwnerPhoto);
         holder.stateOwnerPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -359,8 +352,11 @@ public class CommentActivity extends BaseToolbarActivity {
             ((GradientDrawable)holder.statePetType.getBackground()).setColor(0xFFFF939A);
         }
 
-        ImageLoader.getInstance().
-                displayImage(stateItem.getStateImage(), holder.stateBodyImage, options);
+        Picasso.with(context)
+                .load(stateItem.getStateImage())
+                .fit()
+                .centerCrop()
+                .into(holder.stateBodyImage);
         holder.stateBodyImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -378,8 +374,11 @@ public class CommentActivity extends BaseToolbarActivity {
             CircleImageView praisePhoto = (CircleImageView) getLayoutInflater().
                     inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
             holder.stateBodyPraise.addView(praisePhoto);
-            ImageLoader.getInstance().
-                    displayImage(stateItem.getPraiseUserPhoto(i), praisePhoto, options);
+            Picasso.with(context)
+                    .load(stateItem.getPraiseUserPhoto(i))
+                    .fit()
+                    .centerCrop()
+                    .into(praisePhoto);
         }
 
         holder.comment.setOnClickListener(new View.OnClickListener() {
@@ -406,8 +405,11 @@ public class CommentActivity extends BaseToolbarActivity {
                     CircleImageView praisePhoto = (CircleImageView) getLayoutInflater()
                             .inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
                     praisePhoto.setTag(currentUser.getUserId());
-                    ImageLoader.getInstance().displayImage(
-                            currentUser.getUserPhoto(), praisePhoto, options);
+                    Picasso.with(context)
+                            .load(currentUser.getUserPhoto())
+                            .fit()
+                            .centerCrop()
+                            .into(praisePhoto);
                     holder.stateBodyPraise.addView(praisePhoto, 0);
                     holder.likeState.setImageResource(R.drawable.like);
                     holder.statePraiseNum.setVisibility(View.VISIBLE);
@@ -695,8 +697,11 @@ public class CommentActivity extends BaseToolbarActivity {
 
             if(holder.commentUserPhoto.getTag() == null ||
                     !holder.commentUserPhoto.getTag().equals(commentItem.getCommentUserPhoto())) {
-                ImageLoader.getInstance().
-                        displayImage(commentItem.getCommentUserPhoto(), holder.commentUserPhoto, options);
+                Picasso.with(context)
+                        .load(commentItem.getCommentUserPhoto())
+                        .fit()
+                        .centerCrop()
+                        .into(holder.commentUserPhoto);
                 holder.commentUserPhoto.setTag(commentItem.getCommentUserPhoto());
             }
             holder.commentUserName.setText(commentItem.getCommentUserName());

@@ -1,5 +1,6 @@
 package me.qiang.android.chongai.Activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,10 +19,7 @@ import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.squareup.picasso.Picasso;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -33,17 +31,15 @@ import java.io.File;
 import java.io.InputStream;
 
 import me.qiang.android.chongai.Constants;
-import me.qiang.android.chongai.R;
-import me.qiang.android.chongai.util.HttpClient;
 import me.qiang.android.chongai.Model.StateExploreManager;
 import me.qiang.android.chongai.Model.StateItem;
+import me.qiang.android.chongai.R;
+import me.qiang.android.chongai.util.HttpClient;
 
 
 public class StateEdit extends ActionBarActivity implements View.OnClickListener{
 
     private Toolbar mToolbar;
-
-    private DisplayImageOptions options;
 
     private String photoUrl;
 
@@ -56,22 +52,15 @@ public class StateEdit extends ActionBarActivity implements View.OnClickListener
 
     private LinearLayout changePet;
 
+    private Context context;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.state_edit);
 
-        options = new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(R.drawable.ic_empty)
-                .showImageOnFail(R.drawable.ic_error)
-                .resetViewBeforeLoading(true)
-                .cacheOnDisk(true)
-                .imageScaleType(ImageScaleType.EXACTLY)
-                .bitmapConfig(Bitmap.Config.RGB_565)
-                .considerExifParams(true)
-                .displayer(new FadeInBitmapDisplayer(300))
-                .build();
+        context = this;
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
         setSupportActionBar(mToolbar);
@@ -103,7 +92,11 @@ public class StateEdit extends ActionBarActivity implements View.OnClickListener
 
         photoUrl = getIntent().getStringExtra(Constants.Image.IMAGE_RESULT);
 
-        ImageLoader.getInstance().displayImage("file://" + photoUrl, imageView, options);
+        Picasso.with(context)
+                .load("file://" + photoUrl)
+                .fit()
+                .centerCrop()
+                .into(imageView);
     }
 
     @Override

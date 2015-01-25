@@ -1,14 +1,15 @@
 package me.qiang.android.chongai.Fragment;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,10 +22,7 @@ import com.google.gson.reflect.TypeToken;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.squareup.picasso.Picasso;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -58,7 +56,7 @@ public class StateFragment extends BaseFragment {
     private StateAdapter mAdapter;
     private StateExploreManager stateExploreManager;
 
-    private DisplayImageOptions options;
+    private Context context;
 
     public StateFragment() {
     }
@@ -67,23 +65,12 @@ public class StateFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        context = getActivity();
         stateExploreManager = StateExploreManager.getStateExploreManager();
-
-        options = new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(R.drawable.ic_empty)
-                .showImageOnFail(R.drawable.ic_error)
-                .resetViewBeforeLoading(true)
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .imageScaleType(ImageScaleType.EXACTLY)
-                .bitmapConfig(Bitmap.Config.RGB_565)
-                .considerExifParams(true)
-                .displayer(new FadeInBitmapDisplayer(300))
-                .build();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_state_list, container, false);
 
         barProgressDialog = new ProgressDialog(getActivity());
@@ -112,6 +99,24 @@ public class StateFragment extends BaseFragment {
             @Override
             public void onLastItemVisible() {
                 mFooterView.setVisibility(View.VISIBLE);
+            }
+        });
+
+        pullToRefreshView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                final Picasso picasso = Picasso.with(context);
+                if(scrollState == SCROLL_STATE_IDLE || scrollState == SCROLL_STATE_TOUCH_SCROLL) {
+                    picasso.resumeTag(context);
+                }
+                else {
+                    picasso.pauseTag(context);
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
             }
         });
 
@@ -253,7 +258,11 @@ public class StateFragment extends BaseFragment {
 
             final StateItem stateItem = stateExploreManager.get(position);
 
-            ImageLoader.getInstance().displayImage(stateItem.getStateOwnerPhoto(), holder.stateOwnerPhoto, options);
+            Picasso.with(context)
+                    .load(stateItem.getStateOwnerPhoto())
+                    .fit()
+                    .centerCrop()
+                    .into(holder.stateOwnerPhoto);
             holder.stateOwnerPhoto.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -291,7 +300,11 @@ public class StateFragment extends BaseFragment {
                 ((GradientDrawable)holder.statePetType.getBackground()).setColor(0xFFFF939A);
             }
 
-            ImageLoader.getInstance().displayImage(stateItem.getStateImage(), holder.stateBodyImage, options);
+            Picasso.with(context)
+                    .load(stateItem.getStateImage())
+                    .fit()
+                    .centerCrop()
+                    .into(holder.stateBodyImage);
             holder.stateBodyImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -310,7 +323,11 @@ public class StateFragment extends BaseFragment {
                 CircleImageView praisePhoto = (CircleImageView) inflater.inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
                 praisePhoto.setTag(stateItem.getPraiseUserId(i));
                 holder.stateBodyPraise.addView(praisePhoto);
-                ImageLoader.getInstance().displayImage(stateItem.getPraiseUserPhoto(i), praisePhoto, options);
+                Picasso.with(context)
+                        .load(stateItem.getPraiseUserPhoto(i))
+                        .fit().
+                        centerCrop()
+                        .into(praisePhoto);
             }
 
             if(stateItem.getStatePraisedNum() > 7) {
@@ -332,7 +349,11 @@ public class StateFragment extends BaseFragment {
                         RequestServer.like(stateItem.getStateId(), newLikeCallback());
                         CircleImageView praisePhoto = (CircleImageView) inflater.inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
                         praisePhoto.setTag(GlobalApplication.getUserSessionManager().getCurrentUser().getUserId());
-                        ImageLoader.getInstance().displayImage(GlobalApplication.getUserSessionManager().getCurrentUser().getUserPhoto(), praisePhoto, options);
+                        Picasso.with(context)
+                                .load(GlobalApplication.getUserSessionManager().getCurrentUser().getUserPhoto())
+                                .fit()
+                                .centerCrop()
+                                .into(praisePhoto);
                         holder.stateBodyPraise.addView(praisePhoto, 0);
                         holder.likeState.setImageResource(R.drawable.like);
                         holder.statePraiseNum.setVisibility(View.VISIBLE);
