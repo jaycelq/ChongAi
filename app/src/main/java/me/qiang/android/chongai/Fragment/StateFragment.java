@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.GradientDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +19,6 @@ import android.widget.TextView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -31,19 +29,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.qiang.android.chongai.Activity.CommentActivity;
-import me.qiang.android.chongai.Activity.ImagePager;
 import me.qiang.android.chongai.Activity.UserAcitivity;
-import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.GlobalApplication;
+import me.qiang.android.chongai.Model.Pet;
+import me.qiang.android.chongai.Model.StateExploreManager;
+import me.qiang.android.chongai.Model.StateItem;
 import me.qiang.android.chongai.R;
-import me.qiang.android.chongai.util.HttpClient;
-import me.qiang.android.chongai.util.Pet;
-import me.qiang.android.chongai.util.StateExploreManager;
-import me.qiang.android.chongai.util.StateItem;
+import me.qiang.android.chongai.util.ActivityTransition;
+import me.qiang.android.chongai.util.RequestServer;
 
 public class StateFragment extends BaseFragment {
 
@@ -51,7 +47,7 @@ public class StateFragment extends BaseFragment {
     private PullToRefreshListView pullToRefreshView;
     private View mFooterView;
     private ProgressBar footerLoading;
-    protected ProgressDialog barProgressDialog;
+    private ProgressDialog barProgressDialog;
 
     // Adapter and state manager related to list view
     private StateAdapter mAdapter;
@@ -59,12 +55,6 @@ public class StateFragment extends BaseFragment {
 
     private DisplayImageOptions options;
 
-    private FollowHttpClient followHttpClient;
-
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public StateFragment() {
     }
 
@@ -84,24 +74,22 @@ public class StateFragment extends BaseFragment {
                 .considerExifParams(true)
                 .displayer(new FadeInBitmapDisplayer(300))
                 .build();
-
-        barProgressDialog = new ProgressDialog(getActivity());
-        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_SPINNER);
-
-        followHttpClient = new FollowHttpClient(barProgressDialog);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_state_list, container, false);
-        pullToRefreshView = (PullToRefreshListView) rootView.findViewById(R.id.my_list);
 
+        barProgressDialog = new ProgressDialog(getActivity());
+        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_SPINNER);
+
+        pullToRefreshView = (PullToRefreshListView) rootView.findViewById(R.id.my_list);
         mFooterView = inflater.inflate(R.layout.loading, null);
         footerLoading = (ProgressBar) mFooterView.findViewById(R.id.loading);
         pullToRefreshView.getRefreshableView().addFooterView(mFooterView);
+        // set the color of progress dialog
         footerLoading.getIndeterminateDrawable().setColorFilter(0xff7FB446,
                 android.graphics.PorterDuff.Mode.SRC_ATOP);
-        mFooterView.setVisibility(View.GONE);
 
         mAdapter = new StateAdapter();
         pullToRefreshView.setAdapter(mAdapter);
@@ -124,40 +112,45 @@ public class StateFragment extends BaseFragment {
         return rootView;
     }
 
-    private void startImagePagerActivity(String imageUrl){
-        Intent intent = new Intent(getActivity(), ImagePager.class);
-        List<String> imageUrls = new ArrayList<>();
-        imageUrls.add(imageUrl);
-        Bundle bundle=new Bundle();
-        bundle.putInt(Constants.Extra.IMAGE_POSITION, 0);
-        bundle.putStringArrayList(Constants.Extra.IMAGE_TO_SHOW, (ArrayList)imageUrls);
-        intent.putExtras(bundle);
-        startActivity(intent);
-        getActivity().overridePendingTransition(R.anim.zoom_enter, 0);
+    private JsonHttpResponseHandler newFollowCallback(final TextView follow) {
+        return new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.i("JSON", response.toString());
+                barProgressDialog.dismiss();
+                follow.setText("√ 已关注");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.i("JSON", "JSON FAIL");
+                barProgressDialog.dismiss();
+            }
+
+        };
     }
 
-    private class GetDataTask extends AsyncTask<Void, Void, String[]> {
+    private JsonHttpResponseHandler newLikeCallback() {
+        return new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.i("JSON", response.toString());
+                try {
+                    if (response.getInt("status") == 0) {
 
-        @Override
-        protected String[] doInBackground(Void... params) {
-            // Simulates a bckground job.
-            try {
-                Log.i("AndroidPullToRefresh", "do pull");
-                Thread.sleep(4000);
-            } catch (InterruptedException e) {
+                    }
+                } catch (JSONException ex) {
+                    Log.i("JSON", ex.toString());
+                }
             }
-            return null;
-        }
 
-        @Override
-        protected void onPostExecute(String[] result) {
-            mAdapter.notifyDataSetChanged();
-
-            // Call onRefreshComplete when the list has been refreshed.
-            pullToRefreshView.onRefreshComplete();
-
-            super.onPostExecute(result);
-        }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.i("JSON", "JSON FAIL");
+            }
+        };
     }
 
     public class StateAdapter extends BaseAdapter {
@@ -237,7 +230,7 @@ public class StateFragment extends BaseFragment {
                         Log.i("Follow", "onclick");
                         barProgressDialog.setMessage("正在处理...");
                         barProgressDialog.show();
-                        followHttpClient.follow(stateItem.getStateOwnerId(), holder.isFollowed);
+                        RequestServer.follow(stateItem.getStateOwnerId(), newFollowCallback(holder.isFollowed));
                     }
                     //TODO: deal with cancel follow action
                 }
@@ -255,7 +248,9 @@ public class StateFragment extends BaseFragment {
             holder.stateBodyImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startImagePagerActivity(stateItem.getStateImage());
+                    ArrayList<String> imageUrls = new ArrayList<String>();
+                    imageUrls.add(stateItem.getStateImage());
+                    ActivityTransition.startImagePagerActivity(getActivity(), imageUrls, 0);
                 }
             });
 
@@ -287,7 +282,7 @@ public class StateFragment extends BaseFragment {
                 @Override
                 public void onClick(View v) {
                     if(stateItem.getLikeState() == false) {
-                        LikeHttpClient.like(inflater, stateItem.getStateId(), holder, stateItem, options);
+                        RequestServer.like(stateItem.getStateId(), newLikeCallback());
                         CircleImageView praisePhoto = (CircleImageView) inflater.inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
                         praisePhoto.setTag(4);
                         ImageLoader.getInstance().displayImage(GlobalApplication.getUserSessionManager().getCurrentUser().getUserPhoto(), praisePhoto, options);
@@ -300,7 +295,7 @@ public class StateFragment extends BaseFragment {
                         return;
                     }
                     else if(stateItem.getLikeState() == true) {
-                        LikeHttpClient.unlike(inflater, stateItem.getStateId(), holder, stateItem, options);
+                        RequestServer.unlike(stateItem.getStateId(), newLikeCallback());
                         holder.likeState.setImageResource(R.drawable.not_like);
                         holder.statePraiseNum.setText(stateItem.getStatePraisedNum() - 1 + "");
                         if (stateItem.getStatePraisedNum() <= 1)
@@ -365,94 +360,4 @@ public class StateFragment extends BaseFragment {
         public TextView statePraiseNum;
         public ImageView likeState;
     }
-
-    public static class FollowHttpClient {
-        ProgressDialog barProgressDialog;
-        public FollowHttpClient(ProgressDialog dialog) {
-            barProgressDialog = dialog;
-        }
-
-        public void follow(int userId, final TextView follow){
-            RequestParams params = new RequestParams();
-            params.setUseJsonStreamer(true);
-            params.put("act", "follow");
-            params.put("userId", userId);
-            HttpClient.post("login", params, new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    // If the response is JSONObject instead of expected JSONArray
-                    Log.i("JSON", response.toString());
-                    barProgressDialog.dismiss();
-                    follow.setText("√ 已关注");
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    Log.i("JSON", "JSON FAIL");
-                    barProgressDialog.dismiss();
-                }
-            });
-        }
-    }
-
-    public static class LikeHttpClient {
-        public static void like(final LayoutInflater inflater,
-                                int stateId, final ViewHolder holder, final StateItem stateItem, final DisplayImageOptions options) {
-            RequestParams params = new RequestParams();
-            params.setUseJsonStreamer(true);
-            params.put("post_id", stateId);
-            HttpClient.post("like", params, new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    // If the response is JSONObject instead of expected JSONArray
-                    Log.i("JSON", response.toString());
-                    try {
-                        if (response.getInt("status") == 0) {
-
-                        }
-                    } catch (JSONException ex) {
-                        Log.i("JSON", ex.toString());
-                    }
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    Log.i("JSON", "JSON FAIL");
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    Log.i("JSON", responseString);
-                }
-            });
-        }
-
-        public static void unlike(final LayoutInflater inflater,
-                                  int stateId, final ViewHolder holder, final StateItem stateItem,
-                                  final DisplayImageOptions options) {
-            RequestParams params = new RequestParams();
-            params.setUseJsonStreamer(true);
-            params.put("post_id", stateId);
-            HttpClient.post("like/unlike", params, new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    // If the response is JSONObject instead of expected JSONArray
-                    Log.i("JSON", response.toString());
-                    try {
-                        if (response.getInt("status") == 0) {
-
-                        }
-                    } catch (JSONException ex) {
-                        Log.i("JSON", ex.toString());
-                    }
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    Log.i("JSON", "JSON FAIL");
-                }
-            });
-        }
-    }
-
 }

@@ -19,7 +19,8 @@ public class RequestServer {
         HttpClient.post("login", params, jsonHttpResponseHandler);
     }
 
-    public static void login(final String phoneNumber, final String md5Password, JsonHttpResponseHandler jsonHttpResponseHandler){
+    public static void login(final String phoneNumber, final String md5Password,
+                             JsonHttpResponseHandler jsonHttpResponseHandler){
         JSONObject userInfo = new JSONObject();
         try {
             userInfo.put("phone_number", phoneNumber);
@@ -45,12 +46,27 @@ public class RequestServer {
         HttpClient.post("login/verify", params, jsonHttpResponseHandler);
     }
 
-    public static void verifyPhoneNumber(String phoneNumber, JsonHttpResponseHandler jsonHttpResponseHandler) {
+    public static void verifyPhoneNumber(String phoneNumber,
+                                         JsonHttpResponseHandler jsonHttpResponseHandler) {
         RequestParams params = new RequestParams();
         params.setUseJsonStreamer(true);
         params.put("phone_number", phoneNumber);
         params.put("verify_sms", 0);
         HttpClient.post("login/verify", params, jsonHttpResponseHandler);
+    }
+
+    public static void like(int stateId, JsonHttpResponseHandler jsonHttpResponseHandler) {
+        RequestParams params = new RequestParams();
+        params.setUseJsonStreamer(true);
+        params.put("post_id", stateId);
+        HttpClient.post("like", params, jsonHttpResponseHandler);
+    }
+
+    public static void unlike(int stateId, JsonHttpResponseHandler jsonHttpResponseHandler) {
+        RequestParams params = new RequestParams();
+        params.setUseJsonStreamer(true);
+        params.put("post_id", stateId);
+        HttpClient.post("like/unlike", params, jsonHttpResponseHandler);
     }
 
 }

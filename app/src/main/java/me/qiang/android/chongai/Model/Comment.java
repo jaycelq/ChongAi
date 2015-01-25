@@ -1,4 +1,4 @@
-package me.qiang.android.chongai.util;
+package me.qiang.android.chongai.Model;
 
 import com.google.gson.annotations.SerializedName;
 

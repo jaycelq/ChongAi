@@ -1,4 +1,4 @@
-package me.qiang.android.chongai.util;
+package me.qiang.android.chongai.Model;
 
 import android.content.Context;
 import android.content.Intent;

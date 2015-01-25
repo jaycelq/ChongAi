@@ -55,12 +55,12 @@ import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.Fragment.StateFragment;
 import me.qiang.android.chongai.GlobalApplication;
 import me.qiang.android.chongai.R;
-import me.qiang.android.chongai.util.Comment;
+import me.qiang.android.chongai.Model.Comment;
 import me.qiang.android.chongai.util.HttpClient;
-import me.qiang.android.chongai.util.Pet;
-import me.qiang.android.chongai.util.StateExploreManager;
-import me.qiang.android.chongai.util.StateItem;
-import me.qiang.android.chongai.util.User;
+import me.qiang.android.chongai.Model.Pet;
+import me.qiang.android.chongai.Model.StateExploreManager;
+import me.qiang.android.chongai.Model.StateItem;
+import me.qiang.android.chongai.Model.User;
 
 public class CommentActivity extends BaseToolbarActivity {
 

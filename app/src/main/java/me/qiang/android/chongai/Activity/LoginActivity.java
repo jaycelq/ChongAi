@@ -26,8 +26,8 @@ import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.util.ActivityTransition;
 import me.qiang.android.chongai.util.MD5;
 import me.qiang.android.chongai.util.RequestServer;
-import me.qiang.android.chongai.util.User;
-import me.qiang.android.chongai.util.UserSessionManager;
+import me.qiang.android.chongai.Model.User;
+import me.qiang.android.chongai.Model.UserSessionManager;
 
 /**
  * A login screen that offers login via phone/password.

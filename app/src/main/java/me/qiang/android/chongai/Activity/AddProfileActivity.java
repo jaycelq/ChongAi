@@ -35,8 +35,8 @@ import me.qiang.android.chongai.GlobalApplication;
 import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.util.CompressUploadTask;
 import me.qiang.android.chongai.util.HttpClient;
-import me.qiang.android.chongai.util.User;
-import me.qiang.android.chongai.util.UserSessionManager;
+import me.qiang.android.chongai.Model.User;
+import me.qiang.android.chongai.Model.UserSessionManager;
 
 public class AddProfileActivity extends BaseToolbarActivity implements TextWatcher{
     private UserSessionManager userSessionManager;

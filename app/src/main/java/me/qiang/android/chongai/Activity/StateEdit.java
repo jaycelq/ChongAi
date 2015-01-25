@@ -34,8 +34,8 @@ import java.io.InputStream;
 
 import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.util.HttpClient;
-import me.qiang.android.chongai.util.StateExploreManager;
-import me.qiang.android.chongai.util.StateItem;
+import me.qiang.android.chongai.Model.StateExploreManager;
+import me.qiang.android.chongai.Model.StateItem;
 
 
 public class StateEdit extends ActionBarActivity implements View.OnClickListener{

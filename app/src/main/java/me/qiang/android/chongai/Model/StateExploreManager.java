@@ -1,4 +1,4 @@
-package me.qiang.android.chongai.util;
+package me.qiang.android.chongai.Model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -18,6 +18,7 @@ import java.util.List;
 
 import me.qiang.android.chongai.Fragment.StateFragment;
 import me.qiang.android.chongai.GlobalApplication;
+import me.qiang.android.chongai.util.HttpClient;
 
 /**
  * Created by LiQiang on 17/1/15.
@@ -111,7 +112,7 @@ public class StateExploreManager {
                     Gson gson = new Gson();
                     StateRefreshResults stateRefreshResults = gson.fromJson(response.toString(), StateRefreshResults.class);
 
-                    Log.i("GSON", stateRefreshResults.newStatesList.size()+ "");
+                    Log.i("GSON", stateRefreshResults.newStatesList.size() + "");
                     statesList = stateRefreshResults.newStatesList;
 
                     listViewAdapter.notifyDataSetChanged();
