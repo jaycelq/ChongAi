@@ -45,7 +45,27 @@ public final class Constants {
         public static final int WRONG_PASSWORD = 4003;
     }
 
-    public static class Album {
+    public static class Image {
         public static final int PICK_IMAGE = 1001;
+        public static final int TAKE_PHOTO = 1002;
+
+        public static final String IMAGE_RESULT = "image_url";
+    }
+
+    public static class FragmentTag {
+        public static final String STATE_FRAGMENT =
+                "me.qiang.android.fragment.StateFragment";
+        public static final String DRAWER_FRAGMENT =
+                "me.qiang.android.fragment.DrawerFragment";
+        public static final String BOTTOM_NAVIGATION_FRAGMENT =
+                "me.qiang.android.fragment.BottomNavigationFragment";
+        public static final String CREATE_NEW_STATE_FRAGMENT =
+                "me.qiang.android.fragment.CreateNewStateFragment";
+        public static final String BOTTOM_POPUP_FRAGMENT =
+                "me.qiang.android.fragment.BottomPopUpFragment";
+    }
+
+    public static class StateManager {
+        public static final String STATE_INDEX = "state_index";
     }
 }

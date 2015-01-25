@@ -35,67 +35,81 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.squareup.picasso.Picasso;
 
 import org.apache.http.Header;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.Fragment.StateFragment;
 import me.qiang.android.chongai.GlobalApplication;
-import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.Model.Comment;
-import me.qiang.android.chongai.util.HttpClient;
+import me.qiang.android.chongai.Model.CommentsManager;
 import me.qiang.android.chongai.Model.Pet;
 import me.qiang.android.chongai.Model.StateExploreManager;
 import me.qiang.android.chongai.Model.StateItem;
 import me.qiang.android.chongai.Model.User;
+import me.qiang.android.chongai.Model.UserSessionManager;
+import me.qiang.android.chongai.R;
+import me.qiang.android.chongai.util.ActivityTransition;
 import me.qiang.android.chongai.util.RequestServer;
 
 public class CommentActivity extends BaseToolbarActivity {
+    // UserSessionManager to get the info of the current user
+    private UserSessionManager userSessionManager;
+    private User currentUser;
 
-    private StateExploreManager stateExploreManager;
+    // CommentsManger to manage the comments attached to stateItem
+    private CommentsManager commentsManager;
+
+    // The current stateItem
+    private StateItem stateItem;
 
     private DisplayImageOptions options;
 
-    private ListView commentList;
+    // UI widget and adapter
     private View commentHeader;
-    private View commentFooter;
-    private EditText commentEditText;
+    private TextView commentNum;
+    private ListView commentList;
+    private CommentAdapter commentAdapter;
+
+    // UI widget to send state
     private TextView sendComment;
+    private EditText commentEditText;
+    //TODO: add expression in user
     private ImageView commentEditExpression;
+
+    // MainLayout used to detect soft keyboard popup
     private LinearLayout mainLayout;
 
+    // UI in the listView footer
+    private View commentFooter;
     private View loading;
-    private TextView nomoreComents;
+    private TextView noMoreComments;
+
+    // Flag to load more, when nomore comments or is refreshing stop get more
     boolean nomore = false;
     boolean isRefreshing = false;
 
+    // Used to calculate distance to scroll when soft keyboard pop up
     private int clickedY;
 
     boolean softKeyboardState = false;
     boolean listItemClicked = false;
 
     protected ProgressDialog barProgressDialog;
-
-    private StateItem stateItem;
-
-    private CommentHttpClient commentHttpClient;
-
-    private CommentsManager commentsManager;
-
-    private CommentAdapter commentAdapter;
 
     private User toUser;
 
@@ -119,12 +133,14 @@ public class CommentActivity extends BaseToolbarActivity {
                 .displayer(new FadeInBitmapDisplayer(300))
                 .build();
 
-        stateExploreManager = StateExploreManager.getStateExploreManager();
+        int position = getIntent().getIntExtra(Constants.StateManager.STATE_INDEX, 0);
+        stateItem = StateExploreManager.getStateExploreManager().get(position);
 
-        barProgressDialog = new ProgressDialog(this);
-        barProgressDialog.setProgressStyle(barProgressDialog.STYLE_SPINNER);
+        userSessionManager = GlobalApplication.getUserSessionManager();
+        currentUser = userSessionManager.getCurrentUser();
+        commentsManager = new CommentsManager(stateItem.getStateId());
 
-        commentHttpClient = new CommentHttpClient(barProgressDialog);
+        initCommentList();
 
         sendComment = (TextView) findViewById(R.id.send_comment);
         sendComment.setClickable(false);
@@ -133,8 +149,10 @@ public class CommentActivity extends BaseToolbarActivity {
             @Override
             public void onClick(View v) {
                 int toUserId = toUser == null ? 0 : toUser.getUserId();
-                commentHttpClient.sendComments(stateItem.getStateId(),
-                        commentEditText.getText().toString(), toUserId);
+                String content = commentEditText.getText().toString();
+
+                RequestServer.sendComment(stateItem.getStateId(), content,
+                        toUserId, newSendCommentCallback(content));
                 hideSoftKeyboard();
                 commentEditText.setText("");
             }
@@ -165,49 +183,28 @@ public class CommentActivity extends BaseToolbarActivity {
             }
         });
 
+    }
+
+    private void initCommentList() {
         commentList = (ListView) findViewById(R.id.list);
-        mainLayout = (LinearLayout) findViewById(R.id.main_layout);
-        mainLayout.getViewTreeObserver().
-                addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
 
-                        int heightDiff = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).
-                                getDefaultDisplay().getHeight() - mainLayout.getHeight();
-
-                        if (heightDiff > 300) {
-                            if (softKeyboardState == false && listItemClicked == true) {
-                                scrollClickedViewToScreenBottom(clickedY);
-                                softKeyboardState = true;
-                                listItemClicked = false;
-                            }
-                        } else {
-                            if (softKeyboardState == true) {
-                                softKeyboardState = false;
-                            }
-                        }
-                    }
-                });
-
+        //Init ListView header
         commentHeader = getLayoutInflater().inflate(R.layout.state_item, null);
-        int position = getIntent().getIntExtra("STATE_POS", 0);
-        initHeader(position);
-
-        commentsManager = new CommentsManager(stateItem.getStateId());
-
+        initHeader();
         commentList.addHeaderView(commentHeader);
 
+        //Init ListView footer
         commentFooter = getLayoutInflater().inflate(R.layout.loading, null);
-        commentList.addFooterView(commentFooter);
-        commentFooter.setVisibility(View.GONE);
         loading = commentFooter.findViewById(R.id.loading_layout);
-        nomoreComents = (TextView) commentFooter.findViewById(R.id.loading_nomore);
+        noMoreComments = (TextView) commentFooter.findViewById(R.id.loading_nomore);
+        commentList.addFooterView(commentFooter);
 
+        //set ListView adapter
         commentAdapter = new CommentAdapter();
         commentList.setAdapter(commentAdapter);
-        commentsManager.getNewComments();
 
-
+        // setOnItemClickListener to determine whom current user is reply to and
+        // get the y coordinate of the clicked item bottom used to calculate the distance to scroll
         commentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -260,7 +257,11 @@ public class CommentActivity extends BaseToolbarActivity {
                         if(atEnd == false && nomore == false && isRefreshing == false) {
                             isRefreshing = true;
                             commentFooter.setVisibility(View.VISIBLE);
-                            commentsManager.getCommentsMore();
+                            int commentCount = commentsManager.commentsCount();
+                            int commentId = commentCount == 0 ? 0
+                                    :commentsManager.getComment(commentCount -1).getCommentId();
+                            RequestServer.getComments(commentId, stateItem.getStateId(),
+                                    newGetMoreCommentsCallback());
                         }
                         atEnd = true;
                     }
@@ -272,28 +273,32 @@ public class CommentActivity extends BaseToolbarActivity {
             public void onScrollStateChanged(AbsListView view, int scrollState) {
             }
         });
+
+        mainLayout = (LinearLayout) findViewById(R.id.main_layout);
+        mainLayout.getViewTreeObserver().
+                addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+
+                        int heightDiff = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).
+                                getDefaultDisplay().getHeight() - mainLayout.getHeight();
+
+                        if (heightDiff > 300) {
+                            if (softKeyboardState == false && listItemClicked == true) {
+                                scrollClickedViewToScreenBottom(clickedY);
+                                softKeyboardState = true;
+                                listItemClicked = false;
+                            }
+                        } else {
+                            if (softKeyboardState == true) {
+                                softKeyboardState = false;
+                            }
+                        }
+                    }
+                });
     }
 
-    private JsonHttpResponseHandler newFollowCallback(final TextView follow) {
-        return new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                // If the response is JSONObject instead of expected JSONArray
-                Log.i("JSON", response.toString());
-                barProgressDialog.dismiss();
-                follow.setText("√ 已关注");
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.i("JSON", "JSON FAIL");
-                barProgressDialog.dismiss();
-            }
-
-        };
-    }
-
-    private void initHeader(int position) {
+    private void initHeader() {
         final StateFragment.ViewHolder holder = new StateFragment.ViewHolder();
         View view = commentHeader;
 
@@ -309,13 +314,14 @@ public class CommentActivity extends BaseToolbarActivity {
         holder.stateBodyPraise = (LinearLayout) view.findViewById(R.id.state_body_praise);
         holder.comment = (LinearLayout) view.findViewById(R.id.comment);
         holder.stateCommentNum = (TextView) view.findViewById(R.id.state_comment_num);
+        commentNum = holder.stateCommentNum;
         holder.praise = (LinearLayout) view.findViewById(R.id.praise);
         holder.statePraiseNum = (TextView) view.findViewById(R.id.state_praise_num);
+        holder.likeState = (ImageView) view.findViewById(R.id.like_state);
 
-        stateItem = stateExploreManager.get(position);
-
-        ImageLoader.getInstance().
-                displayImage(stateItem.getStateOwnerPhoto(), holder.stateOwnerPhoto, options);
+//        ImageLoader.getInstance().
+//                displayImage(stateItem.getStateOwnerPhoto(), holder.stateOwnerPhoto, options);
+        Picasso.with(CommentActivity.this).load(stateItem.getStateOwnerPhoto()).into(holder.stateOwnerPhoto);
         holder.stateOwnerPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -358,7 +364,8 @@ public class CommentActivity extends BaseToolbarActivity {
         holder.stateBodyImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startImagePagerActivity(stateItem.getStateImage());
+                ActivityTransition.startImagePagerActivity(CommentActivity.this,
+                        stateItem.getStateImage());
             }
         });
 
@@ -378,14 +385,55 @@ public class CommentActivity extends BaseToolbarActivity {
         holder.comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                int[] pos = {0, 0};
+                commentHeader.getLocationOnScreen(pos);
+                clickedY = pos[1] + 10 + commentHeader.getHeight();
+                listItemClicked = true;
+                commentEditText.requestFocus();
+                InputMethodManager imm =
+                        (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(commentEditText, InputMethodManager.SHOW_IMPLICIT);
+                toUser = null;
+                commentEditText.setHint("");
             }
         });
 
         holder.praise.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(CommentActivity.this, PraiseActivity.class));
+                v.setClickable(false);
+                if(stateItem.getLikeState() == false) {
+                    CircleImageView praisePhoto = (CircleImageView) getLayoutInflater()
+                            .inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
+                    praisePhoto.setTag(currentUser.getUserId());
+                    ImageLoader.getInstance().displayImage(
+                            currentUser.getUserPhoto(), praisePhoto, options);
+                    holder.stateBodyPraise.addView(praisePhoto, 0);
+                    holder.likeState.setImageResource(R.drawable.like);
+                    holder.statePraiseNum.setVisibility(View.VISIBLE);
+                    holder.statePraiseNum.setText(stateItem.getStatePraisedNum() + 1 + "");
+                    stateItem.setLikeState(true);
+                    stateItem.addPraiseUser(currentUser);
+                    RequestServer.like(stateItem.getStateId(), newLikeCallback(v));
+                    return;
+                }
+                else if(stateItem.getLikeState() == true) {
+                    holder.likeState.setImageResource(R.drawable.not_like);
+                    holder.statePraiseNum.setText(stateItem.getStatePraisedNum() - 1 + "");
+                    if (stateItem.getStatePraisedNum() <= 1)
+                        holder.statePraiseNum.setVisibility(View.GONE);
+                    for(int i = 0; i < holder.stateBodyPraise.getChildCount(); i++) {
+                        if(holder.stateBodyPraise.getChildAt(i).getTag() != null &&
+                                (int) holder.stateBodyPraise.getChildAt(i).getTag() ==
+                                       currentUser.getUserId()) {
+                            holder.stateBodyPraise.removeViewAt(i);
+                        }
+                    }
+                    stateItem.setLikeState(false);
+                    stateItem.decreasePraiseUser(currentUser.getUserId());
+                    RequestServer.unlike(stateItem.getStateId(), newLikeCallback(v));
+                    return;
+                }
             }
         });
 
@@ -409,24 +457,171 @@ public class CommentActivity extends BaseToolbarActivity {
     }
 
     private void scrollClickedViewToScreenBottom(int dest) {
-        int[] commentEditTextCoordination = {0, 0};
+        int[] commentEditTextCoordinate = {0, 0};
 
-        commentEditText.getLocationOnScreen(commentEditTextCoordination);
+        commentEditText.getLocationOnScreen(commentEditTextCoordinate);
 
         commentList
-                .smoothScrollBy(dest - commentEditTextCoordination[1], 600);
+                .smoothScrollBy(dest - commentEditTextCoordinate[1], 600);
     }
 
-    private void startImagePagerActivity(String imageUrl){
-        Intent intent = new Intent(this, ImagePager.class);
-        List<String> imageUrls = new ArrayList<>();
-        imageUrls.add(imageUrl);
-        Bundle bundle=new Bundle();
-        bundle.putInt(Constants.Extra.IMAGE_POSITION, 0);
-        bundle.putStringArrayList(Constants.Extra.IMAGE_TO_SHOW, (ArrayList)imageUrls);
-        intent.putExtras(bundle);
-        startActivity(intent);
-        overridePendingTransition(R.anim.zoom_enter, 0);
+    private JsonHttpResponseHandler newFollowCallback(final TextView follow) {
+        return new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.i("JSON", response.toString());
+                barProgressDialog.dismiss();
+                follow.setText("√ 已关注");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.i("JSON", "JSON FAIL");
+                barProgressDialog.dismiss();
+            }
+
+        };
+    }
+
+    private JsonHttpResponseHandler newSendCommentCallback(final String content) {
+        return new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.i("JSON", response.toString());
+                try {
+                    int commentId = response.getJSONObject("body").getInt("comment_id");
+                    User commentUser = userSessionManager.getCurrentUser();
+                    Comment newComment = new Comment(commentId,stateItem.getStateId(), commentUser,
+                            toUser, content);
+                    commentsManager.pushComment(newComment);
+                    commentNum.setVisibility(View.VISIBLE);
+                    commentNum.setText(stateItem.getStateCommentsNum() + 1 + "");
+                    commentAdapter.notifyDataSetChanged();
+                } catch (JSONException ex) {
+                    Log.i("JSON", ex.toString());
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers,
+                                  Throwable throwable, JSONObject errorResponse) {
+                Log.i("JSON", "JSON FAIL");
+            }
+        };
+    }
+
+    private JsonHttpResponseHandler newGetNewCommentsCallback() {
+        return new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.i("JSON", response.toString());
+                Gson gson = new Gson();
+
+                try {
+                    Log.i("JSON", "" + response.getInt("status"));
+                    if(response.getInt("status") == 0) {
+                        JSONArray body = response.getJSONArray("body");
+                        Type commentItemListType = new TypeToken<ArrayList<Comment>>(){}.getType();
+                        ArrayList<Comment> newCommentsList =
+                                gson.fromJson(body.toString(), commentItemListType);
+                        Log.i("GSON", newCommentsList.size() + "");
+                        commentsManager.updateCommentsList(newCommentsList);
+                        commentAdapter.notifyDataSetChanged();
+                    }
+                } catch (JSONException ex) {
+                    Log.i("JSON", ex.toString());
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers,
+                                  Throwable throwable, JSONObject errorResponse) {
+                Log.i("JSON", "JSON FAIL");
+            }
+        };
+    }
+
+    private JsonHttpResponseHandler newGetMoreCommentsCallback() {
+        return new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.i("JSON", response.toString());
+                Gson gson = new Gson();
+
+                try {
+                    Log.i("JSON", "" + response.getInt("status"));
+                    if(response.getInt("status") == 0) {
+                        JSONArray body = response.getJSONArray("body");
+                        Type commentItemListType = new TypeToken<ArrayList<Comment>>(){}.getType();
+                        ArrayList<Comment> newCommentsList =
+                                gson.fromJson(body.toString(), commentItemListType);
+                        Log.i("GSON", newCommentsList.size() + "");
+
+                        Log.i("GSON", newCommentsList.size()+ "");
+                        if(newCommentsList.size() > 0) {
+                            commentsManager.addComments(newCommentsList);
+                            commentAdapter.notifyDataSetChanged();
+                        }
+                        else {
+                            loading.setVisibility(View.GONE);
+                            noMoreComments.setVisibility(View.VISIBLE);
+                            nomore = true;
+                        }
+                        isRefreshing = false;
+                    }
+                } catch (JSONException ex) {
+                    Log.i("JSON", ex.toString());
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers,
+                                  Throwable throwable, JSONObject errorResponse) {
+                Log.i("JSON", "JSON FAIL");
+                isRefreshing = false;
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Log.i("JSON", "JSON FAIL");
+                isRefreshing = false;
+            }
+        };
+    }
+
+    private JsonHttpResponseHandler newLikeCallback(final View view) {
+        return new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.i("JSON", response.toString());
+                view.setClickable(true);
+                try {
+                    if (response.getInt("status") == 0) {
+
+                    }
+                } catch (JSONException ex) {
+                    Log.i("JSON", ex.toString());
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.i("JSON", "JSON FAIL");
+                view.setClickable(true);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                view.setClickable(true);
+            }
+        };
     }
 
     @Override
@@ -576,164 +771,5 @@ public class CommentActivity extends BaseToolbarActivity {
         TextView commentUserName;
         ImageView commentUserGender;
         TextView commentContent;
-    }
-
-    public class CommentHttpClient {
-        ProgressDialog progressDialog;
-
-        public CommentHttpClient(ProgressDialog dialog) {
-            progressDialog = dialog;
-        }
-
-        public void getComments(int startStateId) {
-            RequestParams params = new RequestParams();
-            params.setUseJsonStreamer(true);
-            params.put("comment_id", startStateId);
-            params.put("post_id", stateItem.getStateId());
-
-            HttpClient.post("getComments", params, new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    super.onSuccess(statusCode, headers, response);
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers,
-                                      Throwable throwable, JSONObject errorResponse) {
-                    super.onFailure(statusCode, headers, throwable, errorResponse);
-                }
-            });
-        }
-
-        public void sendComments(int stateId, final String content, int userId) {
-            RequestParams params = new RequestParams();
-            params.setUseJsonStreamer(true);
-            params.put("post_id", stateId);
-            params.put("content", content);
-            params.put("user_id", userId);
-
-            HttpClient.post("comment", params, new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    // If the response is JSONObject instead of expected JSONArray
-                    Log.i("JSON", response.toString());
-                    try {
-                        int commentId = response.getJSONObject("body").getInt("comment_id");
-                        User commentUser = GlobalApplication.getUserSessionManager().getCurrentUser();
-                        Comment newComment = new Comment(commentId,stateItem.getStateId(), commentUser,
-                                toUser, content);
-                        commentsManager.pushComment(newComment);
-                        commentAdapter.notifyDataSetChanged();
-                    } catch (JSONException ex) {
-                        Log.i("JSON", ex.toString());
-                    }
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers,
-                                      Throwable throwable, JSONObject errorResponse) {
-                    Log.i("JSON", "JSON FAIL");
-                }
-            });
-        }
-    }
-
-    public class CommentsManager {
-        private int stateId;
-        private List<Comment> commentList;
-
-        public CommentsManager(int stateId) {
-            this.stateId = stateId;
-            commentList = new ArrayList<>();
-        }
-
-        public int commentsCount() {
-            return commentList.size();
-        }
-
-        public Comment getComment(int i) {
-            return commentList.get(i);
-        }
-
-        public User getCommentUser(int i) {
-            return commentList.get(i).getCommentUser();
-        }
-
-        public void pushComment(Comment comment) {
-            commentList.add(0, comment);
-        }
-
-        public void getNewComments() {
-            RequestParams params = new RequestParams();
-            params.setUseJsonStreamer(true);
-            params.put("comment_id", 0);
-            params.put("post_id", stateId);
-
-            HttpClient.post("comment/getComment", params, new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    // If the response is JSONObject instead of expected JSONArray
-                    Log.i("JSON", response.toString());
-                    Gson gson = new Gson();
-                    CommentsResult commentsResult = gson.fromJson(response.toString(), CommentsResult.class);
-
-                    Log.i("GSON", commentsResult.newCommentsList.size()+ "");
-                    commentList = commentsResult.newCommentsList;
-
-                    commentAdapter.notifyDataSetChanged();
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers,
-                                      Throwable throwable, JSONObject errorResponse) {
-                    Log.i("JSON", "JSON FAIL");
-                }
-            });
-        }
-
-        public void getCommentsMore() {
-            RequestParams params = new RequestParams();
-            params.setUseJsonStreamer(true);
-            int comment_id = commentList.size() == 0 ? 0 :commentList.get(commentList.size() -1).getCommentId();
-            Log.i("comment_id", comment_id + " " + isRefreshing);
-            params.put("comment_id", comment_id);
-            params.put("post_id", stateId);
-
-            HttpClient.post("comment/getComment", params, new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    // If the response is JSONObject instead of expected JSONArray
-                    Log.i("JSON", response.toString());
-                    Gson gson = new Gson();
-                    CommentsResult commentsResult = gson.fromJson(response.toString(), CommentsResult.class);
-
-                    Log.i("GSON", commentsResult.newCommentsList.size()+ "");
-                    if(commentsResult.newCommentsList.size() > 0) {
-                        commentList.addAll(commentsResult.newCommentsList);
-                        commentAdapter.notifyDataSetChanged();
-                    }
-                    else {
-                        loading.setVisibility(View.GONE);
-                        nomoreComents.setVisibility(View.VISIBLE);
-                        nomore = true;
-                    }
-                    isRefreshing = false;
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers,
-                                      Throwable throwable, JSONObject errorResponse) {
-                    Log.i("JSON", "JSON FAIL");
-                    isRefreshing = false;
-                }
-            });
-        }
-
-        public class CommentsResult {
-            public int status;
-
-            @SerializedName("body")
-            public List<Comment> newCommentsList;
-        }
     }
 }

@@ -1,7 +1,6 @@
 package me.qiang.android.chongai.Activity;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,11 +15,11 @@ import android.widget.TextView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.qiang.android.chongai.R;
 
-public class ChoosePetActivity extends ActionBarActivity {
+public class ChoosePetActivity extends BaseToolbarActivity {
 
     private ListView petList;
     private ImageView petIcon;
-    private int petSelectePosition = 0;
+    private int petSelectedPosition = 0;
     private PetListAdapter petListAdapter;
 
     @Override
@@ -37,7 +36,7 @@ public class ChoosePetActivity extends ActionBarActivity {
         petList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                petSelectePosition = position;
+                petSelectedPosition = position;
                 petListAdapter.notifyDataSetChanged();
             }
         });
@@ -105,7 +104,7 @@ public class ChoosePetActivity extends ActionBarActivity {
                 holder = (ViewHolder) view.getTag();
             }
 
-            if(position == petSelectePosition)
+            if(position == petSelectedPosition)
                 holder.petSelected.setImageResource(R.drawable.pet_selected);
             else
                 holder.petSelected.setImageResource(R.drawable.pet_unselected);

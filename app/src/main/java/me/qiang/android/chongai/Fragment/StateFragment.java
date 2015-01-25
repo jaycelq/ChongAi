@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.qiang.android.chongai.Activity.CommentActivity;
 import me.qiang.android.chongai.Activity.UserAcitivity;
+import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.GlobalApplication;
 import me.qiang.android.chongai.Model.Pet;
 import me.qiang.android.chongai.Model.StateExploreManager;
@@ -115,6 +116,11 @@ public class StateFragment extends BaseFragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     public void getNewStates(){
@@ -380,7 +386,7 @@ public class StateFragment extends BaseFragment {
 
     private void startCommentActivity(int pos) {
         Intent intent = new Intent(getActivity(), CommentActivity.class);
-        intent.putExtra("STATE_POS", pos);
+        intent.putExtra(Constants.StateManager.STATE_INDEX, pos);
         startActivity(intent);
     }
 

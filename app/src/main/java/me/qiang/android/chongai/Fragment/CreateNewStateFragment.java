@@ -2,11 +2,13 @@ package me.qiang.android.chongai.Fragment;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,21 +17,29 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.IOException;
+
+import me.qiang.android.chongai.Activity.StateEdit;
+import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.R;
+import me.qiang.android.chongai.util.ActivityTransition;
 import me.qiang.android.chongai.util.BlurBackground;
+import me.qiang.android.chongai.util.CameraUtil;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class CreateNewStateFragment extends Fragment implements View.OnClickListener{
 
-    private OnFragmentInteractionListener mListener;
     private ImageView takePhoto;
     private TextView takePhotoText;
     private ImageView pickPhoto;
     private TextView pickPhotoText;
     private ImageView takeVideo;
     private TextView takeVideoText;
+
+    private File photoFile = null;
 
     public CreateNewStateFragment() {
     }
@@ -57,22 +67,6 @@ public class CreateNewStateFragment extends Fragment implements View.OnClickList
         takePhoto.setOnClickListener(this);
 
         return rootView;
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        mListener.onCreateNewFragmentClick(v.getId());
     }
 
     @Override
@@ -143,8 +137,60 @@ public class CreateNewStateFragment extends Fragment implements View.OnClickList
         return anim;
     }
 
-    public interface OnFragmentInteractionListener {
-        public void onCreateNewFragmentClick(int id);
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id) {
+            case R.id.pop_up_bg:
+                getActivity().onBackPressed();
+                break;
+            case R.id.pick_photo:
+                ActivityTransition.pickImageFromAlbum(this);
+                break;
+            case R.id.take_photo:
+                // Create the File where the photo should go
+                try {
+                    photoFile = CameraUtil.createImageFile();
+                } catch (IOException ex) {
+                    // Error occurred while creating the File
+                    Log.i("TAKE_PHOTO", ex.getMessage());
+                }
+                ActivityTransition.takePhoto(this, photoFile);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // TODO Auto-generated method stub
+        if (requestCode == Constants.Image.TAKE_PHOTO) {
+            if (resultCode == Activity.RESULT_OK) {
+                try {
+                    startStateEditActivity(photoFile.getCanonicalPath());
+                } catch (IOException ex) {
+                    // Error occurred while creating the File
+                    Log.i("TAKE_PHOTO", ex.getMessage());
+                }
+            }
+            else {
+                photoFile.delete();
+            }
+        }
+        else if(requestCode == Constants.Image.PICK_IMAGE) {
+            if(resultCode == Activity.RESULT_OK) {
+                String photoUrl = data.getExtras().getString(Constants.Image.IMAGE_RESULT);
+                startStateEditActivity(photoUrl);
+            }
+        }
+    }
+
+    private void startStateEditActivity(String imageFile) {
+        Intent intent = new Intent(getActivity(), StateEdit.class);
+        intent.putExtra(Constants.Image.IMAGE_RESULT, imageFile);
+        Log.i("CAMERA_CAPTURE", imageFile);
+        startActivity(intent);
     }
 
 }

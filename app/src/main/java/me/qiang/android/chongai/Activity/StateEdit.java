@@ -32,6 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 
+import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.util.HttpClient;
 import me.qiang.android.chongai.Model.StateExploreManager;
@@ -100,7 +101,7 @@ public class StateEdit extends ActionBarActivity implements View.OnClickListener
             }
         });
 
-        photoUrl = getIntent().getStringExtra("img_url");
+        photoUrl = getIntent().getStringExtra(Constants.Image.IMAGE_RESULT);
 
         ImageLoader.getInstance().displayImage("file://" + photoUrl, imageView, options);
     }
@@ -136,6 +137,7 @@ public class StateEdit extends ActionBarActivity implements View.OnClickListener
 
     private void startMainActivity() {
         Intent registerIntent = new Intent(this, MainActivity.class);
+        registerIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(registerIntent);
         this.finish();
     }

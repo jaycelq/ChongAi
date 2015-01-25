@@ -17,7 +17,6 @@ import android.widget.RadioGroup;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -32,11 +31,12 @@ import java.io.InputStream;
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.GlobalApplication;
-import me.qiang.android.chongai.R;
-import me.qiang.android.chongai.util.CompressUploadTask;
-import me.qiang.android.chongai.util.HttpClient;
 import me.qiang.android.chongai.Model.User;
 import me.qiang.android.chongai.Model.UserSessionManager;
+import me.qiang.android.chongai.R;
+import me.qiang.android.chongai.util.ActivityTransition;
+import me.qiang.android.chongai.util.CompressUploadTask;
+import me.qiang.android.chongai.util.RequestServer;
 
 public class AddProfileActivity extends BaseToolbarActivity implements TextWatcher{
     private UserSessionManager userSessionManager;
@@ -87,7 +87,7 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
         profilePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pickImageFromAlbum();
+                ActivityTransition.pickImageFromAlbum(AddProfileActivity.this);
             }
         });
 
@@ -106,9 +106,9 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case Constants.Album.PICK_IMAGE:
+            case Constants.Image.PICK_IMAGE:
                 if(resultCode == RESULT_OK) {
-                    avatarUrl = data.getExtras().getString("img_url");
+                    avatarUrl = data.getExtras().getString(Constants.Image.IMAGE_RESULT);
                     Log.i("PHOTO_URL", avatarUrl);
                     ImageLoader.getInstance()
                             .displayImage("file://" + avatarUrl, profilePhoto, options);
@@ -140,11 +140,6 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
         return super.onOptionsItemSelected(item);
     }
 
-    public void pickImageFromAlbum() {
-        Intent intent = new Intent(this, CustomAlbum.class);
-        startActivityForResult(intent, Constants.Album.PICK_IMAGE);
-    }
-
     public void attemptSaveProfile() {
         final String userName = profileName.getText().toString();
         final String userLocation = profileLocation.getText().toString();
@@ -172,7 +167,7 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
                 protected void onPostExecute(InputStream inputStream) {
                     User user = new User(userName, userGender,
                             userLocation, userSignature, userPhotoUrl);
-                    saveProfile(user, inputStream);
+                    RequestServer.saveProfile(user, inputStream, avatarUrl, newSaveProfileCallback());
                 }
             };
             compressUploadTask.execute(avatarUrl);
@@ -190,9 +185,7 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
         if (TextUtils.isEmpty(userName) || !isUserNameValid(userName))
             focusView = profileName;
 
-        if (TextUtils.isEmpty(userLocation))
-            focusView = profileLocation;
-        else if (!isUserLocationValid(userLocation))
+        if (TextUtils.isEmpty(userLocation) || !isUserLocationValid(userLocation))
             focusView = profileLocation;
 
         if (TextUtils.isEmpty(userSignature) || !isUserSignatureValid(userSignature))
@@ -220,31 +213,20 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
         return userPhotoUrl.length() > 0;
     }
 
-    private void startMainActivity() {
-        Intent registerIntent = new Intent(this, MainActivity.class);
-        startActivity(registerIntent);
-        this.finish();
-    }
-
-    private void saveProfile(User user, InputStream avatarPic) {
-        RequestParams params = new RequestParams();
-
-        final Gson gson = new Gson();
-        String userInfo = gson.toJson(user, User.class);
-
-        params.put("avatar_pic", avatarPic, avatarUrl);
-        params.put("user", userInfo);
-        HttpClient.post("user/newProfile", params, new JsonHttpResponseHandler() {
+    private JsonHttpResponseHandler newSaveProfileCallback() {
+        return new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 // If the response is JSONObject instead of expected JSONArray
                 Log.i("JSON", response.toString());
+                Gson gson = new Gson();
                 try {
                     if (response.getInt("status") == 0) {
                         JSONObject userJsonObject = response.getJSONObject("body");
                         User currentUser = gson.fromJson(userJsonObject.toString(), User.class);
                         userSessionManager.updateUserProfile(true, currentUser);
-                        startMainActivity();
+                        ActivityTransition.startMainActivity(AddProfileActivity.this);
+                        AddProfileActivity.this.finish();
                     }
                 } catch (JSONException ex) {
                 }
@@ -263,16 +245,15 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 Log.i("JSON", responseString);
                 hideProgressDialog();
-                new AlertDialog.Builder(AddProfileActivity.this).setMessage("服务器故障").
+                new AlertDialog.Builder(AddProfileActivity.this).setMessage("服务器故障,请稍后重试").
                         setPositiveButton("确定", null).show();
             }
-        });
+        };
     }
 
     @Override
     public void afterTextChanged(Editable s) {
         if(isInputValid() == null) {
-            Log.i("ADD_PROFILE", "clickable");
             saveProfile.setClickable(true);
         }
         else

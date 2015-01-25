@@ -18,11 +18,9 @@ package me.qiang.android.chongai.Fragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,9 +40,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.qiang.android.chongai.Activity.StateEdit;
 import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.R;
+import me.qiang.android.chongai.util.ActivityTransition;
 import me.qiang.android.chongai.util.AlbumHelper;
 import me.qiang.android.chongai.util.CameraUtil;
 
@@ -180,50 +178,23 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
         getActivity().onBackPressed();
     }
 
-    private void startStateEditActivity(String imageFile) {
-        Intent intent = new Intent(getActivity(), StateEdit.class);
-        intent.putExtra("STATE_PHOTO", imageFile);
-        Log.i("CAMERA_CAPTURE", imageFile);
-        startActivity(intent);
-    }
-
-    private void takePhoto() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            // Create the File where the photo should go
-            try {
-                photoFile = CameraUtil.createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-                Log.i("TAKE_PHOTO", ex.getMessage());
-
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                        Uri.fromFile(photoFile));
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-            }
-        }
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
+        Log.i("OnActivityResult", "return from take photo");
         if (requestCode == REQUEST_TAKE_PHOTO) {
             if(resultCode == Activity.RESULT_OK) {
                 try {
-                    //startStateEditActivity(photoFile.getCanonicalPath());
                     Intent intent = new Intent();
-                    intent.putExtra("img_url", photoFile.getCanonicalPath());
+                    intent.putExtra(Constants.Image.IMAGE_RESULT, photoFile.getCanonicalPath());
                     getActivity().setResult(Activity.RESULT_OK, intent);
                     getActivity().finish();
                 } catch (IOException ex) {
-                    // Error occurred while creating the File
                     Log.i("TAKE_PHOTO", ex.getMessage());
-
                 }
+            }
+            else {
+                photoFile.delete();
             }
         }
     }
@@ -310,9 +281,8 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //startStateEditActivity(imageUrls.get((int) v.getTag()));
                         Intent intent = new Intent();
-                        intent.putExtra("img_url", imageUrls.get((int) v.getTag()));
+                        intent.putExtra(Constants.Image.IMAGE_RESULT, imageUrls.get((int) v.getTag()));
                         getActivity().setResult(Activity.RESULT_OK, intent);
                         getActivity().finish();
                     }
@@ -323,7 +293,14 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        takePhoto();
+                        // Create the File where the photo should go
+                        try {
+                            photoFile = CameraUtil.createImageFile();
+                        } catch (IOException ex) {
+                            // Error occurred while creating the File
+                            Log.i("TAKE_PHOTO", ex.getMessage());
+                        }
+                        ActivityTransition.takePhoto(ImageGridFragment.this, photoFile);
                     }
                 });
             }

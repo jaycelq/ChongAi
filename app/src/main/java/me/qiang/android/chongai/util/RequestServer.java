@@ -1,10 +1,15 @@
 package me.qiang.android.chongai.util;
 
+import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.InputStream;
+
+import me.qiang.android.chongai.Model.User;
 
 /**
  * Created by LiQiang on 24/1/15.
@@ -74,6 +79,40 @@ public class RequestServer {
         params.setUseJsonStreamer(true);
         params.put("post_id", stateId);
         HttpClient.post("post/getPosts", params, jsonHttpResponseHandler);
+    }
+
+    public static void saveProfile(User user, InputStream avatarPic, String avatarUrl,
+                             JsonHttpResponseHandler jsonHttpResponseHandler) {
+        RequestParams params = new RequestParams();
+
+        final Gson gson = new Gson();
+        String userInfo = gson.toJson(user, User.class);
+
+        params.put("avatar_pic", avatarPic, avatarUrl);
+        params.put("user", userInfo);
+        HttpClient.post("user/newProfile", params, jsonHttpResponseHandler);
+    }
+
+
+    public static void sendComment(int stateId, final String content, int userId,
+                             JsonHttpResponseHandler jsonHttpResponseHandler) {
+        RequestParams params = new RequestParams();
+        params.setUseJsonStreamer(true);
+        params.put("post_id", stateId);
+        params.put("content", content);
+        params.put("user_id", userId);
+
+        HttpClient.post("comment", params, jsonHttpResponseHandler);
+    }
+
+    public static void getComments(int commentId, int stateId,
+                            JsonHttpResponseHandler jsonHttpResponseHandler) {
+        RequestParams params = new RequestParams();
+        params.setUseJsonStreamer(true);
+        params.put("comment_id", commentId);
+        params.put("post_id", stateId);
+
+        HttpClient.post("comment/getComment", params, jsonHttpResponseHandler);
     }
 
 }
