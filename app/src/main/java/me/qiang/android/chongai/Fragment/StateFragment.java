@@ -3,7 +3,6 @@ package me.qiang.android.chongai.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,8 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -32,17 +29,13 @@ import org.json.JSONObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import me.qiang.android.chongai.Activity.CommentActivity;
-import me.qiang.android.chongai.Activity.UserAcitivity;
 import me.qiang.android.chongai.Constants;
-import me.qiang.android.chongai.GlobalApplication;
-import me.qiang.android.chongai.Model.Pet;
 import me.qiang.android.chongai.Model.StateExploreManager;
 import me.qiang.android.chongai.Model.StateItem;
 import me.qiang.android.chongai.R;
-import me.qiang.android.chongai.util.ActivityTransition;
 import me.qiang.android.chongai.util.RequestServer;
+import me.qiang.android.chongai.widget.StateItemView;
 
 public class StateFragment extends BaseFragment {
 
@@ -125,6 +118,8 @@ public class StateFragment extends BaseFragment {
 
     @Override
     public void onResume() {
+        Log.i("State_fragment", "onresume");
+        mAdapter.notifyDataSetChanged();
         super.onResume();
     }
 
@@ -233,24 +228,10 @@ public class StateFragment extends BaseFragment {
             final ViewHolder holder;
             View view = convertView;
             if (view == null) {
-                view = inflater.inflate(R.layout.state_item, parent, false);
+                view = inflater.inflate(R.layout.state_item_view, parent, false);
                 holder = new ViewHolder();
                 assert view != null;
-                holder.stateOwnerPhoto = (CircleImageView) view.findViewById(R.id.state_owner_photo);
-                holder.stateOwnerName = (TextView) view.findViewById(R.id.state_owner_name);
-                holder.stateOwnerLocation = (TextView) view.findViewById(R.id.state_owner_location);
-                holder.stateCreateTime = (TextView) view.findViewById(R.id.state_create_distance);
-                holder.isFollowed = (TextView) view.findViewById(R.id.follow);
-                holder.statePetName = (TextView) view.findViewById(R.id.state_pet_name);
-                holder.statePetType = (TextView) view.findViewById(R.id.state_pet_type);
-                holder.stateBodyImage = (ImageView) view.findViewById(R.id.state_body_image);
-                holder.stateBodyText = (TextView) view.findViewById(R.id.state_body_text);
-                holder.stateBodyPraise = (LinearLayout) view.findViewById(R.id.state_body_praise);
-                holder.comment = (LinearLayout) view.findViewById(R.id.comment);
-                holder.stateCommentNum = (TextView) view.findViewById(R.id.state_comment_num);
-                holder.praise = (LinearLayout) view.findViewById(R.id.praise);
-                holder.statePraiseNum = (TextView) view.findViewById(R.id.state_praise_num);
-                holder.likeState = (ImageView) view.findViewById(R.id.like_state);
+                holder.stateItemView = (StateItemView)view;
                 view.setTag(holder);
             } else {
                 holder = (ViewHolder) view.getTag();
@@ -258,149 +239,14 @@ public class StateFragment extends BaseFragment {
 
             final StateItem stateItem = stateExploreManager.get(position);
 
-            Picasso.with(context)
-                    .load(stateItem.getStateOwnerPhoto())
-                    .fit()
-                    .centerCrop()
-                    .into(holder.stateOwnerPhoto);
-            holder.stateOwnerPhoto.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(new Intent(getActivity(), UserAcitivity.class));
-                }
-            });
+            holder.stateItemView.updateStateItemView(stateItem);
 
-            holder.stateOwnerName.setText(stateItem.getStateOwnerName());
-
-            holder.stateOwnerLocation.setText(stateItem.getStateOwnerLocation());
-
-            if(stateItem.isFollowedStateOwner())
-                holder.isFollowed.setText("√ 已关注");
-            else
-                holder.isFollowed.setText("+ 关注");
-
-            holder.isFollowed.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(!stateItem.isFollowedStateOwner()) {
-                        Log.i("Follow", "onclick");
-                        barProgressDialog.setMessage("正在处理...");
-                        barProgressDialog.show();
-                        RequestServer.follow(stateItem.getStateOwnerId(), newFollowCallback(holder.isFollowed));
-                    }
-                    //TODO: deal with cancel follow action
-                }
-            });
-
-            holder.statePetName.setText(stateItem.getStatePetName());
-            holder.statePetType.setText(stateItem.getStatePetType());
-
-            if(stateItem.getStatePetGender() == Pet.Gender.FEMALE) {
-                ((GradientDrawable)holder.statePetName.getBackground()).setColor(0xFFFF939A);
-                ((GradientDrawable)holder.statePetType.getBackground()).setColor(0xFFFF939A);
-            }
-
-            Picasso.with(context)
-                    .load(stateItem.getStateImage())
-                    .fit()
-                    .centerCrop()
-                    .into(holder.stateBodyImage);
-            holder.stateBodyImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ArrayList<String> imageUrls = new ArrayList<String>();
-                    imageUrls.add(stateItem.getStateImage());
-                    ActivityTransition.startImagePagerActivity(getActivity(), imageUrls, 0);
-                }
-            });
-
-            holder.stateBodyText.setText(stateItem.getStateContent());
-
-            if(holder.stateBodyPraise.getChildCount() > 0)
-                holder.stateBodyPraise.removeAllViews();
-
-            for (int i = 0; i < Math.min(7, stateItem.getStatePraisedNum()); i++) {
-                CircleImageView praisePhoto = (CircleImageView) inflater.inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
-                praisePhoto.setTag(stateItem.getPraiseUserId(i));
-                holder.stateBodyPraise.addView(praisePhoto);
-                Picasso.with(context)
-                        .load(stateItem.getPraiseUserPhoto(i))
-                        .fit().
-                        centerCrop()
-                        .into(praisePhoto);
-            }
-
-            if(stateItem.getStatePraisedNum() > 7) {
-                ImageView praisePhoto = (ImageView) inflater.inflate(R.layout.icon_more, holder.stateBodyPraise, false);
-                holder.stateBodyPraise.addView(praisePhoto);
-            }
-
-            holder.comment.setOnClickListener(new View.OnClickListener() {
+            holder.stateItemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     startCommentActivity(position);
                 }
             });
-
-            holder.praise.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(stateItem.getLikeState() == false) {
-                        RequestServer.like(stateItem.getStateId(), newLikeCallback());
-                        CircleImageView praisePhoto = (CircleImageView) inflater.inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
-                        praisePhoto.setTag(GlobalApplication.getUserSessionManager().getCurrentUser().getUserId());
-                        Picasso.with(context)
-                                .load(GlobalApplication.getUserSessionManager().getCurrentUser().getUserPhoto())
-                                .fit()
-                                .centerCrop()
-                                .into(praisePhoto);
-                        holder.stateBodyPraise.addView(praisePhoto, 0);
-                        holder.likeState.setImageResource(R.drawable.like);
-                        holder.statePraiseNum.setVisibility(View.VISIBLE);
-                        holder.statePraiseNum.setText(stateItem.getStatePraisedNum() + 1 + "");
-                        stateItem.setLikeState(true);
-                        stateItem.addPraiseUser(GlobalApplication.getUserSessionManager().getCurrentUser());
-                        return;
-                    }
-                    else if(stateItem.getLikeState() == true) {
-                        RequestServer.unlike(stateItem.getStateId(), newLikeCallback());
-                        holder.likeState.setImageResource(R.drawable.not_like);
-                        holder.statePraiseNum.setText(stateItem.getStatePraisedNum() - 1 + "");
-                        if (stateItem.getStatePraisedNum() <= 1)
-                            holder.statePraiseNum.setVisibility(View.GONE);
-                        for(int i = 0; i < holder.stateBodyPraise.getChildCount(); i++) {
-                            if(holder.stateBodyPraise.getChildAt(i).getTag() != null &&
-                                    (int) holder.stateBodyPraise.getChildAt(i).getTag() ==
-                                    GlobalApplication.getUserSessionManager().getCurrentUser().getUserId()) {
-                                holder.stateBodyPraise.removeViewAt(i);
-                            }
-                        }
-                        stateItem.setLikeState(false);
-                        stateItem.decreasePraiseUser(GlobalApplication.getUserSessionManager().getCurrentUser().getUserId());
-                        return;
-                    }
-                }
-            });
-
-            holder.statePraiseNum.setVisibility(View.GONE);
-            if(stateItem.getStatePraisedNum() > 0) {
-                holder.statePraiseNum.setVisibility(View.VISIBLE);
-                holder.statePraiseNum.setText(stateItem.getStatePraisedNum() + "");
-            }
-
-            if(stateItem.getLikeState()) {
-                holder.likeState.setImageResource(R.drawable.like);
-            }
-            else {
-                holder.likeState.setImageResource(R.drawable.not_like);
-            }
-
-            holder.stateCommentNum.setVisibility(View.GONE);
-            if(stateItem.getStateCommentsNum() > 0) {
-                holder.stateCommentNum.setVisibility(View.VISIBLE);
-                holder.stateCommentNum.setText(stateItem.getStateCommentsNum() + "");
-            }
-
             return view;
         }
     }
@@ -412,20 +258,6 @@ public class StateFragment extends BaseFragment {
     }
 
     public static class ViewHolder {
-        public CircleImageView stateOwnerPhoto;
-        public TextView stateOwnerName;
-        public TextView stateOwnerLocation;
-        public TextView stateCreateTime;
-        public TextView isFollowed;
-        public TextView statePetName;
-        public TextView statePetType;
-        public ImageView stateBodyImage;
-        public TextView stateBodyText;
-        public LinearLayout stateBodyPraise;
-        public LinearLayout comment;
-        public TextView stateCommentNum;
-        public LinearLayout praise;
-        public TextView statePraiseNum;
-        public ImageView likeState;
+        public StateItemView stateItemView;
     }
 }

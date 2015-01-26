@@ -68,4 +68,9 @@ public final class Constants {
     public static class StateManager {
         public static final String STATE_INDEX = "state_index";
     }
+
+    public static class StateItem {
+        public static final String STATE_ID = "state_index";
+        public static final String LAST_PRAISE_USER = "last_praise_user";
+    }
 }

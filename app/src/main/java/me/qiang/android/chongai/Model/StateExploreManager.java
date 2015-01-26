@@ -53,11 +53,6 @@ public class StateExploreManager {
         if(lastStatesExplored != null) {
             statesList = gson.fromJson(lastStatesExplored, stateItemListType);
         }
-        else {
-            for (int i = 0; i < 9; i++) {
-                statesList.add(new StateItem());
-            }
-        }
     }
 
     public static StateExploreManager getStateExploreManager() {

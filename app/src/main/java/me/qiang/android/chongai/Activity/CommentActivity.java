@@ -3,7 +3,6 @@ package me.qiang.android.chongai.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Layout;
@@ -48,18 +47,16 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.qiang.android.chongai.Constants;
-import me.qiang.android.chongai.Fragment.StateFragment;
 import me.qiang.android.chongai.GlobalApplication;
 import me.qiang.android.chongai.Model.Comment;
 import me.qiang.android.chongai.Model.CommentsManager;
-import me.qiang.android.chongai.Model.Pet;
 import me.qiang.android.chongai.Model.StateExploreManager;
 import me.qiang.android.chongai.Model.StateItem;
 import me.qiang.android.chongai.Model.User;
 import me.qiang.android.chongai.Model.UserSessionManager;
 import me.qiang.android.chongai.R;
-import me.qiang.android.chongai.util.ActivityTransition;
 import me.qiang.android.chongai.util.RequestServer;
+import me.qiang.android.chongai.widget.StateItemView;
 
 public class CommentActivity extends BaseToolbarActivity {
     // UserSessionManager to get the info of the current user
@@ -75,8 +72,7 @@ public class CommentActivity extends BaseToolbarActivity {
     private StateItem stateItem;
 
     // UI widget and adapter
-    private View commentHeader;
-    private TextView commentNum;
+    private StateItemView commentHeader;
     private ListView commentList;
     private CommentAdapter commentAdapter;
 
@@ -173,7 +169,7 @@ public class CommentActivity extends BaseToolbarActivity {
         commentList = (ListView) findViewById(R.id.list);
 
         //Init ListView header
-        commentHeader = getLayoutInflater().inflate(R.layout.state_item, null);
+        commentHeader = (StateItemView) getLayoutInflater().inflate(R.layout.state_item_view, null);
         initHeader();
         commentList.addHeaderView(commentHeader);
 
@@ -192,6 +188,7 @@ public class CommentActivity extends BaseToolbarActivity {
         commentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.i("COMMENT_ONCLICK", position+"");
                 int[] pos = {0, 0};
                 view.getLocationOnScreen(pos);
                 clickedY = pos[1] + 10 + view.getHeight();
@@ -200,7 +197,7 @@ public class CommentActivity extends BaseToolbarActivity {
                 InputMethodManager imm =
                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.showSoftInput(commentEditText, InputMethodManager.SHOW_IMPLICIT);
-                if(position == 0 || position >= commentsManager.commentsCount()) {
+                if(position == 0 || position > commentsManager.commentsCount()) {
                     toUser = null;
                     commentEditText.setHint("");
                 }
@@ -290,98 +287,9 @@ public class CommentActivity extends BaseToolbarActivity {
     }
 
     private void initHeader() {
-        final StateFragment.ViewHolder holder = new StateFragment.ViewHolder();
-        View view = commentHeader;
+        commentHeader.updateStateItemView(stateItem);
 
-        holder.stateOwnerPhoto = (CircleImageView) view.findViewById(R.id.state_owner_photo);
-        holder.stateOwnerName = (TextView) view.findViewById(R.id.state_owner_name);
-        holder.stateOwnerLocation = (TextView) view.findViewById(R.id.state_owner_location);
-        holder.stateCreateTime = (TextView) view.findViewById(R.id.state_create_distance);
-        holder.isFollowed = (TextView) view.findViewById(R.id.follow);
-        holder.statePetName = (TextView) view.findViewById(R.id.state_pet_name);
-        holder.statePetType = (TextView) view.findViewById(R.id.state_pet_type);
-        holder.stateBodyImage = (ImageView) view.findViewById(R.id.state_body_image);
-        holder.stateBodyText = (TextView) view.findViewById(R.id.state_body_text);
-        holder.stateBodyPraise = (LinearLayout) view.findViewById(R.id.state_body_praise);
-        holder.comment = (LinearLayout) view.findViewById(R.id.comment);
-        holder.stateCommentNum = (TextView) view.findViewById(R.id.state_comment_num);
-        commentNum = holder.stateCommentNum;
-        holder.praise = (LinearLayout) view.findViewById(R.id.praise);
-        holder.statePraiseNum = (TextView) view.findViewById(R.id.state_praise_num);
-        holder.likeState = (ImageView) view.findViewById(R.id.like_state);
-
-        Picasso.with(context).
-                load(stateItem.getStateOwnerPhoto())
-                .fit()
-                .centerCrop()
-                .into(holder.stateOwnerPhoto);
-        holder.stateOwnerPhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(CommentActivity.this , UserAcitivity.class));
-            }
-        });
-
-        holder.stateOwnerName.setText(stateItem.getStateOwnerName());
-
-        holder.stateOwnerLocation.setText(stateItem.getStateOwnerLocation());
-
-        if(stateItem.isFollowedStateOwner())
-            holder.isFollowed.setText("√ 已关注");
-        else
-            holder.isFollowed.setText("+ 关注");
-
-        holder.isFollowed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!stateItem.isFollowedStateOwner()) {
-                    Log.i("Follow", "onclick");
-                    barProgressDialog.setMessage("正在处理...");
-                    barProgressDialog.show();
-                    RequestServer.follow(stateItem.getStateOwnerId(), newFollowCallback(holder.isFollowed));
-                }
-                //TODO: deal with cancel follow action
-            }
-        });
-
-        holder.statePetName.setText(stateItem.getStatePetName());
-        holder.statePetType.setText(stateItem.getStatePetType());
-
-        if(stateItem.getStatePetGender() == Pet.Gender.FEMALE) {
-            ((GradientDrawable)holder.statePetName.getBackground()).setColor(0xFFFF939A);
-            ((GradientDrawable)holder.statePetType.getBackground()).setColor(0xFFFF939A);
-        }
-
-        Picasso.with(context)
-                .load(stateItem.getStateImage())
-                .fit()
-                .centerCrop()
-                .into(holder.stateBodyImage);
-        holder.stateBodyImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ActivityTransition.startImagePagerActivity(CommentActivity.this,
-                        stateItem.getStateImage());
-            }
-        });
-
-        holder.stateBodyText.setText(stateItem.getStateContent());
-
-        if(holder.stateBodyPraise.getChildCount() > 0)
-            holder.stateBodyPraise.removeAllViews();
-
-        for (int i = 0; i < Math.min(8, stateItem.getStatePraisedNum()); i++) {
-            CircleImageView praisePhoto = (CircleImageView) getLayoutInflater().
-                    inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
-            holder.stateBodyPraise.addView(praisePhoto);
-            Picasso.with(context)
-                    .load(stateItem.getPraiseUserPhoto(i))
-                    .fit()
-                    .centerCrop()
-                    .into(praisePhoto);
-        }
-
-        holder.comment.setOnClickListener(new View.OnClickListener() {
+        commentHeader.setOnCommentClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int[] pos = {0, 0};
@@ -396,60 +304,6 @@ public class CommentActivity extends BaseToolbarActivity {
                 commentEditText.setHint("");
             }
         });
-
-        holder.praise.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                v.setClickable(false);
-                if(stateItem.getLikeState() == false) {
-                    CircleImageView praisePhoto = (CircleImageView) getLayoutInflater()
-                            .inflate(R.layout.praise_photo, holder.stateBodyPraise, false);
-                    praisePhoto.setTag(currentUser.getUserId());
-                    Picasso.with(context)
-                            .load(currentUser.getUserPhoto())
-                            .fit()
-                            .centerCrop()
-                            .into(praisePhoto);
-                    holder.stateBodyPraise.addView(praisePhoto, 0);
-                    holder.likeState.setImageResource(R.drawable.like);
-                    holder.statePraiseNum.setVisibility(View.VISIBLE);
-                    holder.statePraiseNum.setText(stateItem.getStatePraisedNum() + 1 + "");
-                    stateItem.setLikeState(true);
-                    stateItem.addPraiseUser(currentUser);
-                    RequestServer.like(stateItem.getStateId(), newLikeCallback(v));
-                    return;
-                }
-                else if(stateItem.getLikeState() == true) {
-                    holder.likeState.setImageResource(R.drawable.not_like);
-                    holder.statePraiseNum.setText(stateItem.getStatePraisedNum() - 1 + "");
-                    if (stateItem.getStatePraisedNum() <= 1)
-                        holder.statePraiseNum.setVisibility(View.GONE);
-                    for(int i = 0; i < holder.stateBodyPraise.getChildCount(); i++) {
-                        if(holder.stateBodyPraise.getChildAt(i).getTag() != null &&
-                                (int) holder.stateBodyPraise.getChildAt(i).getTag() ==
-                                       currentUser.getUserId()) {
-                            holder.stateBodyPraise.removeViewAt(i);
-                        }
-                    }
-                    stateItem.setLikeState(false);
-                    stateItem.decreasePraiseUser(currentUser.getUserId());
-                    RequestServer.unlike(stateItem.getStateId(), newLikeCallback(v));
-                    return;
-                }
-            }
-        });
-
-        holder.statePraiseNum.setVisibility(View.GONE);
-        if(stateItem.getStatePraisedNum() > 0) {
-            holder.statePraiseNum.setVisibility(View.VISIBLE);
-            holder.statePraiseNum.setText(stateItem.getStatePraisedNum() + "");
-        }
-
-        holder.stateCommentNum.setVisibility(View.GONE);
-        if(stateItem.getStateCommentsNum() > 0) {
-            holder.stateCommentNum.setVisibility(View.VISIBLE);
-            holder.stateCommentNum.setText(stateItem.getStateCommentsNum() + "");
-        }
     }
 
     private void hideSoftKeyboard() {
@@ -467,25 +321,6 @@ public class CommentActivity extends BaseToolbarActivity {
                 .smoothScrollBy(dest - commentEditTextCoordinate[1], 600);
     }
 
-    private JsonHttpResponseHandler newFollowCallback(final TextView follow) {
-        return new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                // If the response is JSONObject instead of expected JSONArray
-                Log.i("JSON", response.toString());
-                barProgressDialog.dismiss();
-                follow.setText("√ 已关注");
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.i("JSON", "JSON FAIL");
-                barProgressDialog.dismiss();
-            }
-
-        };
-    }
-
     private JsonHttpResponseHandler newSendCommentCallback(final String content) {
         return new JsonHttpResponseHandler() {
             @Override
@@ -498,8 +333,8 @@ public class CommentActivity extends BaseToolbarActivity {
                     Comment newComment = new Comment(commentId,stateItem.getStateId(), commentUser,
                             toUser, content);
                     commentsManager.pushComment(newComment);
-                    commentNum.setVisibility(View.VISIBLE);
-                    commentNum.setText(stateItem.getStateCommentsNum() + 1 + "");
+                    stateItem.addStateCommentsNum();
+                    commentHeader.setStateCommentNum(stateItem.getStateCommentsNum());
                     commentAdapter.notifyDataSetChanged();
                 } catch (JSONException ex) {
                     Log.i("JSON", ex.toString());
@@ -593,35 +428,6 @@ public class CommentActivity extends BaseToolbarActivity {
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 Log.i("JSON", "JSON FAIL");
                 isRefreshing = false;
-            }
-        };
-    }
-
-    private JsonHttpResponseHandler newLikeCallback(final View view) {
-        return new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                // If the response is JSONObject instead of expected JSONArray
-                Log.i("JSON", response.toString());
-                view.setClickable(true);
-                try {
-                    if (response.getInt("status") == 0) {
-
-                    }
-                } catch (JSONException ex) {
-                    Log.i("JSON", ex.toString());
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.i("JSON", "JSON FAIL");
-                view.setClickable(true);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                view.setClickable(true);
             }
         };
     }

@@ -71,6 +71,8 @@ public class StateItem {
 
     public int getStateCommentsNum() { return stateCommentsNum;}
 
+    public void addStateCommentsNum() {stateCommentsNum++;}
+
     public String getPraiseUserPhoto(int i) {
         return statePraised.get(i).photo;
     }

@@ -17,6 +17,7 @@ import me.qiang.android.chongai.Activity.CustomAlbum;
 import me.qiang.android.chongai.Activity.ImagePager;
 import me.qiang.android.chongai.Activity.MainActivity;
 import me.qiang.android.chongai.Activity.RegisterActivity;
+import me.qiang.android.chongai.Activity.UserAcitivity;
 import me.qiang.android.chongai.Constants;
 
 /**
@@ -45,6 +46,11 @@ public class ActivityTransition {
         bundle.putStringArrayList(Constants.Extra.IMAGE_TO_SHOW, (ArrayList)imageUrls);
         intent.putExtras(bundle);
         context.startActivity(intent);
+    }
+
+    public static void startUserActivity(Context context) {
+        Intent userIntent = new Intent(context, UserAcitivity.class);
+        context.startActivity(userIntent);
     }
 
     public static void startImagePagerActivity(Context context, String imageUrl){
