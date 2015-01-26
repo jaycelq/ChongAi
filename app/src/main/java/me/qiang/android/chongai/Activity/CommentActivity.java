@@ -330,6 +330,7 @@ public class CommentActivity extends BaseToolbarActivity {
                 try {
                     int commentId = response.getJSONObject("body").getInt("comment_id");
                     User commentUser = userSessionManager.getCurrentUser();
+                    Log.i("CurrentUser", commentUser.getUserPhoto());
                     Comment newComment = new Comment(commentId,stateItem.getStateId(), commentUser,
                             toUser, content);
                     commentsManager.pushComment(newComment);

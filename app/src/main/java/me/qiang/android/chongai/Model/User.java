@@ -2,8 +2,6 @@ package me.qiang.android.chongai.Model;
 
 import com.google.gson.annotations.SerializedName;
 
-import me.qiang.android.chongai.R;
-
 /**
  * Created by qiang on 1/8/2015.
  */
@@ -36,16 +34,6 @@ public class User {
     @SerializedName("if_follow")
     public boolean isFollowed;
 
-    //TODO: remove the defaults constructor
-    public User() {
-        userId = 4;
-        nickName = "李强";
-        location = "上海市 闵行区";
-        photo = "drawable://" + R.drawable.profile_photo_nana;
-        gender = Gender.MALE;
-        signature = "Love me~ Love my pet!~";
-        isFollowed = false;
-    }
 
     public User(String userName, Gender userGender, String userLocation,
                 String userSignature, String userLocalPhoto) {

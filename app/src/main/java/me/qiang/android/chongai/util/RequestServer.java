@@ -115,4 +115,26 @@ public class RequestServer {
         HttpClient.post("comment/getComment", params, jsonHttpResponseHandler);
     }
 
+    public static void sendState(String content, String photoUrl, int petId, double locationX,
+                                 double locationY, InputStream photoFileStream,
+                                 JsonHttpResponseHandler jsonHttpResponseHandler){
+        RequestParams params = new RequestParams();
+        params.put("photo", photoFileStream, photoUrl);
+        JSONObject stateInfo = new JSONObject();
+        try {
+            stateInfo.put("content", content);
+            stateInfo.put("pet_id", petId);
+            JSONObject location = new JSONObject();
+            location.put("location_x", locationX);
+            location.put("location_y", locationY);
+            stateInfo.put("location", location);
+
+        } catch (JSONException ex) {
+            // 键为null或使用json不支持的数字格式(NaN, infinities)
+            throw new RuntimeException(ex);
+        }
+        params.put("content", stateInfo);
+        HttpClient.post("post/index", params, jsonHttpResponseHandler);
+    }
+
 }

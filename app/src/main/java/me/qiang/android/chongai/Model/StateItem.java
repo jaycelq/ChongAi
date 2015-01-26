@@ -2,10 +2,8 @@ package me.qiang.android.chongai.Model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
-
-import me.qiang.android.chongai.R;
 
 /**
  * Created by qiang on 1/11/2015.
@@ -44,15 +42,17 @@ public class StateItem {
     @SerializedName("comment_num")
     public int stateCommentsNum;
 
-    // TODO: remove the default test constructor
-    public StateItem() {
-        stateOwner = new User();
-        statePet = new Pet();
-        stateImage = "drawable://" + R.drawable.pet_dog;
-        statePraised = new LinkedList<>();
-        statePraisedNum = 0;
-        stateCommentsNum = 0;
-        stateLike = false;
+    public StateItem(int stateId, String photoUrl, String stateContent, User stateOwner, Pet statePet) {
+        this.stateId = stateId;
+        this.stateImage = photoUrl;
+        this.stateContent = stateContent;
+        this.stateOwner = stateOwner;
+        this.statePet = statePet;
+        this.statePraised = new ArrayList<>();
+        this.stateCommentsNum = 0;
+        this.statePraisedNum = 0;
+        this.stateCommentsNum = 0;
+        this.stateLike = false;
     }
 
     public int getStateId() { return stateId;}
