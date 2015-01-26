@@ -42,6 +42,8 @@ public class StateFragment extends BaseFragment {
     // UI widget
     private PullToRefreshListView pullToRefreshView;
     private View mFooterView;
+    private View loading;
+    private TextView noMoreStates;
     private ProgressBar footerLoading;
     private ProgressDialog barProgressDialog;
 
@@ -50,6 +52,8 @@ public class StateFragment extends BaseFragment {
     private StateExploreManager stateExploreManager;
 
     private Context context;
+
+    private boolean noMore = false;
 
     public StateFragment() {
     }
@@ -71,6 +75,8 @@ public class StateFragment extends BaseFragment {
 
         pullToRefreshView = (PullToRefreshListView) rootView.findViewById(R.id.my_list);
         mFooterView = inflater.inflate(R.layout.loading, null);
+        loading = mFooterView.findViewById(R.id.loading_layout);
+        noMoreStates = (TextView) mFooterView.findViewById(R.id.loading_nomore);
         footerLoading = (ProgressBar) mFooterView.findViewById(R.id.loading);
         pullToRefreshView.getRefreshableView().addFooterView(mFooterView);
         // set the color of progress dialog
@@ -87,11 +93,18 @@ public class StateFragment extends BaseFragment {
             }
         });
 
+        if(mAdapter.getCount() == 0)
+            RequestServer.getStates(stateExploreManager.getLastStateId(), newGetMoreStatesCallback());
+
         pullToRefreshView.setOnLastItemVisibleListener(new PullToRefreshBase.OnLastItemVisibleListener() {
 
             @Override
             public void onLastItemVisible() {
-                mFooterView.setVisibility(View.VISIBLE);
+                if(noMore == false) {
+                    loading.setVisibility(View.VISIBLE);
+                    noMoreStates.setVisibility(View.GONE);
+                    RequestServer.getStates(stateExploreManager.getLastStateId(), newGetMoreStatesCallback());
+                }
             }
         });
 
@@ -155,6 +168,45 @@ public class StateFragment extends BaseFragment {
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Log.i("JSON", "JSON FAIL");
                 pullToRefreshView.onRefreshComplete();
+            }
+        };
+    }
+
+    private JsonHttpResponseHandler newGetMoreStatesCallback() {
+        return new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.i("JSON", response.toString());
+                Gson gson = new Gson();
+                try {
+                    Log.i("JSON", "" + response.getInt("status"));
+                    if(response.getInt("status") == 0) {
+                        JSONArray body = response.getJSONArray("body");
+                        Type stateItemListType = new TypeToken<ArrayList<StateItem>>(){}.getType();
+                        ArrayList<StateItem> newStatesList =
+                                gson.fromJson(body.toString(), stateItemListType);
+                        Log.i("GSON", newStatesList.size() + "");
+
+                        if(newStatesList.size() > 0) {
+                            stateExploreManager.appendStatesList(newStatesList);
+                            mAdapter.notifyDataSetChanged();
+                        }
+                        else {
+                            loading.setVisibility(View.GONE);
+                            noMoreStates.setVisibility(View.VISIBLE);
+                            noMore = true;
+                        }
+
+                    }
+                } catch (JSONException ex) {
+                    Log.i("JSON", ex.toString());
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.i("JSON", "JSON FAIL");
             }
         };
     }

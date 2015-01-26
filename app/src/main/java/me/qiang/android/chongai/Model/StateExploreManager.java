@@ -39,14 +39,17 @@ public class StateExploreManager {
 
     private Type stateItemListType;
 
+    private Gson gson;
+
     private StateExploreManager(Context context) {
         this._context = context;
         pref = _context.getSharedPreferences(PREFER_NAME, PRIVATE_MODE);
         editor = pref.edit();
 
+        gson = new Gson();
+
         statesList = new ArrayList<>();
 
-        Gson gson = new Gson();
         stateItemListType = new TypeToken<ArrayList<StateItem>>(){}.getType();
 
         String lastStatesExplored = pref.getString(LAST_STATES_EXPLORED, null);
@@ -75,6 +78,18 @@ public class StateExploreManager {
 
     public void updateStatesList(ArrayList<StateItem> statesList) {
         this.statesList = statesList;
+        editor.putString(LAST_STATES_EXPLORED, gson.toJson(statesList, stateItemListType));
+        editor.commit();
+    }
+
+    public void appendStatesList(ArrayList<StateItem> newStatesList) {
+        this.statesList.addAll(newStatesList);
+        editor.putString(LAST_STATES_EXPLORED, gson.toJson(statesList, stateItemListType));
+        editor.commit();
+    }
+
+    public int getLastStateId() {
+        return stateCount() == 0 ? 0 : get(stateCount()-1).getStateId();
     }
 
 }
