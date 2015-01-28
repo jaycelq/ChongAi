@@ -34,5 +34,6 @@
     <string name="title_activity_praise">PraiseActivity</string>
     <string name="title_activity_choose_pet">ChoosePetActivity</string>
     <string name="title_activity_base_toolbar">BaseToolbarActivity</string>
+    <string name="title_activity_pet">PetActivity</string>
 
 </resources>
