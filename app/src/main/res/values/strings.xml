@@ -36,4 +36,6 @@
     <string name="title_activity_base_toolbar">BaseToolbarActivity</string>
     <string name="title_activity_pet">PetActivity</string>
 
+    <string name="send_message">发消息</string>
+
 </resources>

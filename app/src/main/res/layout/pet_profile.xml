@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/pet_meta_info"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:orientation="horizontal"
+        android:background="@color/light_green"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/praise_user_photo"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/comment_user"/>
+
+        <LinearLayout
+            android:id="@+id/user_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/praise_user_photo"
+            android:paddingLeft="10dp"
+            android:orientation="vertical"
+            android:layout_alignParentBottom="true">
+
+            <TextView
+                android:id="@+id/praise_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:text="gugu"
+                android:textSize="15sp"
+                android:textColor="@color/textColor"/>
+
+
+
+            <TextView
+                android:id="@+id/state_pet_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/pet_tag_background"
+                android:padding="1dp"
+                android:text="金色寻回犬"
+                android:textSize="11sp"
+                android:gravity="center"
+                android:textColor="@android:color/white"/>
+        </LinearLayout>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="30dp"
+            android:src="@drawable/profile_photo_nana"/>
+        
+        <TextView
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="30dp"
+            android:text="请绑定设备"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:background="@drawable/green_round_button"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_below="@+id/pet_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="-10dp"
+        android:paddingTop="20dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:gravity="center_horizontal"
+        android:background="@color/light_green">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:paddingLeft="60dp"
+            android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="爱好"
+            android:textSize="15sp"
+            android:textColor="#6899BE"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="吃饭、睡觉、晒太阳"
+            android:textSize="15sp"
+            android:textColor="#B7E078"/>
+        </LinearLayout>
+        <View
+            android:layout_width="240dp"
+            android:layout_height="1dp"
+            android:background="@color/textColor"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:paddingLeft="60dp"
+            android:gravity="left"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="年龄"
+                android:textSize="15sp"
+                android:textColor="#6899BE"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="2岁"
+                android:textSize="15sp"
+                android:textColor="#B7E078"/>
+        </LinearLayout>
+        <View
+            android:layout_width="240dp"
+            android:layout_height="1dp"
+            android:background="@color/textColor"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="left"
+            android:paddingLeft="60dp"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="技能"
+                android:textSize="15sp"
+                android:textColor="#6899BE"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="吐舌头不掉口水～"
+                android:textSize="15sp"
+                android:textColor="#B7E078"/>
+        </LinearLayout>
+        <View
+            android:layout_width="240dp"
+            android:layout_height="1dp"
+            android:background="@color/textColor"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/pet_name"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/pet_meta_info"
+        android:text="Lucky"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/white"
+        android:background="@drawable/green_button_with_white_stroke"/>
+
+</RelativeLayout>

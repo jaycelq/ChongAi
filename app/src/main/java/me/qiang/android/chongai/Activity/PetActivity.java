@@ -9,6 +9,8 @@ import me.qiang.android.chongai.R;
 
 public class PetActivity extends ActionBarActivity {
 
+    // UI widget
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
