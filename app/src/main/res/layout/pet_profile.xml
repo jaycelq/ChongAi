@@ -17,23 +17,23 @@
         android:paddingBottom="10dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/praise_user_photo"
+            android:id="@+id/pet_photo"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginLeft="20dp"
             android:src="@drawable/comment_user"/>
 
         <LinearLayout
-            android:id="@+id/user_desc"
+            android:id="@+id/pet_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/praise_user_photo"
+            android:layout_toRightOf="@id/pet_photo"
             android:paddingLeft="10dp"
             android:orientation="vertical"
             android:layout_alignParentBottom="true">
 
             <TextView
-                android:id="@+id/praise_user_name"
+                android:id="@+id/pet_meta_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
@@ -44,10 +44,10 @@
 
 
             <TextView
-                android:id="@+id/state_pet_type"
+                android:id="@+id/pet_meta_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/pet_tag_background"
                 android:padding="1dp"
                 android:text="金色寻回犬"
@@ -57,6 +57,7 @@
         </LinearLayout>
 
         <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/pet_owner_photo"
             android:layout_width="55dp"
             android:layout_height="55dp"
             android:layout_alignParentRight="true"
@@ -64,6 +65,7 @@
             android:src="@drawable/profile_photo_nana"/>
         
         <TextView
+            android:id="@+id/pet_device_status"
             android:layout_width="55dp"
             android:layout_height="55dp"
             android:layout_alignParentRight="true"
@@ -81,13 +83,13 @@
         android:orientation="vertical"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="-10dp"
+        android:layout_marginTop="-15dp"
         android:paddingTop="20dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingBottom="10dp"
         android:gravity="center_horizontal"
-        android:background="@color/light_green">
+        android:background="@drawable/pet_info_background">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -103,6 +105,7 @@
             android:textColor="#6899BE"/>
 
         <TextView
+            android:id="@+id/pet_hobby"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -129,6 +132,7 @@
                 android:textColor="#6899BE"/>
 
             <TextView
+                android:id="@+id/pet_age"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -155,6 +159,7 @@
                 android:textColor="#6899BE"/>
 
             <TextView
+                android:id="@+id/pet_skill"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"

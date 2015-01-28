@@ -18,10 +18,10 @@
         android:orientation="horizontal">
         
             <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/user_photo"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/profile_photo_nana"/>
+                android:layout_gravity="center_vertical"/>
         
             <LinearLayout
                 android:layout_width="180dp"
@@ -42,10 +42,9 @@
                         android:layout_weight="1">
 
                         <TextView
-                            android:id="@+id/my_state_num"
+                            android:id="@+id/state_num"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="80"
                             android:layout_gravity="center_horizontal"
                             android:textSize="18sp"
                             android:textColor="@color/numberColor"/>
@@ -72,10 +71,9 @@
                         android:layout_weight="1">
 
                         <TextView
-                            android:id="@+id/my_fans_num"
+                            android:id="@+id/fans_num"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="2230"
                             android:layout_gravity="center_horizontal"
                             android:textSize="18sp"
                             android:textColor="@color/numberColor"/>
@@ -104,7 +102,6 @@
                             android:id="@+id/follow_num"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="96"
                             android:layout_gravity="center_horizontal"
                             android:textSize="18sp"
                             android:textColor="@color/numberColor"/>
@@ -128,6 +125,7 @@
                     android:paddingRight="10dp"
                     android:orientation="horizontal">
                 <Button
+                    android:id="@+id/follow"
                     android:layout_width="70dp"
                     android:layout_height="25dp"
                     android:layout_marginTop="5dp"
@@ -142,6 +140,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"/>
                 <Button
+                    android:id="@+id/send_message"
                     android:layout_width="70dp"
                     android:layout_height="25dp"
                     android:layout_marginTop="5dp"

@@ -1,20 +1,45 @@
 package me.qiang.android.chongai.Activity;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import in.srain.cube.views.GridViewWithHeaderAndFooter;
 import me.qiang.android.chongai.R;
+import me.qiang.android.chongai.widget.PetProfileView;
 
 public class PetActivity extends ActionBarActivity {
 
     // UI widget
+    GridViewWithHeaderAndFooter petPhotoWithHeader;
+    PetProfileView headerView;
+    private View footerView;
+    private View loading;
+    private TextView noMoreStates;
+
+    List<String> imageUrls = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pet);
+
+        petPhotoWithHeader = (GridViewWithHeaderAndFooter) findViewById(R.id.pet_photo_with_header);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        headerView = (PetProfileView)layoutInflater.inflate(R.layout.pet_profile_item, null);
+        footerView = layoutInflater.inflate(R.layout.loading, null);
+        loading = footerView.findViewById(R.id.loading_layout);
+        noMoreStates = (TextView) footerView.findViewById(R.id.loading_nomore);
+        petPhotoWithHeader.addHeaderView(headerView);
+        petPhotoWithHeader.addFooterView(footerView);
+
     }
 
 

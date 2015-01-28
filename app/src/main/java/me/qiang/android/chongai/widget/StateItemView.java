@@ -93,7 +93,7 @@ public class StateItemView extends LinearLayout {
         stateOwnerPhoto.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityTransition.startUserActivity(context);
+                ActivityTransition.startUserActivity(context, stateItem.getStateOwnerId());
             }
         });
 

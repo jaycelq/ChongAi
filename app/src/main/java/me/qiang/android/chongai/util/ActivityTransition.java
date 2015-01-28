@@ -48,8 +48,9 @@ public class ActivityTransition {
         context.startActivity(intent);
     }
 
-    public static void startUserActivity(Context context) {
+    public static void startUserActivity(Context context, int userId) {
         Intent userIntent = new Intent(context, UserAcitivity.class);
+        userIntent.putExtra(Constants.User.USER_ID, userId);
         context.startActivity(userIntent);
     }
 

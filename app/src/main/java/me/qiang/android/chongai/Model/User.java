@@ -34,6 +34,15 @@ public class User {
     @SerializedName("if_follow")
     public boolean isFollowed;
 
+    @SerializedName("post_num")
+    public int post_num;
+
+    @SerializedName("fans_num")
+    public int fans_num;
+
+    @SerializedName("follow_num")
+    public int follow_num;
+
 
     public User(String userName, Gender userGender, String userLocation,
                 String userSignature, String userLocalPhoto) {

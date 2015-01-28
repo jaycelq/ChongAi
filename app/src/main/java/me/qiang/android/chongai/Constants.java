@@ -73,4 +73,8 @@ public final class Constants {
         public static final String STATE_ID = "state_index";
         public static final String LAST_PRAISE_USER = "last_praise_user";
     }
+
+    public static class User {
+        public static final String USER_ID = "user_id";
+    }
 }

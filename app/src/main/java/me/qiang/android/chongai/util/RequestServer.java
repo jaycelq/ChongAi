@@ -137,4 +137,12 @@ public class RequestServer {
         HttpClient.post("post/index", params, jsonHttpResponseHandler);
     }
 
+    public static void getUserInfo(int userId, JsonHttpResponseHandler jsonHttpResponseHandler) {
+        RequestParams params = new RequestParams();
+        params.setUseJsonStreamer(true);
+        params.put("user_id", userId);
+
+        HttpClient.post("/user", params, jsonHttpResponseHandler);
+    }
+
 }

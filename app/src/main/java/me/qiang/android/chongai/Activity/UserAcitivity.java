@@ -1,36 +1,25 @@
 package me.qiang.android.chongai.Activity;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
-
+import me.qiang.android.chongai.Fragment.UserFragment;
 import me.qiang.android.chongai.R;
 
-public class UserAcitivity extends ActionBarActivity {
-
-    private PullToRefreshListView userProfileList;
-    private View profileHeader;
-    private ProfileAdapter profileAdapter;
+public class UserAcitivity extends BaseToolbarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_acitivity);
-        profileAdapter = new ProfileAdapter();
 
-        userProfileList = (PullToRefreshListView) findViewById(R.id.list);
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, new UserFragment())
+                    .commit();
+        }
 
-        profileHeader = getLayoutInflater().inflate(R.layout.profile_header, null);
-
-        userProfileList.getRefreshableView().addHeaderView(profileHeader);
-        userProfileList.setAdapter(profileAdapter);
     }
 
 
@@ -56,32 +45,4 @@ public class UserAcitivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public class ProfileAdapter extends BaseAdapter {
-
-        private LayoutInflater inflater;
-
-        ProfileAdapter() {
-            inflater = getLayoutInflater();
-        }
-
-        @Override
-        public int getCount() {
-            return 1;
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            return inflater.inflate(R.layout.profile_data, parent, false);
-        }
-    }
 }

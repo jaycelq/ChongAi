@@ -8,133 +8,13 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/pet_container"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:paddingTop="15dp"
             android:paddingBottom="15dp"
             android:layout_gravity="left"
             android:orientation="horizontal">
-            
-            <LinearLayout
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/profile_photo_nana"/>
-                
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="45dp"
-                    android:orientation="vertical"
-                    android:layout_marginLeft="3dp"
-                    android:gravity="center_vertical|left">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Lucky"
-                        android:textSize="13sp"
-                        android:textColor="#BAE17D"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/pet_tag_background"
-                        android:layout_marginTop="5dp"
-                        android:text="金毛寻回犬"
-                        android:textSize="11sp"
-                        android:paddingLeft="3dp"
-                        android:paddingRight="3dp"
-                        android:gravity="center"
-                        android:textColor="@android:color/white"/>
-
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/profile_photo_nana"/>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="45dp"
-                    android:orientation="vertical"
-                    android:layout_marginLeft="3dp"
-                    android:gravity="center_vertical|left">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="毛毛"
-                        android:textSize="13sp"
-                        android:textColor="#BAE17D"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/pet_tag_background"
-                        android:layout_marginTop="5dp"
-                        android:text="萨摩耶犬"
-                        android:textSize="11sp"
-                        android:paddingLeft="3dp"
-                        android:paddingRight="3dp"
-                        android:gravity="center"
-                        android:textColor="@android:color/white"/>
-
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/profile_photo_nana"/>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="45dp"
-                    android:orientation="vertical"
-                    android:layout_marginLeft="3dp"
-                    android:gravity="center_vertical|left">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="菲比"
-                        android:textSize="13sp"
-                        android:textColor="#BAE17D"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/pet_tag_background"
-                        android:layout_marginTop="5dp"
-                        android:text="泰迪犬"
-                        android:textSize="11sp"
-                        android:paddingLeft="3dp"
-                        android:paddingRight="3dp"
-                        android:gravity="center"
-                        android:textColor="@android:color/white"/>
-
-                </LinearLayout>
-            </LinearLayout>
-
         </LinearLayout>
     </HorizontalScrollView>
 
@@ -175,6 +55,7 @@
                 android:textColor="#6899BE"/>
 
             <TextView
+                android:id="@+id/user_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -191,6 +72,7 @@
                 android:textColor="#6899BE"/>
 
             <TextView
+                android:id="@+id/user_gender"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -199,6 +81,7 @@
                 android:textColor="#B7E078"/>
 
             <ImageView
+                android:id="@+id/user_gender_icon"
                 android:layout_width="15dp"
                 android:layout_height="15dp"
                 android:layout_marginLeft="5dp"
@@ -234,6 +117,7 @@
             android:background="#E0EFC6">
 
             <TextView
+                android:id="@+id/user_signature"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
