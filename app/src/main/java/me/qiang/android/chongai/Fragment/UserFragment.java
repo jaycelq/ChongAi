@@ -1,9 +1,14 @@
 package me.qiang.android.chongai.Fragment;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -30,7 +35,9 @@ import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.GlobalApplication;
 import me.qiang.android.chongai.Model.Pet;
 import me.qiang.android.chongai.Model.User;
+import me.qiang.android.chongai.Model.UserSessionManager;
 import me.qiang.android.chongai.R;
+import me.qiang.android.chongai.util.ActivityTransition;
 import me.qiang.android.chongai.util.RequestServer;
 
 /**
@@ -39,6 +46,7 @@ import me.qiang.android.chongai.util.RequestServer;
 public class UserFragment extends BaseFragment {
     private Context context;
 
+    private UserSessionManager userSessionManager;
     private int currentUserId;
     private User user;
     private int userId;
@@ -72,9 +80,41 @@ public class UserFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        currentUserId = GlobalApplication.getUserSessionManager().getCurrentUser().getUserId();
+        userSessionManager = GlobalApplication.getUserSessionManager();
+        currentUserId = userSessionManager.getCurrentUser().getUserId();
         userId = getActivity().getIntent().getIntExtra(Constants.User.USER_ID, currentUserId);
         context = getActivity();
+        setHasOptionsMenu(userId == currentUserId);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_user, menu);
+        super.onCreateOptionsMenu(menu,inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add_pet:
+                ActivityTransition.startAddPetActivity(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.Pet.ADD_PET) {
+            if (resultCode == Activity.RESULT_OK) {
+                int petId = data.getExtras().getInt(Constants.Pet.PET_ADD_RESULT);
+                Pet pet = userSessionManager.getPet(petId);
+                if(pet != null) {
+                    addBriefPetItem(pet);
+                }
+            }
+        }
     }
 
     @Override
@@ -100,7 +140,6 @@ public class UserFragment extends BaseFragment {
         userProfileList.getRefreshableView().addHeaderView(profileHeader);
 
         userProfileList.setAdapter(profileAdapter);
-
 
         rootView.post(new Runnable() {
             @Override
@@ -144,18 +183,7 @@ public class UserFragment extends BaseFragment {
                     userSignatrure.setText(user.signature);
                     for(int i = 0; i < userPetList.size(); i++) {
                         Pet pet = userPetList.get(i);
-                        View petBriefView = getActivity().getLayoutInflater().inflate(R.layout.pet_brief_item, null);
-                        CircleImageView petPhoto = (CircleImageView) petBriefView.findViewById(R.id.pet_photo);
-                        Picasso.with(context)
-                                .load(pet.getPetPhoto())
-                                .fit()
-                                .centerCrop()
-                                .into(petPhoto);
-                        TextView petName = (TextView) petBriefView.findViewById(R.id.pet_name);
-                        petName.setText(pet.getPetName());
-                        TextView petType = (TextView) petBriefView.findViewById(R.id.pet_type);
-                        petType.setText(pet.getPetType());
-                        userPetContainer.addView(petBriefView);
+                        addBriefPetItem(pet);
                     }
 
                 } catch (JSONException ex) {
@@ -168,6 +196,28 @@ public class UserFragment extends BaseFragment {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
             }
         };
+    }
+
+    private void addBriefPetItem(Pet pet) {
+        View petBriefView = getActivity().getLayoutInflater().inflate(R.layout.pet_brief_item, null);
+        CircleImageView petPhoto = (CircleImageView) petBriefView.findViewById(R.id.pet_photo);
+        TextView petName = (TextView) petBriefView.findViewById(R.id.pet_name);
+        petName.setText(pet.getPetName());
+        TextView petType = (TextView) petBriefView.findViewById(R.id.pet_type);
+        petType.setText(pet.getPetType());
+        userPetContainer.addView(petBriefView);
+        Picasso.with(context)
+                .load(pet.getPetPhoto())
+                .fit()
+                .centerCrop()
+                .into(petPhoto);
+        petPhoto.setTag(pet.getPetId());
+        petPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     public class ProfileAdapter extends BaseAdapter {

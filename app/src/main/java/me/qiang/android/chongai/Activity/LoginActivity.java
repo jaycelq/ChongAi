@@ -14,14 +14,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+
 import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.GlobalApplication;
+import me.qiang.android.chongai.Model.Pet;
 import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.util.ActivityTransition;
 import me.qiang.android.chongai.util.MD5;
@@ -129,10 +135,13 @@ public class LoginActivity extends BaseLoginRegisterActivity implements TextWatc
                 hideProgressDialog();
                 try {
                     if(response.getInt("status") == 0) {
-                        JSONObject userJsonObject = response.getJSONObject("body");
+                        JSONObject userJsonObject = response.getJSONObject("body").getJSONObject("user");
                         User currentUser = gson.fromJson(userJsonObject.toString(), User.class);
+                        JSONArray petJsonArray = response.getJSONObject("body").getJSONArray("pets");
+                        Type PetListType = new TypeToken<ArrayList<Pet>>(){}.getType();
+                        ArrayList<Pet> petList = gson.fromJson(petJsonArray.toString(), PetListType);
                         userSessionManager.createUserLoginSession(phoneNumber, md5Password,
-                                true, currentUser);
+                                true, currentUser, petList);
                         ActivityTransition.startMainActivity(LoginActivity.this);
                         LoginActivity.this.finish();
                     }
@@ -140,7 +149,7 @@ public class LoginActivity extends BaseLoginRegisterActivity implements TextWatc
                         JSONObject userJsonObject = response.getJSONObject("error");
                         User currentUser = gson.fromJson(userJsonObject.toString(), User.class);
                         userSessionManager.createUserLoginSession(phoneNumber, md5Password,
-                                false, currentUser);
+                                false, currentUser, null);
                         Log.i("JSON", "" + userSessionManager.getCurrentUser().getUserId());
                         ActivityTransition.startAddProfileActivity(LoginActivity.this);
                         LoginActivity.this.finish();

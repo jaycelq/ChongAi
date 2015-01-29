@@ -16,47 +16,18 @@
 package me.qiang.android.chongai.Fragment;
 
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
 import java.lang.reflect.Field;
 
-import me.qiang.android.chongai.R;
-
 
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public abstract class BaseFragment extends Fragment {
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		setHasOptionsMenu(true);
-	}
-
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.main_menu, menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.item_clear_memory_cache:
-
-				return true;
-			case R.id.item_clear_disc_cache:
-				return true;
-			default:
-				return false;
-		}
-	}
 
     // Arbitrary value; set it to some reasonable default
     private static final int DEFAULT_CHILD_ANIMATION_DURATION = 250;

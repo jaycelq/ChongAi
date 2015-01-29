@@ -5,26 +5,6 @@
     android:orientation="vertical"
     tools:context="me.qiang.android.chongai.Activity.UserAcitivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar_actionbar"
-        style="@style/ToolBarStyle"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:elevation="0dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:minHeight="50dp"
-        >
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="NANA"
-            android:textSize="20sp"
-            android:textColor="@android:color/white"
-            android:layout_gravity="center"
-            android:id="@+id/toolbar_title" />
-    </android.support.v7.widget.Toolbar>
-
     <com.handmark.pulltorefresh.library.PullToRefreshListView
         xmlns:ptr="http://schemas.android.com/apk/res-auto"
         android:id="@+id/list"

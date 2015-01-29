@@ -5,6 +5,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 import me.qiang.android.chongai.Activity.LoginActivity;
 
@@ -25,7 +29,12 @@ public class UserSessionManager {
     // Shared pref mode
     int PRIVATE_MODE = 0;
 
+    Gson gson = new Gson();
+
     private User currentUser = null;
+
+    // Pet List Type
+    Type PetListType = new TypeToken<ArrayList<Pet>>(){}.getType();
 
     // Sharedpref file name
     private static final String PREFER_NAME = "app_user_session";
@@ -45,6 +54,9 @@ public class UserSessionManager {
     // User id (make variable public to access from outside)
     public static final String KEY_USER_PROFILE = "user_details";
 
+    // Pet Info (make variable public to access from outside)
+    public static final String KEY_PET_INFO = "pet_details";
+
     // Constructor
     public UserSessionManager(Context context){
         this._context = context;
@@ -54,9 +66,9 @@ public class UserSessionManager {
 
     //Create login session
     public void createUserLoginSession(String phoneNumber, String md5Password,
-                                       boolean hasProfile, User user){
-        Gson gson = new Gson();
+                                       boolean hasProfile, User user, ArrayList<Pet> petList){
         String currentUserDetails = gson.toJson(user, User.class);
+        String petListDetails = gson.toJson(petList, PetListType);
 
         // Storing login value as TRUE
         editor.putBoolean(IS_USER_LOGIN, true);
@@ -73,10 +85,38 @@ public class UserSessionManager {
         // Storing profile in pref
         editor.putString(KEY_USER_PROFILE, currentUserDetails);
 
+        editor.putString(KEY_PET_INFO, petListDetails);
+
         currentUser = user;
 
         // commit changes
         editor.commit();
+    }
+
+    public void updatePetInfo(ArrayList<Pet> petList) {
+        String petListDetails = gson.toJson(petList, PetListType);
+
+        editor.putString(KEY_PET_INFO, petListDetails);
+        editor.commit();
+    }
+
+    public void addPet(Pet pet) {
+        String petListDetails = pref.getString(KEY_PET_INFO, "");
+        ArrayList<Pet> petList = gson.fromJson(petListDetails, PetListType);
+        petList.add(pet);
+        editor.putString(KEY_PET_INFO, gson.toJson(petList, PetListType));
+        editor.commit();
+    }
+
+    public Pet getPet(int petId) {
+        String petListDetails = pref.getString(KEY_PET_INFO, "");
+        ArrayList<Pet> petList = gson.fromJson(petListDetails, PetListType);
+        for(int i = 0; i < petList.size(); i++) {
+            Pet pet = petList.get(i);
+            if(pet.getPetId() == petId)
+                return pet;
+        }
+        return null;
     }
 
     public void updateUserProfile(boolean hasProfile, User user) {
@@ -104,6 +144,12 @@ public class UserSessionManager {
         }
 
         return currentUser;
+    }
+
+    public ArrayList<Pet> getPetList() {
+        String petListDetails = pref.getString(KEY_PET_INFO, "");
+        ArrayList<Pet> petList = gson.fromJson(petListDetails, PetListType);
+        return petList;
     }
 
     /**

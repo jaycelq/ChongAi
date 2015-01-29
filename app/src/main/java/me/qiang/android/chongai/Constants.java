@@ -77,4 +77,28 @@ public final class Constants {
     public static class User {
         public static final String USER_ID = "user_id";
     }
+
+    public static class Pet {
+        public static final String[] PET_AGE={
+                "1岁以下",
+                "1岁",
+                "2岁",
+                "3岁",
+                "4岁",
+                "5岁",
+                "6岁",
+                "7岁",
+                "8岁",
+                "9岁",
+                "10岁",
+                "11岁",
+                "12岁",
+                "13岁",
+                "14岁",
+                "15岁",
+                "15岁以上"
+        };
+        public static final String PET_ADD_RESULT = "pet_add_result";
+        public static final int ADD_PET = 2001;
+    }
 }

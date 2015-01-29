@@ -25,7 +25,7 @@ public class Pet {
     @SerializedName("pet_name")
     public String petName;
 
-    @SerializedName("pet_photo")
+    @SerializedName("pet_avatar")
     public String petPhoto;
 
     @SerializedName("sex")
@@ -35,7 +35,7 @@ public class Pet {
     public String petHobby;
 
     @SerializedName("pet_age")
-    public int petAge;
+    public String petAge;
 
     @SerializedName("pet_skill")
     public String petSkill;
@@ -52,9 +52,21 @@ public class Pet {
         petGender = Gender.FEMALE;
     }
 
+    public Pet(String petName,
+               Gender petGender, String petType, String petHobby,
+               String petAge, String petSkill, String petImei) {
+        this.petName = petName;
+        this.petGender = petGender;
+        this.petType = petType;
+        this.petHobby = petHobby;
+        this.petAge = petAge;
+        this.petSkill = petSkill;
+        this.petImei = petImei;
+    }
+
     public Pet(int petId, int petUserId, User petUser, String petName, String petPhoto,
                Gender petGender, String petType, String petHobby,
-               int petAge, String petSkill) {
+               String petAge, String petSkill) {
         this.petId = petId;
         this.petUserId = petUserId;
         this.petUser = petUser;
@@ -93,7 +105,7 @@ public class Pet {
         return petHobby;
     }
 
-    public int getPetAge() {
+    public String getPetAge() {
         return petAge;
     }
 

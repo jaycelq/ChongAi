@@ -12,6 +12,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.qiang.android.chongai.Activity.AddPetActivity;
 import me.qiang.android.chongai.Activity.AddProfileActivity;
 import me.qiang.android.chongai.Activity.CustomAlbum;
 import me.qiang.android.chongai.Activity.ImagePager;
@@ -63,6 +64,11 @@ public class ActivityTransition {
         bundle.putStringArrayList(Constants.Extra.IMAGE_TO_SHOW, (ArrayList)imageUrls);
         intent.putExtras(bundle);
         context.startActivity(intent);
+    }
+
+    public static void startAddPetActivity(Fragment fr) {
+        Intent addPetIntent = new Intent(fr.getActivity(), AddPetActivity.class);
+        fr.startActivityForResult(addPetIntent, Constants.Pet.ADD_PET);
     }
 
 

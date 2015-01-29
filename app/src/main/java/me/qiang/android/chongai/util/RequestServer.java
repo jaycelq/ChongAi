@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 
+import me.qiang.android.chongai.Model.Pet;
 import me.qiang.android.chongai.Model.User;
 
 /**
@@ -91,6 +92,17 @@ public class RequestServer {
         params.put("avatar_pic", avatarPic, avatarUrl);
         params.put("user", userInfo);
         HttpClient.post("user/newProfile", params, jsonHttpResponseHandler);
+    }
+
+    public static void addPet(Pet pet,InputStream avatarPic, String avatarUrl,
+                              JsonHttpResponseHandler jsonHttpResponseHandler) {
+        RequestParams params = new RequestParams();
+
+        final Gson gson = new Gson();
+        String petInfo = gson.toJson(pet, Pet.class);
+        params.put("pet_avatar", avatarPic, avatarUrl);
+        params.put("pet_info", petInfo);
+        HttpClient.post("pet/add", params, jsonHttpResponseHandler);
     }
 
 

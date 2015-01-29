@@ -113,6 +113,10 @@
             android:name=".Activity.PetActivity"
             android:label="@string/title_activity_pet" >
         </activity>
+        <activity
+            android:name=".Activity.AddPetActivity"
+            android:label="@string/title_activity_add_pet" >
+        </activity>
     </application>
 
 </manifest>

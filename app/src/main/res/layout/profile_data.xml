@@ -11,6 +11,8 @@
             android:id="@+id/pet_container"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:paddingTop="15dp"
             android:paddingBottom="15dp"
             android:layout_gravity="left"
@@ -24,6 +26,7 @@
         android:orientation="vertical"
         android:paddingLeft="10dp"
         android:paddingRight="10dp">
+
         <View
             android:layout_height="2dp"
             android:layout_width="fill_parent"
@@ -45,47 +48,54 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:background="#E0EFC6">
-
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:text="位置"
-                android:textSize="15sp"
-                android:textColor="#6899BE"/>
+                android:layout_weight="1">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:text="位置"
+                    android:textSize="15sp"
+                    android:textColor="#6899BE"/>
 
-            <TextView
-                android:id="@+id/user_location"
+                <TextView
+                    android:id="@+id/user_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="上海市 长宁区"
+                    android:textSize="15sp"
+                    android:textColor="#B7E078"/>
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text="上海市 长宁区"
-                android:textSize="15sp"
-                android:textColor="#B7E078"/>
+                android:layout_weight="1">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="性别"
+                    android:textSize="15sp"
+                    android:textColor="#6899BE"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:text="性别"
-                android:textSize="15sp"
-                android:textColor="#6899BE"/>
+                <TextView
+                    android:id="@+id/user_gender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="女"
+                    android:textSize="15sp"
+                    android:textColor="#B7E078"/>
 
-            <TextView
-                android:id="@+id/user_gender"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text="女"
-                android:textSize="15sp"
-                android:textColor="#B7E078"/>
-
-            <ImageView
-                android:id="@+id/user_gender_icon"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_marginLeft="5dp"
-                android:src="@drawable/female"/>
+                <ImageView
+                    android:id="@+id/user_gender_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginLeft="5dp"
+                    android:src="@drawable/female"/>
+            </LinearLayout>
 
         </LinearLayout>
 
