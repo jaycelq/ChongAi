@@ -63,6 +63,8 @@ public final class Constants {
                 "me.qiang.android.fragment.CreateNewStateFragment";
         public static final String BOTTOM_POPUP_FRAGMENT =
                 "me.qiang.android.fragment.BottomPopUpFragment";
+        public static final String BDMAP_FRAGMENT =
+                "me.qiang.android.baidumap.BDMapFragment";
     }
 
     public static class StateManager {

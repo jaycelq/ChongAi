@@ -28,7 +28,7 @@
         	        android:layout_marginLeft="3dp"
         	        android:textColor="#88ade5"
         	        android:text="宠物" />
-        	    <com.bdmapdemo.MyToggleButton android:id="@+id/togglebtn_gps"
+        	    <me.qiang.android.chongai.baidumap.MyToggleButton android:id="@+id/togglebtn_gps"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:layout_marginLeft="3dp"
@@ -54,7 +54,7 @@
         	        android:layout_gravity="center_vertical"
         	        android:textColor="#ef7f7f"
         	        android:text="栅栏" />
-        	    <com.bdmapdemo.MyToggleButton android:id="@+id/togglebtn_zhalan"
+        	    <me.qiang.android.chongai.baidumap.MyToggleButton android:id="@+id/togglebtn_zhalan"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:layout_marginLeft="3dp"

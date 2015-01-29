@@ -75,20 +75,41 @@ public class MainActivity extends BaseToolbarActivity implements
     @Override
     public void onFragmentInteraction(int id) {
         // TODO: deal with fragment transaction on bottom icon click
-        FragmentTransaction ft =  getSupportFragmentManager().beginTransaction();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        switch (id) {
+            case R.id.add_state:
+                ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out);
+                CreateNewStateFragment createNewStateFragment = new CreateNewStateFragment();
+                ft.add(R.id.top_screen_container, createNewStateFragment,
+                        Constants.FragmentTag.CREATE_NEW_STATE_FRAGMENT);
 
-        ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out);
-        CreateNewStateFragment createNewStateFragment = new CreateNewStateFragment();
-        ft.add(R.id.top_screen_container, createNewStateFragment,
-                Constants.FragmentTag.CREATE_NEW_STATE_FRAGMENT);
+                ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out);
+                BottomPopupFragment bottomPopupFragment = new BottomPopupFragment();
+                ft.add(R.id.bottom_container, bottomPopupFragment,
+                        Constants.FragmentTag.BOTTOM_POPUP_FRAGMENT);
 
-        ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out);
-        BottomPopupFragment bottomPopupFragment = new BottomPopupFragment();
-        ft.add(R.id.bottom_container, bottomPopupFragment,
-                Constants.FragmentTag.BOTTOM_POPUP_FRAGMENT);
-
-        ft.addToBackStack(null);
-        ft.commit();
+                ft.addToBackStack(null);
+                ft.commit();
+                break;
+            case R.id.map:
+                BDMapFragment bdMapFragment = (BDMapFragment) getSupportFragmentManager().findFragmentByTag(
+                        Constants.FragmentTag.BDMAP_FRAGMENT);
+                if(bdMapFragment == null)
+                    bdMapFragment = new BDMapFragment();
+                ft.replace(R.id.main_screen_container, bdMapFragment,
+                        Constants.FragmentTag.BDMAP_FRAGMENT);
+                ft.commit();
+                break;
+            case R.id.album:
+                StateFragment stateFragment = (StateFragment) getSupportFragmentManager().findFragmentByTag(
+                        Constants.FragmentTag.STATE_FRAGMENT);
+                if(stateFragment == null)
+                    stateFragment = new StateFragment();
+                ft.replace(R.id.main_screen_container, stateFragment,
+                        Constants.FragmentTag.BDMAP_FRAGMENT);
+                ft.commit();
+                break;
+        }
     }
 
     @Override

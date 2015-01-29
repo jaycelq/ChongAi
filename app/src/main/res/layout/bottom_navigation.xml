@@ -24,7 +24,7 @@
         android:textColor="#F0F6D6"/>
 
     <RadioButton
-        android:id="@+id/rbAddress"
+        android:id="@+id/map"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -59,7 +59,7 @@
         android:src="@drawable/plus"/>
 
     <RadioButton
-        android:id="@+id/rbFind"
+        android:id="@+id/message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -73,7 +73,7 @@
         android:textColor="#F0F6D6" />
 
     <RadioButton
-        android:id="@+id/rbMe"
+        android:id="@+id/about_me"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

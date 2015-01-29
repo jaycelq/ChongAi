@@ -2,12 +2,13 @@ package me.qiang.android.chongai.Fragment;
 
 
 import android.app.Activity;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 
 import me.qiang.android.chongai.R;
 
@@ -17,7 +18,8 @@ import me.qiang.android.chongai.R;
 public class BottomNavigationFragment extends BaseFragment {
 
     private OnFragmentInteractionListener mListener;
-    ImageView addState;
+    private RadioGroup tabRadioGroup;
+    private ImageView addState;
 
     public BottomNavigationFragment() {
         // Required empty public constructor
@@ -36,6 +38,15 @@ public class BottomNavigationFragment extends BaseFragment {
                 onButtonPressed(v.getId());
             }
         });
+
+        tabRadioGroup = (RadioGroup) rootView.findViewById(R.id.tab_menu);
+        tabRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                        mListener.onFragmentInteraction(checkedId);
+            }
+        });
+
         return rootView;
     }
 
@@ -55,6 +66,7 @@ public class BottomNavigationFragment extends BaseFragment {
             mListener.onFragmentInteraction(id);
         }
     }
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(int id);
