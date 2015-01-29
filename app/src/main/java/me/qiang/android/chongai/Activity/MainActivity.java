@@ -106,7 +106,7 @@ public class MainActivity extends BaseToolbarActivity implements
                 if(stateFragment == null)
                     stateFragment = new StateFragment();
                 ft.replace(R.id.main_screen_container, stateFragment,
-                        Constants.FragmentTag.BDMAP_FRAGMENT);
+                        Constants.FragmentTag.STATE_FRAGMENT);
                 ft.commit();
                 break;
         }
