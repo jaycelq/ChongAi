@@ -26,4 +26,8 @@
         <item name="android:windowEnterAnimation">@anim/dir_list_slide_in</item>
         <item name="android:windowExitAnimation">@anim/dir_list_slide_out</item>
     </style>
+
+    <style name="my_edittext_style" parent="@android:style/Widget.EditText">
+        <item name="android:background">@drawable/selector_edittext_bg</item>
+    </style>
 </resources>

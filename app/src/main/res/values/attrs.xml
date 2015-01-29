@@ -2,4 +2,11 @@
     <declare-styleable name="ScrimInsetsView">
         <attr name="insetForeground" format="reference|color" />
     </declare-styleable>
+
+    <declare-styleable name="MyToggleButton">
+        <attr name="my_on_background" format="reference" />
+        <attr name="my_off_background" format="reference" />
+        <attr name="my_slide_btn" format="reference" />
+        <attr name="my_toggle_state" format="boolean" />
+    </declare-styleable>
 </resources>

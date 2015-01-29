@@ -13,6 +13,7 @@ import me.qiang.android.chongai.Fragment.CreateNewStateFragment;
 import me.qiang.android.chongai.Fragment.DrawerFragment;
 import me.qiang.android.chongai.Fragment.StateFragment;
 import me.qiang.android.chongai.R;
+import me.qiang.android.chongai.baidumap.BDMapFragment;
 
 public class MainActivity extends BaseToolbarActivity implements
         DrawerFragment.OnFragmentInteractionListener,
