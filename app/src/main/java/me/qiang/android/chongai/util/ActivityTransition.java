@@ -17,6 +17,7 @@ import me.qiang.android.chongai.Activity.AddProfileActivity;
 import me.qiang.android.chongai.Activity.CustomAlbum;
 import me.qiang.android.chongai.Activity.ImagePager;
 import me.qiang.android.chongai.Activity.MainActivity;
+import me.qiang.android.chongai.Activity.PetActivity;
 import me.qiang.android.chongai.Activity.RegisterActivity;
 import me.qiang.android.chongai.Activity.UserAcitivity;
 import me.qiang.android.chongai.Constants;
@@ -92,6 +93,12 @@ public class ActivityTransition {
                 fr.startActivityForResult(takePictureIntent, Constants.Image.TAKE_PHOTO);
             }
         }
+    }
+
+    public static void startPetActivity(Fragment fr, int petId) {
+        Intent petIntent = new Intent(fr.getActivity(), PetActivity.class);
+        petIntent.putExtra(Constants.Pet.PET_ID, petId);
+        fr.startActivity(petIntent);
     }
 
 }

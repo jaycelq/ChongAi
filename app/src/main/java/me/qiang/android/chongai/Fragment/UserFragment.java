@@ -215,7 +215,7 @@ public class UserFragment extends BaseFragment {
         petPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                ActivityTransition.startPetActivity(UserFragment.this, (int) v.getTag());
             }
         });
     }
