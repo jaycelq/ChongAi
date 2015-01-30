@@ -65,6 +65,8 @@ public final class Constants {
                 "me.qiang.android.fragment.BottomPopUpFragment";
         public static final String BDMAP_FRAGMENT =
                 "me.qiang.android.baidumap.BDMapFragment";
+        public static final String USER_FRAGMENT =
+                "me.qiang.android.fragment.UserFragment";
     }
 
     public static class StateManager {
@@ -103,5 +105,6 @@ public final class Constants {
         public static final String PET_ADD_RESULT = "pet_add_result";
         public static final String PET_ID = "pet_id";
         public static final int ADD_PET = 2001;
+        public static final int PICK_PET = 2002;
     }
 }

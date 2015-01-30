@@ -46,11 +46,11 @@ public class PetActivity extends ActionBarActivity {
         petPhotoWithHeader = (GridViewWithHeaderAndFooter) findViewById(R.id.pet_photo_with_header);
         LayoutInflater layoutInflater = LayoutInflater.from(this);
         headerView = (PetProfileView)layoutInflater.inflate(R.layout.pet_profile_item, null);
-        footerView = layoutInflater.inflate(R.layout.loading, null);
-        loading = footerView.findViewById(R.id.loading_layout);
-        noMoreStates = (TextView) footerView.findViewById(R.id.loading_nomore);
+//        footerView = layoutInflater.inflate(R.layout.loading, null);
+//        loading = footerView.findViewById(R.id.loading_layout);
+//        noMoreStates = (TextView) footerView.findViewById(R.id.loading_nomore);
         petPhotoWithHeader.addHeaderView(headerView);
-        petPhotoWithHeader.addFooterView(footerView);
+//        petPhotoWithHeader.addFooterView(footerView);
 
         mAdapter = new ImageAdapter();
         petPhotoWithHeader.setAdapter(mAdapter);

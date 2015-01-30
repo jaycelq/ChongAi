@@ -8,13 +8,13 @@
     <RelativeLayout
         android:id="@+id/pet_meta_info"
         android:layout_width="match_parent"
-        android:layout_height="72dp"
+        android:layout_height="84dp"
         android:orientation="horizontal"
         android:background="@color/light_green"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp">
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/pet_photo"
@@ -83,11 +83,11 @@
         android:orientation="vertical"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="-15dp"
+        android:layout_marginTop="-16dp"
         android:paddingTop="20dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingBottom="10dp"
+        android:paddingBottom="16dp"
         android:gravity="center_horizontal"
         android:background="@drawable/pet_info_background">
 

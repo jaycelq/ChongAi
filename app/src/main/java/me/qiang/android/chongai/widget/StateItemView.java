@@ -126,6 +126,10 @@ public class StateItemView extends LinearLayout {
             ((GradientDrawable)statePetName.getBackground()).setColor(0xFFFF939A);
             ((GradientDrawable)statePetType.getBackground()).setColor(0xFFFF939A);
         }
+        else {
+            ((GradientDrawable)statePetName.getBackground()).setColor(0xFFA8C9F5);
+            ((GradientDrawable)statePetType.getBackground()).setColor(0xFFA8C9F5);
+        }
 
         Picasso.with(context)
                 .load(stateItem.getStateImage())

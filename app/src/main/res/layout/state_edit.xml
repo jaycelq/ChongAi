@@ -14,14 +14,22 @@
         android:background="?attr/colorPrimary"
         android:minHeight="50dp"
         >
+
+        <ImageView
+            android:id="@+id/toolbar_back_button"
+            android:layout_width="@dimen/toolbar_back_button_width"
+            android:layout_height="@dimen/toolbar_back_button_height"
+            android:scaleType="fitXY"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/back_button"/>
+
         <TextView
+            android:id="@+id/toolbar_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="NANA"
-            android:textSize="20sp"
-            android:textColor="@android:color/white"
-            android:layout_gravity="center"
-            android:id="@+id/toolbar_title" />
+            android:textSize="@dimen/toolbar_title_size"
+            android:textColor="@color/toolbar_title_color"
+            android:layout_gravity="center" />
 
         <Button
             android:id="@+id/send_state"
@@ -52,6 +60,7 @@
                 android:gravity="start|top"
                 android:hint="@string/state_edit_hint"
                 android:textSize="14sp"
+                android:textColor="#6D6D6D"
                 android:background="@null"
                 android:padding="10dp"/>
             <LinearLayout
@@ -89,26 +98,66 @@
                         android:layout_weight="1"
                         android:visibility="gone"/>
 
-                    <LinearLayout
-                        android:id="@+id/change_pet"
+                    <RelativeLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginRight="20dp"
-                        android:orientation="horizontal">
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:src="@drawable/pet_in_edit"/>
-
-                        <TextView
+                        android:layout_height="match_parent">
+                        <LinearLayout
+                            android:id="@+id/change_pet"
                             android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentRight="true"
+                            android:orientation="horizontal">
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:src="@drawable/pet_in_edit"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dp"
+                                android:layout_gravity="center_vertical"
+                                android:text="更改宠物信息"
+                                android:textColor="#FF6652"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/pet_tag"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="5dp"
-                            android:layout_gravity="center_vertical"
-                            android:text="更改宠物信息"
-                            android:textColor="#FF6652"/>
-                    </LinearLayout>
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/state_pet_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="3dp"
+                                android:paddingRight="3dp"
+                                android:paddingTop="2dp"
+                                android:paddingBottom="2dp"
+                                android:background="@drawable/pet_tag_background"
+                                android:text="Lucky"
+                                android:textSize="11sp"
+                                android:gravity="center"
+                                android:textColor="@android:color/white"/>
+
+                            <TextView
+                                android:id="@+id/state_pet_type"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="3dp"
+                                android:paddingRight="3dp"
+                                android:paddingTop="2dp"
+                                android:paddingBottom="2dp"
+                                android:layout_marginLeft="10dp"
+                                android:background="@drawable/pet_tag_background"
+                                android:text="金色寻回犬"
+                                android:textSize="11sp"
+                                android:gravity="center"
+                                android:textColor="@android:color/white"/>
+                        </LinearLayout>
+                    </RelativeLayout>
 
                 </LinearLayout>
 
@@ -132,17 +181,24 @@
         android:gravity="center_vertical"
         android:background="#E0E0E0">
 
-        <ImageView
+        <LinearLayout
+            android:id="@+id/change_photo"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:src="@drawable/ic_camera_alt_grey600_24dp"/>
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:src="@drawable/ic_camera_alt_grey600_24dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="更换图片"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="更换图片"/>
+        </LinearLayout>
 
         <View
             android:layout_width="wrap_content"

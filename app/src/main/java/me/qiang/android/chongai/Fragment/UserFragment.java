@@ -199,7 +199,7 @@ public class UserFragment extends BaseFragment {
     }
 
     private void addBriefPetItem(Pet pet) {
-        View petBriefView = getActivity().getLayoutInflater().inflate(R.layout.pet_brief_item, null);
+        View petBriefView = getActivity().getLayoutInflater().inflate(R.layout.pet_brief_item, userPetContainer, false);
         CircleImageView petPhoto = (CircleImageView) petBriefView.findViewById(R.id.pet_photo);
         TextView petName = (TextView) petBriefView.findViewById(R.id.pet_name);
         petName.setText(pet.getPetName());

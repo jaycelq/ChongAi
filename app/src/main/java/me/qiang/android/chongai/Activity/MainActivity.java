@@ -12,6 +12,7 @@ import me.qiang.android.chongai.Fragment.BottomPopupFragment;
 import me.qiang.android.chongai.Fragment.CreateNewStateFragment;
 import me.qiang.android.chongai.Fragment.DrawerFragment;
 import me.qiang.android.chongai.Fragment.StateFragment;
+import me.qiang.android.chongai.Fragment.UserFragment;
 import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.baidumap.BDMapFragment;
 
@@ -92,6 +93,7 @@ public class MainActivity extends BaseToolbarActivity implements
                 ft.commit();
                 break;
             case R.id.map:
+                ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
                 BDMapFragment bdMapFragment = (BDMapFragment) getSupportFragmentManager().findFragmentByTag(
                         Constants.FragmentTag.BDMAP_FRAGMENT);
                 if(bdMapFragment == null)
@@ -101,12 +103,23 @@ public class MainActivity extends BaseToolbarActivity implements
                 ft.commit();
                 break;
             case R.id.album:
+                ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
                 StateFragment stateFragment = (StateFragment) getSupportFragmentManager().findFragmentByTag(
                         Constants.FragmentTag.STATE_FRAGMENT);
                 if(stateFragment == null)
                     stateFragment = new StateFragment();
                 ft.replace(R.id.main_screen_container, stateFragment,
                         Constants.FragmentTag.STATE_FRAGMENT);
+                ft.commit();
+                break;
+            case R.id.about_me:
+                ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
+                UserFragment userFragment = (UserFragment) getSupportFragmentManager().findFragmentByTag(
+                        Constants.FragmentTag.USER_FRAGMENT);
+                if(userFragment == null)
+                    userFragment = new UserFragment();
+                ft.replace(R.id.main_screen_container, userFragment,
+                        Constants.FragmentTag.USER_FRAGMENT);
                 ft.commit();
                 break;
         }
