@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -189,7 +190,7 @@ public class StateEdit extends BaseToolbarActivity implements View.OnClickListen
             }
         }
         else if(requestCode ==Constants.Image.PICK_IMAGE) {
-        if(resultCode == RESULT_OK) {
+            if(resultCode == RESULT_OK) {
                 photoUrl = data.getExtras().getString(Constants.Image.IMAGE_RESULT);
                 Log.i("PHOTO_URL", photoUrl);
                 Picasso.with(context)
@@ -199,13 +200,21 @@ public class StateEdit extends BaseToolbarActivity implements View.OnClickListen
                         .into(imageView);
             }
         }
+        else if(requestCode == Constants.Pet.ADD_PET) {
+            if(resultCode == Activity.RESULT_OK) {
+                petList = GlobalApplication.getUserSessionManager().getPetList();
+                petListAdapter.notifyDataSetChanged();
+            }
+        }
     }
 
     private void showPetListDialog(){
-        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(StateEdit.this);
+        final AlertDialog.Builder alertDialog = new AlertDialog
+                .Builder(new ContextThemeWrapper(this, R.style.AlertDialogCustom));
         LayoutInflater inflater = getLayoutInflater();
         View convertView = (View) inflater.inflate(R.layout.basic_listview, null);
         alertDialog.setView(convertView);
+        alertDialog.setTitle("选择宠物");
         final AlertDialog petListAlertDialog = alertDialog.create();
         ListView lv = (ListView) convertView.findViewById(R.id.basic_list);
         lv.setAdapter(petListAdapter);
@@ -278,6 +287,19 @@ public class StateEdit extends BaseToolbarActivity implements View.OnClickListen
         }
 
         @Override
+        public int getViewTypeCount() {
+            return 2;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if(position == petList.size())
+                return 1;
+            else
+                return 0;
+        }
+
+        @Override
         public Object getItem(int position) {
             return null;
         }
@@ -291,7 +313,10 @@ public class StateEdit extends BaseToolbarActivity implements View.OnClickListen
         public View getView(int position, View convertView, ViewGroup parent) {
             final ViewHolder holder;
             View view = convertView;
+            int type = getItemViewType(position);
+            Log.i("GetView", position + " "+ petList.size());
             if (view == null) {
+                Log.i("GetView", position + " " + petSelectedPosition);
                 view = inflater.inflate(R.layout.pet_choose_item, parent, false);
                 holder = new ViewHolder();
                 assert view != null;
@@ -302,7 +327,8 @@ public class StateEdit extends BaseToolbarActivity implements View.OnClickListen
             } else {
                 holder = (ViewHolder) view.getTag();
             }
-            if(position < petList.size()) {
+
+            if(type == 0) {
                 Pet pet = petList.get(position);
                 Picasso.with(context)
                         .load(pet.getPetPhoto())
@@ -318,7 +344,7 @@ public class StateEdit extends BaseToolbarActivity implements View.OnClickListen
                     holder.petSelected.setImageResource(android.R.color.transparent);
             }
             else {
-                holder.petPhoto.setImageResource(R.drawable.add);
+                holder.petPhoto.setImageDrawable(getResources().getDrawable(R.drawable.add));
                 holder.petName.setText("添加新宠物");
                 holder.petSelected.setImageResource(android.R.color.transparent);
             }
