@@ -182,6 +182,14 @@ public class MyToggleButton extends View implements View.OnClickListener{
 		}
 	}
 
+    public void turnoff(){
+        toggleState = false;
+        //刷新当前开关状态
+        refreshToggleBtnState();
+        //刷新当前开关视图
+        refreshToggleBtnView();
+    }
+
 	/**根据当前开关状态刷新ToggleBtn位置值
 	 */
 	private void refreshToggleBtnState() {

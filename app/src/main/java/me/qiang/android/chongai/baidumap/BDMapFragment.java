@@ -324,6 +324,10 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
         builder.setNegativeButton("知道了", new DialogInterface.OnClickListener() {  
             public void onClick(DialogInterface dialog, int whichButton) {  
 //            	new AlertDialog.Builder(getActivity()).setMessage("知道了").show();
+                toggleBtnZhalan.turnoff();
+                mMapController.clear();
+                drawCircleOnReceiveLocation(radius);
+                drawPetIcon(petLocation);
             	Toast.makeText(getActivity(), "知道了", Toast.LENGTH_SHORT).show();
             }  
         });  
