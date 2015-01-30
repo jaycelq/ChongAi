@@ -27,6 +27,7 @@ public class MainActivity extends BaseToolbarActivity implements
     private FragmentTransaction ft;
     private BDMapFragment bdMapFragment;
     private StateFragment stateFragment;
+    private UserFragment userFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +83,7 @@ public class MainActivity extends BaseToolbarActivity implements
         // TODO: deal with fragment transaction on bottom icon click
         ft = getSupportFragmentManager().beginTransaction();
         //采用transaction.add(), transaction.show(), transaction.hide()方式载入Fragment，替代transaction.replace()方式
+        ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
         hideAllContentFragment(ft);
         switch (id) {
             case R.id.add_state:
@@ -114,7 +116,6 @@ public class MainActivity extends BaseToolbarActivity implements
                 break;
             case R.id.album:
                 ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
-
                 stateFragment = (StateFragment) getSupportFragmentManager().findFragmentByTag(
                         Constants.FragmentTag.STATE_FRAGMENT);
                 if(stateFragment == null){
@@ -128,12 +129,15 @@ public class MainActivity extends BaseToolbarActivity implements
                 break;
             case R.id.about_me:
                 ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
-                UserFragment userFragment = (UserFragment) getSupportFragmentManager().findFragmentByTag(
+                userFragment = (UserFragment) getSupportFragmentManager().findFragmentByTag(
                         Constants.FragmentTag.USER_FRAGMENT);
-                if(userFragment == null)
+                if(userFragment == null) {
                     userFragment = new UserFragment();
-                ft.replace(R.id.main_screen_container, userFragment,
-                        Constants.FragmentTag.USER_FRAGMENT);
+                    ft.add(R.id.main_screen_container, userFragment,
+                            Constants.FragmentTag.USER_FRAGMENT);
+                }else {
+                    ft.show(userFragment);
+                }
                 ft.commit();
                 break;
         }
@@ -146,6 +150,9 @@ public class MainActivity extends BaseToolbarActivity implements
         }
         if(bdMapFragment != null){
             transaction.hide(bdMapFragment);
+        }
+        if(userFragment != null){
+            transaction.hide(userFragment);
         }
     }
 
