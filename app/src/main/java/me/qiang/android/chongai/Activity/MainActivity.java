@@ -87,7 +87,8 @@ public class MainActivity extends BaseToolbarActivity implements
         ft = getSupportFragmentManager().beginTransaction();
         //采用transaction.add(), transaction.show(), transaction.hide()方式载入Fragment，替代transaction.replace()方式
 //        ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
-        hideAllContentFragment(ft);
+        if(id != R.id.add_state)
+            hideAllContentFragment(ft);
         switch (id) {
             case R.id.add_state:
                 ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out);
