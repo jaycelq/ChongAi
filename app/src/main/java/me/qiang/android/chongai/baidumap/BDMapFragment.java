@@ -83,6 +83,85 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		view = inflater.inflate(R.layout.fragment_bdmap, container, false);
+
+        /**全局Application初始化，尽量在setContentView之前初始化 */
+        mApplication = GlobalApplication.GetInstance();
+        //设置LoactionHandler
+        mApplication.setLoactionHandler(new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                if(msg.what == GlobalApplication.NEW_LOC_MSG){
+                    mCurLocation = (BDLocation) msg.obj;
+                    mMapController.clear();
+                    locatingOnReceiveLocation();
+                    drawCircleOnReceiveLocation(radius);
+                    drawPetIcon(petLocation);
+                }
+            }
+        });
+
+        /**UI初始化*/
+        tvPetName = (TextView) view.findViewById(R.id.tv_petname);
+        tvDistance = (TextView) view.findViewById(R.id.tv_distance);
+        tvBattery = (TextView) view.findViewById(R.id.tv_battery);
+        etRadius = (EditText) view.findViewById(R.id.et_radius);
+        radius = getInt(etRadius.getText().toString());//获取默认检测半径值
+        etRadius.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void afterTextChanged(Editable s) {
+                radius = getInt(s.toString());
+                if (radius != -1) {
+                    mMapController.clear();
+                    drawCircleOnReceiveLocation(radius);
+                    drawPetIcon(petLocation);
+                }
+            }
+        });
+        minusBtn = (ImageButton) view.findViewById(R.id.ibtn_minus);
+        plusBtn = (ImageButton) view.findViewById(R.id.ibtn_plus);
+        locateBtn = (Button) view.findViewById(R.id.btn_locate);
+        ivPetName = (ImageView) view.findViewById(R.id.iv_petname);
+        minusBtn.setOnClickListener(this);
+        plusBtn.setOnClickListener(this);
+        locateBtn.setOnClickListener(this);
+        ivPetName.setOnClickListener(this);
+        toggleBtnPetGPS = (MyToggleButton) view.findViewById(R.id.togglebtn_gps);
+        toggleBtnZhalan = (MyToggleButton) view.findViewById(R.id.togglebtn_zhalan);
+        toggleBtnPetGPS.setHandler(new Handler(){//宠物GPS开关
+            @Override
+            public void handleMessage(Message msg) {
+                if (msg.what == MyToggleButton.TOGGLE_CHANGE) {
+                    if (locationOption != null) {
+                        if (toggleBtnPetGPS.getToggleState()) {//若开启宠物，则立即发送一次定位请求
+                            JsonProcess.RequestForString(getActivity(), IMEI);
+                        }
+                        Toast.makeText(getActivity(),
+                                "宠物GPS: " + (toggleBtnPetGPS.getToggleState()?"On":"Off"), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+        toggleBtnZhalan.setHandler(new Handler(){//栅栏开关
+            @Override
+            public void handleMessage(Message msg) {
+                if (msg.what == MyToggleButton.TOGGLE_CHANGE) {
+                    mMapController.clear();
+                    drawCircleOnReceiveLocation(radius);//内含getToggleState()判断
+                    drawPetIcon(petLocation);//内含getToggleState()判断
+                    Toast.makeText(getActivity(),
+                            "栅栏: " + (toggleBtnZhalan.getToggleState()?"On":"Off"), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        //获取震动服务
+        mVibrator =(Vibrator)getActivity().getSystemService(Service.VIBRATOR_SERVICE);
+
+        mMapView = (MapView) view.findViewById(R.id.mapView);//百度地图视图控件
+
 		return view;
 	}
 	
@@ -91,84 +170,7 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
-		/**全局Application初始化，尽量在setContentView之前初始化 */
-		mApplication = GlobalApplication.GetInstance();
-		//设置LoactionHandler
-		mApplication.setLoactionHandler(new Handler(){
-			@Override
-			public void handleMessage(Message msg) {
-				if(msg.what == GlobalApplication.NEW_LOC_MSG){
-					mCurLocation = (BDLocation) msg.obj;
-					mMapController.clear();
-					locatingOnReceiveLocation();
-					drawCircleOnReceiveLocation(radius);
-					drawPetIcon(petLocation);
-				}
-			}
-		});
-		
-		/**UI初始化*/
-		tvPetName = (TextView) view.findViewById(R.id.tv_petname);
-		tvDistance = (TextView) view.findViewById(R.id.tv_distance);
-		tvBattery = (TextView) view.findViewById(R.id.tv_battery);
-		etRadius = (EditText) view.findViewById(R.id.et_radius);
-		radius = getInt(etRadius.getText().toString());//获取默认检测半径值
-		etRadius.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) { }
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-			@Override
-			public void afterTextChanged(Editable s) {
-				radius = getInt(s.toString());
-				if (radius != -1) {
-					mMapController.clear();
-					drawCircleOnReceiveLocation(radius);
-					drawPetIcon(petLocation);
-				}
-			}
-		});
-		minusBtn = (ImageButton) view.findViewById(R.id.ibtn_minus);
-		plusBtn = (ImageButton) view.findViewById(R.id.ibtn_plus);
-		locateBtn = (Button) view.findViewById(R.id.btn_locate);
-		ivPetName = (ImageView) view.findViewById(R.id.iv_petname);
-		minusBtn.setOnClickListener(this);
-		plusBtn.setOnClickListener(this);
-		locateBtn.setOnClickListener(this);
-		ivPetName.setOnClickListener(this);
-		toggleBtnPetGPS = (MyToggleButton) view.findViewById(R.id.togglebtn_gps);
-		toggleBtnZhalan = (MyToggleButton) view.findViewById(R.id.togglebtn_zhalan);
-		toggleBtnPetGPS.setHandler(new Handler(){//宠物GPS开关
-			@Override
-			public void handleMessage(Message msg) {
-				if (msg.what == MyToggleButton.TOGGLE_CHANGE) {
-					if (locationOption != null) {
-						if (toggleBtnPetGPS.getToggleState()) {//若开启宠物，则立即发送一次定位请求
-							JsonProcess.RequestForString(getActivity(), IMEI);
-						}
-						Toast.makeText(getActivity(), 
-								"宠物GPS: " + (toggleBtnPetGPS.getToggleState()?"On":"Off"), Toast.LENGTH_SHORT).show();
-					}
-				}
-			}
-		});
-		toggleBtnZhalan.setHandler(new Handler(){//栅栏开关
-			@Override
-			public void handleMessage(Message msg) {
-				if (msg.what == MyToggleButton.TOGGLE_CHANGE) {
-					mMapController.clear();
-					drawCircleOnReceiveLocation(radius);//内含getToggleState()判断
-					drawPetIcon(petLocation);//内含getToggleState()判断
-					Toast.makeText(getActivity(), 
-							"栅栏: " + (toggleBtnZhalan.getToggleState()?"On":"Off"), Toast.LENGTH_SHORT).show();
-				}
-			}
-		});
-		//获取震动服务
-		mVibrator =(Vibrator)getActivity().getSystemService(Service.VIBRATOR_SERVICE);
-		
 		/**地图视图、控制器初始化 */
-		mMapView = (MapView) view.findViewById(R.id.mapView);//百度地图视图控件
 		mMapController = mMapView.getMap();//百度地图控制器
 		initMapStatus();
 		//开启定位图层
@@ -288,6 +290,10 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 	 */
 	private double updateDistance(){
 		double distance = 0d;
+        if(mCurLocation == null){
+            Toast.makeText(getActivity(), "无法获取当前位置，稍后重试", Toast.LENGTH_SHORT).show();
+            return -1d;
+        }
 		if (petLocation != null) {
 			LatLng curPoint = new LatLng(mCurLocation.getLatitude(), mCurLocation.getLongitude());
 			//距离计算（单位：米），错误时返回-1；DistanceUtil为测距工具
@@ -371,6 +377,10 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 	/**当获取新的位置信息时，进行相关处理
 	 */
 	private void locatingOnReceiveLocation() {
+        if(mCurLocation == null){
+            Toast.makeText(getActivity(), "无法获取当前位置，稍后重试", Toast.LENGTH_SHORT).show();
+            return;
+        }
 		//MyLocationData定位数据，MyLocationData.Builder定位数据建造器
 		MyLocationData locData = new MyLocationData.Builder()
 			.accuracy(0)//设置定位数据的精度信息，单位：米（设置为0则不显示精度覆盖图层）
@@ -393,6 +403,10 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 	/**绘制以当前位置为圆心的圆
 	 */
 	private void drawCircleOnReceiveLocation(int radius) {
+        if(mCurLocation == null){
+            Toast.makeText(getActivity(), "无法获取当前位置，稍后重试", Toast.LENGTH_SHORT).show();
+            return;
+        }
 		if (toggleBtnZhalan.getToggleState()) {//只有开启栅栏才绘制
 			LatLng llCircle = new LatLng(mCurLocation.getLatitude(), mCurLocation.getLongitude());
 			//CircleOptions创建圆的选项
@@ -438,7 +452,7 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 		option.setOpenGps(true);//打开gps
 		option.setCoorType("bd09ll");//设置坐标类型Baidu encoded latitude & longtitude
 //		option.setScanSpan(1000 * 60 * 5);//扫描间隔5min
-		option.setScanSpan(30);//扫描间隔30s
+		option.setScanSpan(30 * 1000);//扫描间隔30s
 		option.setLocationMode(LocationMode.Hight_Accuracy);//GPS + Network locating
 		option.setAddrType("all");//locating results include all address infos
 		option.setIsNeedAddress(true);//include address infos
@@ -461,14 +475,14 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 	public void onResume() {  
         super.onResume();  
         //在activity执行onResume时执行mMapView.onResume()，实现地图生命周期管理  
-        mMapView.onResume();  
+        mMapView.onResume();
     }
     
     @Override
 	public void onPause() {  
         super.onPause();  
         //在activity执行onPause时执行mMapView.onPause()，实现地图生命周期管理  
-        mMapView.onPause();  
+        mMapView.onPause();
     }
     
     @Override
