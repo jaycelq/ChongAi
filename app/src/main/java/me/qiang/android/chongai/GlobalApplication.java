@@ -34,7 +34,6 @@ public class GlobalApplication extends Application {
     public LocationClient mLocationClient;
     public MyLocationListener mMyLocationListener;
     public Handler mLocationHandler;
-    public TextView mLocationResult;
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     @SuppressWarnings("unused")
@@ -49,8 +48,6 @@ public class GlobalApplication extends Application {
         GlobalApplication.context = getApplicationContext();
         GlobalApplication.userSessionManager = new UserSessionManager(getAppContext());
 
-        initImageLoader(getApplicationContext());
-
         //注意：实现GetInstance()，此行代码易漏写
         mBDApplicationInstance = this;
         //百度地图
@@ -62,6 +59,8 @@ public class GlobalApplication extends Application {
         mMyLocationListener = new MyLocationListener();
         //注册监听函数，当没有注册监听函数时，无法发起网络请求
         mLocationClient.registerLocationListener(mMyLocationListener);
+
+        initImageLoader(getApplicationContext());
     }
 
     public static void initImageLoader(Context context) {

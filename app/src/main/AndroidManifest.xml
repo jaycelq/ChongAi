@@ -35,8 +35,8 @@
         android:theme="@style/AppThemeBase" >
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="eA5GaKwIWxc4lkPXw7irNnSI" />
-
+            android:value="Hibn3AL0Dqt0MrZzIS2xqtAD" />
+        <!-- eA5GaKwIWxc4lkPXw7irNnSI   Hibn3AL0Dqt0MrZzIS2xqtAD -->
         <activity
             android:name=".Activity.StateEdit"
             android:label="@string/app_name"

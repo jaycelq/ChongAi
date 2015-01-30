@@ -23,6 +23,10 @@ public class MainActivity extends BaseToolbarActivity implements
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
 
+    private FragmentTransaction ft;
+    private BDMapFragment bdMapFragment;
+    private StateFragment stateFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +79,9 @@ public class MainActivity extends BaseToolbarActivity implements
     @Override
     public void onFragmentInteraction(int id) {
         // TODO: deal with fragment transaction on bottom icon click
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft = getSupportFragmentManager().beginTransaction();
+        //采用transaction.add(), transaction.show(), transaction.hide()方式载入Fragment，替代transaction.replace()方式
+        hideAllContentFragment(ft);
         switch (id) {
             case R.id.add_state:
                 ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out);
@@ -92,23 +98,39 @@ public class MainActivity extends BaseToolbarActivity implements
                 ft.commit();
                 break;
             case R.id.map:
-                BDMapFragment bdMapFragment = (BDMapFragment) getSupportFragmentManager().findFragmentByTag(
+                bdMapFragment = (BDMapFragment) getSupportFragmentManager().findFragmentByTag(
                         Constants.FragmentTag.BDMAP_FRAGMENT);
-                if(bdMapFragment == null)
+                if(bdMapFragment == null){
                     bdMapFragment = new BDMapFragment();
-                ft.replace(R.id.main_screen_container, bdMapFragment,
-                        Constants.FragmentTag.BDMAP_FRAGMENT);
+                    ft.add(R.id.main_screen_container, bdMapFragment, Constants.FragmentTag.BDMAP_FRAGMENT);
+                }else{
+                    ft.show(bdMapFragment);
+                }
+//                ft.replace(R.id.main_screen_container, bdMapFragment, Constants.FragmentTag.BDMAP_FRAGMENT);
                 ft.commit();
                 break;
             case R.id.album:
-                StateFragment stateFragment = (StateFragment) getSupportFragmentManager().findFragmentByTag(
+                stateFragment = (StateFragment) getSupportFragmentManager().findFragmentByTag(
                         Constants.FragmentTag.STATE_FRAGMENT);
-                if(stateFragment == null)
+                if(stateFragment == null){
                     stateFragment = new StateFragment();
-                ft.replace(R.id.main_screen_container, stateFragment,
-                        Constants.FragmentTag.STATE_FRAGMENT);
+                    ft.add(R.id.main_screen_container, stateFragment, Constants.FragmentTag.STATE_FRAGMENT);
+                }else{
+                    ft.show(stateFragment);
+                }
+//                ft.replace(R.id.main_screen_container, stateFragment, Constants.FragmentTag.STATE_FRAGMENT);
                 ft.commit();
                 break;
+        }
+    }
+
+    //采用transaction.add(), transaction.show(), transaction.hide()方式载入Fragment，替代transaction.replace()方式
+    private void hideAllContentFragment(FragmentTransaction transaction) {
+        if(stateFragment != null){
+            transaction.hide(stateFragment);
+        }
+        if(bdMapFragment != null){
+            transaction.hide(bdMapFragment);
         }
     }
 
