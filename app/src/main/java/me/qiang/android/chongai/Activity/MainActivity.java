@@ -1,5 +1,6 @@
 package me.qiang.android.chongai.Activity;
 
+import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -35,6 +36,7 @@ public class MainActivity extends BaseToolbarActivity implements
         setContentView(R.layout.activity_main_drawer);
         setToolbarTile("我的爱宠");
         hideBackButton();
+        getWindow().setFormat(PixelFormat.TRANSLUCENT);
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(false);
@@ -49,8 +51,9 @@ public class MainActivity extends BaseToolbarActivity implements
         drawerLayout.setDrawerListener(mActionBarDrawerToggle);
 
         if (savedInstanceState == null) {
+            stateFragment = new StateFragment();
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_screen_container, new StateFragment(),
+                    .replace(R.id.main_screen_container, stateFragment,
                             Constants.FragmentTag.STATE_FRAGMENT)
                     .commit();
             getSupportFragmentManager().beginTransaction()
@@ -83,7 +86,7 @@ public class MainActivity extends BaseToolbarActivity implements
         // TODO: deal with fragment transaction on bottom icon click
         ft = getSupportFragmentManager().beginTransaction();
         //采用transaction.add(), transaction.show(), transaction.hide()方式载入Fragment，替代transaction.replace()方式
-        ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
+//        ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
         hideAllContentFragment(ft);
         switch (id) {
             case R.id.add_state:
@@ -120,7 +123,7 @@ public class MainActivity extends BaseToolbarActivity implements
                         Constants.FragmentTag.STATE_FRAGMENT);
                 if(stateFragment == null){
                     stateFragment = new StateFragment();
-                    ft.add(R.id.main_screen_container, stateFragment, Constants.FragmentTag.STATE_FRAGMENT);
+                    ft.replace(R.id.main_screen_container, stateFragment, Constants.FragmentTag.STATE_FRAGMENT);
                 }else{
                     ft.show(stateFragment);
                 }
