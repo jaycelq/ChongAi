@@ -59,13 +59,27 @@ public class AddPetActivity extends BaseToolbarActivity implements TextWatcher{
 
     private String avatarUrl = null;
 
+    private int petId;
+    private Pet currentPet;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_pet);
 
-        setToolbarTile("添加宠物");
         enableBackButton();
+
+        saveProfile = (Button) findViewById(R.id.profile_complete);
+        saveProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(petId == 0)
+                    attemptAddPet();
+                else
+                    attemptUpdatePet();
+            }
+        });
+        saveProfile.setClickable(false);
 
         genderRadioGroup = (RadioGroup) findViewById(R.id.pet_gender);
 
@@ -73,7 +87,7 @@ public class AddPetActivity extends BaseToolbarActivity implements TextWatcher{
         petNameView.addTextChangedListener(this);
 
         petTypeView = (EditText) findViewById(R.id.pet_type);
-        petNameView.addTextChangedListener(this);
+        petTypeView.addTextChangedListener(this);
 
         petAgeView = (Spinner) findViewById(R.id.pet_age);
         adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, Constants.Pet.PET_AGE);
@@ -96,18 +110,45 @@ public class AddPetActivity extends BaseToolbarActivity implements TextWatcher{
             }
         });
 
-        saveProfile = (Button) findViewById(R.id.profile_complete);
-        saveProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                attemptAddPet();
-            }
-        });
-        saveProfile.setClickable(false);
-
         userSessionManager = GlobalApplication.getUserSessionManager();
         context = this;
 
+        petId = getIntent().getIntExtra(Constants.Pet.PET_ID, 0);
+        if(petId == 0) {
+            setToolbarTile("添加宠物");
+        }
+        else {
+            setToolbarTile("编辑宠物资料");
+            currentPet = userSessionManager.getPet(petId);
+
+            Picasso.with(context)
+                    .load(currentPet.getPetPhoto())
+                    .fit()
+                    .centerCrop()
+                    .into(petPhoto);
+
+            if(currentPet.getPetGender() == Pet.Gender.FEMALE)
+                genderRadioGroup.check(R.id.female);
+            else
+                genderRadioGroup.check(R.id.male);
+
+            petNameView.setText(currentPet.getPetName());
+            petTypeView.setText(currentPet.getPetType());
+
+            int spinnerPosition = currentPet.getPetAgeIndex();
+            petAgeView.setSelection(spinnerPosition);
+
+            petSkillView.setText(currentPet.getPetSkill());
+            petHobbyView.setText(currentPet.getPetHobby());
+            petDeviceImeiView.setText(currentPet.getImei());
+
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        hideProgressDialog();
+        super.onPause();
     }
 
     @Override
@@ -115,25 +156,25 @@ public class AddPetActivity extends BaseToolbarActivity implements TextWatcher{
         switch (requestCode) {
             case Constants.Image.PICK_IMAGE:
                 if(resultCode == RESULT_OK) {
-                    avatarUrl = data.getExtras().getString(Constants.Image.IMAGE_RESULT);
+                    avatarUrl =  data.getExtras().getString(Constants.Image.IMAGE_RESULT);
                     Log.i("PHOTO_URL", avatarUrl);
                     Picasso.with(context)
                             .load("file://" + avatarUrl)
                             .fit()
                             .centerCrop()
                             .into(petPhoto);
-                    if(isInputValid() == null)
+                    if(isInputValid(avatarUrl) == null)
                         saveProfile.setClickable(true);
                 }
         }
     }
 
-    private View isInputValid() {
+    private View isInputValid(String petAvatar) {
         String petName = petNameView.getText().toString();
         String petType = petTypeView.getText().toString();
         String petHobby = petHobbyView.getText().toString();
         String petSkill = petSkillView.getText().toString();
-        String petPhotoUrl = avatarUrl;
+        String petPhotoUrl = petAvatar;
 
         View focusView = null;
 
@@ -182,7 +223,7 @@ public class AddPetActivity extends BaseToolbarActivity implements TextWatcher{
         final String petSkill = petSkillView.getText().toString();
         final String petDeviceImei = petDeviceImeiView.getText().toString();
         final Pet.Gender petGender;
-        final String petAge;
+        final int petAgeIndex;
         String petPhotoUrl = avatarUrl;
 
         switch (genderRadioGroup.getCheckedRadioButtonId()) {
@@ -194,9 +235,9 @@ public class AddPetActivity extends BaseToolbarActivity implements TextWatcher{
                 break;
         }
 
-        petAge = Constants.Pet.PET_AGE[petAgeView.getSelectedItemPosition()];
+        petAgeIndex = petAgeView.getSelectedItemPosition();
 
-        View focusView = isInputValid();
+        View focusView = isInputValid(petPhotoUrl);
 
         if (focusView != null) {
             focusView.requestFocus();
@@ -206,7 +247,7 @@ public class AddPetActivity extends BaseToolbarActivity implements TextWatcher{
                 @Override
                 protected void onPostExecute(InputStream inputStream) {
                     Pet pet = new Pet(petName, petGender, petType, petHobby,
-                            petAge, petSkill, petDeviceImei);
+                            petAgeIndex, petSkill, petDeviceImei);
                     RequestServer.addPet(pet, inputStream, avatarUrl, newAddPetCallback());
                 }
             };
@@ -215,12 +256,108 @@ public class AddPetActivity extends BaseToolbarActivity implements TextWatcher{
 
     }
 
+    private void attemptUpdatePet() {
+        final String petName = petNameView.getText().toString();
+        final String petType = petTypeView.getText().toString();
+        final String petHobby = petHobbyView.getText().toString();
+        final String petSkill = petSkillView.getText().toString();
+        final String petDeviceImei = petDeviceImeiView.getText().toString();
+        final Pet.Gender petGender;
+        final int petAgeIndex;
+        String petPhotoUrl;
+
+        if(avatarUrl != null)
+            petPhotoUrl = avatarUrl;
+        else
+            petPhotoUrl =  currentPet.getPetPhoto();
+
+        switch (genderRadioGroup.getCheckedRadioButtonId()) {
+            case R.id.female:
+                petGender = Pet.Gender.FEMALE;
+                break;
+            default:
+                petGender = Pet.Gender.MALE;
+                break;
+        }
+
+        petAgeIndex = petAgeView.getSelectedItemPosition();
+
+        View focusView = isInputValid(petPhotoUrl);
+
+        if (focusView != null) {
+            focusView.requestFocus();
+        } else {
+            if(avatarUrl != null) {
+                showProgressDialog("正在处理...");
+                CompressUploadTask compressUploadTask = new CompressUploadTask() {
+                    @Override
+                    protected void onPostExecute(InputStream inputStream) {
+                        Pet pet = new Pet(petId, petName, petGender, petType, petHobby,
+                                petAgeIndex, petSkill, petDeviceImei);
+                        RequestServer.updatePet(pet, inputStream, avatarUrl, newUpdatePetCallback());
+                    }
+                };
+                compressUploadTask.execute(avatarUrl);
+            }
+            else {
+                Pet pet = new Pet(petId, petName, petGender, petType, petHobby,
+                        petAgeIndex, petSkill, petDeviceImei);
+                RequestServer.updatePet(pet, newUpdatePetCallback());
+            }
+        }
+
+    }
+
+
+
+    private JsonHttpResponseHandler newUpdatePetCallback() {
+        return new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.i("JSON", response.toString());
+                Gson gson = new Gson();
+                try {
+                    if (response.getInt("status") == 0) {
+                        JSONObject petJsonObject = response.getJSONObject("body");
+                        Pet pet = gson.fromJson(petJsonObject.toString(), Pet.class);
+                        userSessionManager.updatePet(petId, pet);
+                        Intent intent = new Intent();
+                        intent.putExtra(Constants.Pet.PET_UPDATE_RESULT, pet.getPetId());
+                        hideProgressDialog();
+                        AddPetActivity.this.setResult(Activity.RESULT_OK, intent);
+                        AddPetActivity.this.finish();
+                    }
+                } catch (JSONException ex) {
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.i("JSON", "JSON FAIL");
+                hideProgressDialog();
+                new AlertDialog.Builder(AddPetActivity.this).setMessage("网络连接出现问题").
+                        setPositiveButton("确定", null).show();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Log.i("JSON", responseString);
+                hideProgressDialog();
+                new AlertDialog.Builder(AddPetActivity.this).setMessage("服务器故障,请稍后重试").
+                        setPositiveButton("确定", null).show();
+            }
+        };
+    }
+
     private JsonHttpResponseHandler newAddPetCallback() {
         return new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 // If the response is JSONObject instead of expected JSONArray
                 Log.i("JSON", response.toString());
+                hideProgressDialog();
                 Gson gson = new Gson();
                 try {
                     if (response.getInt("status") == 0) {
@@ -291,7 +428,16 @@ public class AddPetActivity extends BaseToolbarActivity implements TextWatcher{
 
     @Override
     public void afterTextChanged(Editable s) {
-        if(isInputValid() == null) {
+        String petPhotoUrl;
+
+        if(petId == 0)
+            petPhotoUrl = avatarUrl;
+        else if(petId != 0 && avatarUrl != null)
+            petPhotoUrl = avatarUrl;
+        else
+            petPhotoUrl = currentPet.getPetPhoto();
+
+        if(isInputValid(petPhotoUrl) == null) {
             saveProfile.setClickable(true);
         }
         else

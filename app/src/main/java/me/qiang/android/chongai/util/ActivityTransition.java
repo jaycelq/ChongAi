@@ -77,6 +77,12 @@ public class ActivityTransition {
         activity.startActivityForResult(addPetIntent, Constants.Pet.ADD_PET);
     }
 
+    public static void startAddPetActivity(Activity activity, int petId) {
+        Intent addPetIntent = new Intent(activity, AddPetActivity.class);
+        addPetIntent.putExtra(Constants.Pet.PET_ID, petId);
+        activity.startActivityForResult(addPetIntent, Constants.Pet.ADD_PET);
+    }
+
 
     public static void pickImageFromAlbum(Fragment fr) {
         Intent intent = new Intent(fr.getActivity(), CustomAlbum.class);

@@ -66,6 +66,6 @@ public class BaseToolbarActivity extends ActionBarActivity {
     }
 
     public void hideProgressDialog() {
-        barProgressDialog.hide();
+        barProgressDialog.dismiss();
     }
  }

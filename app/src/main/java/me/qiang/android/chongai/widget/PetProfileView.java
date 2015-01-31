@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.GlobalApplication;
 import me.qiang.android.chongai.Model.Pet;
 import me.qiang.android.chongai.Model.UserSessionManager;
@@ -70,6 +71,7 @@ public class PetProfileView extends RelativeLayout {
                 .into(petPhoto);
 
         petMetaName.setText(pet.getPetName());
+        petName.setText(pet.getPetName());
 
         petMetaType.setText(pet.getPetType());
 
@@ -104,7 +106,7 @@ public class PetProfileView extends RelativeLayout {
         }
 
         petHobby.setText(pet.getPetHobby());
-        petAge.setText(pet.getPetAge() + "岁");
+        petAge.setText(Constants.Pet.PET_AGE[pet.getPetAgeIndex()]);
         petSkill.setText(pet.getPetSkill());
     }
 

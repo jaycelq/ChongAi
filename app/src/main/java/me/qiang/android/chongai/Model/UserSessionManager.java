@@ -108,6 +108,20 @@ public class UserSessionManager {
         editor.commit();
     }
 
+    public void updatePet(int petId, Pet newPet) {
+        String petListDetails = pref.getString(KEY_PET_INFO, "");
+        ArrayList<Pet> petList = gson.fromJson(petListDetails, PetListType);
+        for(int i = 0; i < petList.size(); i++) {
+            Pet pet = petList.get(i);
+            if(pet.getPetId() == petId) {
+                petList.set(i, newPet);
+                break;
+            }
+        }
+        editor.putString(KEY_PET_INFO, gson.toJson(petList, PetListType));
+        editor.commit();
+    }
+
     public Pet getPet(int petId) {
         String petListDetails = pref.getString(KEY_PET_INFO, "");
         ArrayList<Pet> petList = gson.fromJson(petListDetails, PetListType);

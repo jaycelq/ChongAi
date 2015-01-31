@@ -206,6 +206,7 @@ public class UserFragment extends BaseFragment {
         TextView petType = (TextView) petBriefView.findViewById(R.id.pet_type);
         petType.setText(pet.getPetType());
         userPetContainer.addView(petBriefView);
+        Log.i("PET_PHOTO", pet.getPetPhoto() + " " +context.toString());
         Picasso.with(context)
                 .load(pet.getPetPhoto())
                 .fit()

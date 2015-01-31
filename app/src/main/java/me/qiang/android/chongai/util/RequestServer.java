@@ -105,6 +105,27 @@ public class RequestServer {
         HttpClient.post("pet/add", params, jsonHttpResponseHandler);
     }
 
+    public static void updatePet(Pet pet, InputStream avatarPic, String avatarUrl,
+                                 JsonHttpResponseHandler jsonHttpResponseHandler) {
+        RequestParams params = new RequestParams();
+
+        final Gson gson = new Gson();
+        String petInfo = gson.toJson(pet, Pet.class);
+        params.put("pet_avatar", avatarPic, avatarUrl);
+        params.put("pet_info", petInfo);
+        HttpClient.post("pet/update", params, jsonHttpResponseHandler);
+    }
+
+    public static void updatePet(Pet pet,
+                                 JsonHttpResponseHandler jsonHttpResponseHandler) {
+        RequestParams params = new RequestParams();
+
+        final Gson gson = new Gson();
+        String petInfo = gson.toJson(pet, Pet.class);
+        params.put("pet_info", petInfo);
+        HttpClient.post("pet/update", params, jsonHttpResponseHandler);
+    }
+
 
     public static void sendComment(int stateId, final String content, int userId,
                              JsonHttpResponseHandler jsonHttpResponseHandler) {
@@ -155,6 +176,14 @@ public class RequestServer {
         params.put("user_id", userId);
 
         HttpClient.post("/user", params, jsonHttpResponseHandler);
+    }
+
+    public static void getPetInfo(int petId, JsonHttpResponseHandler jsonHttpResponseHandler) {
+        RequestParams params = new RequestParams();
+        params.setUseJsonStreamer(true);
+        params.put("pet_id", petId);
+
+        HttpClient.post("pet", params, jsonHttpResponseHandler);
     }
 
 }

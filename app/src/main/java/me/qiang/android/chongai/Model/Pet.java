@@ -35,7 +35,7 @@ public class Pet {
     public String petHobby;
 
     @SerializedName("pet_age")
-    public String petAge;
+    public int petAgeIndex;
 
     @SerializedName("pet_skill")
     public String petSkill;
@@ -54,19 +54,32 @@ public class Pet {
 
     public Pet(String petName,
                Gender petGender, String petType, String petHobby,
-               String petAge, String petSkill, String petImei) {
+               int petAgeIndex, String petSkill, String petImei) {
         this.petName = petName;
         this.petGender = petGender;
         this.petType = petType;
         this.petHobby = petHobby;
-        this.petAge = petAge;
+        this.petAgeIndex = petAgeIndex;
+        this.petSkill = petSkill;
+        this.petImei = petImei;
+    }
+
+    public Pet(int petId, String petName,
+               Gender petGender, String petType, String petHobby,
+               int petAgeIndex, String petSkill, String petImei) {
+        this.petId = petId;
+        this.petName = petName;
+        this.petGender = petGender;
+        this.petType = petType;
+        this.petHobby = petHobby;
+        this.petAgeIndex = petAgeIndex;
         this.petSkill = petSkill;
         this.petImei = petImei;
     }
 
     public Pet(int petId, int petUserId, User petUser, String petName, String petPhoto,
                Gender petGender, String petType, String petHobby,
-               String petAge, String petSkill) {
+               int petAgeIndex, String petSkill) {
         this.petId = petId;
         this.petUserId = petUserId;
         this.petUser = petUser;
@@ -75,7 +88,7 @@ public class Pet {
         this.petGender = petGender;
         this.petType = petType;
         this.petHobby = petHobby;
-        this.petAge = petAge;
+        this.petAgeIndex = petAgeIndex;
         this.petSkill = petSkill;
     }
 
@@ -105,8 +118,8 @@ public class Pet {
         return petHobby;
     }
 
-    public String getPetAge() {
-        return petAge;
+    public int getPetAgeIndex() {
+        return petAgeIndex;
     }
 
     public String getPetSkill() {

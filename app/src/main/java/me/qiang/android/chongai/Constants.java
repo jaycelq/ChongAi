@@ -103,6 +103,7 @@ public final class Constants {
                 "15岁以上"
         };
         public static final String PET_ADD_RESULT = "pet_add_result";
+        public static final String PET_UPDATE_RESULT = "pet_update_result";
         public static final String PET_ID = "pet_id";
         public static final int ADD_PET = 2001;
         public static final int PICK_PET = 2002;

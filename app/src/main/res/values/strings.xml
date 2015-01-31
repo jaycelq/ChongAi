@@ -39,5 +39,6 @@
     <string name="edit_user_profile">修改个人资料</string>
     <string name="add_pet">添加宠物</string>
     <string name="title_activity_add_pet">AddPetActivity</string>
+    <string name="edit_pet_info">编辑宠物资料</string>
 
 </resources>

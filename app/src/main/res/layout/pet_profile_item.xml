@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<me.qiang.android.chongai.widget.PetProfileView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"/>
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <me.qiang.android.chongai.widget.PetProfileView
+        android:id="@+id/pet_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
+</LinearLayout>
