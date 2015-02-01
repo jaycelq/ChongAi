@@ -41,6 +41,12 @@ public class ActivityTransition {
         context.startActivity(addProfileIntent);
     }
 
+    public static void startAddProfileActivity(Fragment fragment, int userId) {
+        Intent addProfileIntent = new Intent(fragment.getActivity(), AddProfileActivity.class);
+        addProfileIntent.putExtra(Constants.User.USER_ID, userId);
+        fragment.startActivityForResult(addProfileIntent, Constants.User.UPDATE_USER);
+    }
+
     public static void startImagePagerActivity(Context context, List<String> imageUrls, int position){
         Intent intent = new Intent(context, ImagePager.class);
         Bundle bundle=new Bundle();

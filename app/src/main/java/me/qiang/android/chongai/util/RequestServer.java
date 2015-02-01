@@ -20,9 +20,15 @@ public class RequestServer {
     public static void follow(int userId, JsonHttpResponseHandler jsonHttpResponseHandler){
         RequestParams params = new RequestParams();
         params.setUseJsonStreamer(true);
-        params.put("act", "follow");
-        params.put("userId", userId);
-        HttpClient.post("login", params, jsonHttpResponseHandler);
+        params.put("user_id", userId);
+        HttpClient.post("user/follow", params, jsonHttpResponseHandler);
+    }
+
+    public static void unfollow(int userId, JsonHttpResponseHandler jsonHttpResponseHandler){
+        RequestParams params = new RequestParams();
+        params.setUseJsonStreamer(true);
+        params.put("user_id", userId);
+        HttpClient.post("user/unfollow", params, jsonHttpResponseHandler);
     }
 
     public static void login(final String phoneNumber, final String md5Password,
@@ -93,6 +99,30 @@ public class RequestServer {
         params.put("user", userInfo);
         HttpClient.post("user/newProfile", params, jsonHttpResponseHandler);
     }
+
+    public static void updateProfile(User user, InputStream avatarPic, String avatarUrl,
+                                   JsonHttpResponseHandler jsonHttpResponseHandler) {
+        RequestParams params = new RequestParams();
+
+        final Gson gson = new Gson();
+        String userInfo = gson.toJson(user, User.class);
+
+        params.put("avatar_pic", avatarPic, avatarUrl);
+        params.put("user", userInfo);
+        HttpClient.post("user/updateProfile", params, jsonHttpResponseHandler);
+    }
+
+    public static void updateProfile(User user,
+                                     JsonHttpResponseHandler jsonHttpResponseHandler) {
+        RequestParams params = new RequestParams();
+
+        final Gson gson = new Gson();
+        String userInfo = gson.toJson(user, User.class);
+
+        params.put("user", userInfo);
+        HttpClient.post("user/updateProfile", params, jsonHttpResponseHandler);
+    }
+
 
     public static void addPet(Pet pet,InputStream avatarPic, String avatarUrl,
                               JsonHttpResponseHandler jsonHttpResponseHandler) {
@@ -184,6 +214,16 @@ public class RequestServer {
         params.put("pet_id", petId);
 
         HttpClient.post("pet", params, jsonHttpResponseHandler);
+    }
+
+    public static void bindLocationDevice(int petId, String imei,
+                                          JsonHttpResponseHandler jsonHttpResponseHandler) {
+        RequestParams params = new RequestParams();
+        params.setUseJsonStreamer(true);
+        params.put("pet_id", petId);
+        params.put("imei", imei);
+
+        HttpClient.post("pet/bind", params, jsonHttpResponseHandler);
     }
 
 }

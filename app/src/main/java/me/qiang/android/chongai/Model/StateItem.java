@@ -87,6 +87,10 @@ public class StateItem {
 
     public boolean isFollowedStateOwner() {return stateOwner.isFollowed();}
 
+    public void setFollowedStaetOwner(boolean followStatus) {
+        stateOwner.isFollowed = followStatus;
+    }
+
     public int getStateOwnerId() {return stateOwner.getUserId();}
 
     public String getStateOwnerName() {return stateOwner.getUserName();}

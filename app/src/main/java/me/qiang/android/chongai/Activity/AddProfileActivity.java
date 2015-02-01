@@ -48,15 +48,36 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
     private CircleImageView profilePhoto;
     private Button saveProfile;
 
+    private int userId = 0;
+    private User currentUser;
+
     private String avatarUrl = null;
+    private Picasso picasso;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_profile);
 
-        setToolbarTile("我的资料");
         enableBackButton();
+
+        userId = getIntent().getIntExtra(Constants.User.USER_ID, 0);
+        if(userId == 0)
+            setToolbarTile("我的资料");
+        else
+            setToolbarTile("更新资料");
+
+        saveProfile = (Button) findViewById(R.id.profile_complete);
+        saveProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(userId == 0)
+                    attemptSaveProfile();
+                else
+                    attemptUpdateProfile();
+            }
+        });
+        saveProfile.setClickable(false);
 
         genderRadioGroup = (RadioGroup) findViewById(R.id.profile_gender);
 
@@ -77,17 +98,28 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
             }
         });
 
-        saveProfile = (Button) findViewById(R.id.profile_complete);
-        saveProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                attemptSaveProfile();
-            }
-        });
-        saveProfile.setClickable(false);
-
         userSessionManager = GlobalApplication.getUserSessionManager();
         context = this;
+
+        if(userId != 0) {
+            currentUser = userSessionManager.getCurrentUser();
+            assert userId == currentUser.getUserId();
+
+            Picasso.with(context)
+                    .load(currentUser.getUserPhoto())
+                    .fit()
+                    .centerCrop()
+                    .into(profilePhoto);
+
+            if(currentUser.getUserGender() == User.Gender.FEMALE)
+                genderRadioGroup.check(R.id.female);
+            else
+                genderRadioGroup.check(R.id.male);
+
+            profileName.setText(currentUser.getUserName());
+            profileLocation.setText(currentUser.getUserLocation());
+            profileSignature.setText(currentUser.getUserLocation());
+        }
     }
 
     @Override
@@ -98,11 +130,11 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
                     avatarUrl = data.getExtras().getString(Constants.Image.IMAGE_RESULT);
                     Log.i("PHOTO_URL", avatarUrl);
                     Picasso.with(context)
-                            .load(avatarUrl)
+                            .load("file://" + avatarUrl)
                             .fit()
                             .centerCrop()
                             .into(profilePhoto);
-                    if(isInputValid() == null)
+                    if(isInputValid(avatarUrl) == null)
                         saveProfile.setClickable(true);
                 }
         }
@@ -130,6 +162,53 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
         return super.onOptionsItemSelected(item);
     }
 
+    public void attemptUpdateProfile() {
+        final String userName = profileName.getText().toString();
+        final String userLocation = profileLocation.getText().toString();
+        final String userSignature = profileSignature.getText().toString();
+        final User.Gender userGender;
+        final String userPhotoUrl;
+
+        if(avatarUrl != null) {
+            userPhotoUrl = avatarUrl;
+        }
+        else
+            userPhotoUrl = currentUser.getUserPhoto();
+
+        switch (genderRadioGroup.getCheckedRadioButtonId()) {
+            case R.id.female:
+                userGender = User.Gender.FEMALE;
+                break;
+            default:
+                userGender = User.Gender.MALE;
+                break;
+        }
+
+        View focusView = isInputValid(userPhotoUrl);
+
+        if (focusView != null) {
+            focusView.requestFocus();
+        } else {
+            showProgressDialog("正在处理...");
+            if(avatarUrl != null) {
+                CompressUploadTask compressUploadTask = new CompressUploadTask() {
+                    @Override
+                    protected void onPostExecute(InputStream inputStream) {
+                        User user = new User(userId, userName, userGender,
+                                userLocation, userSignature, userPhotoUrl);
+                        RequestServer.updateProfile(user, inputStream, avatarUrl, newSaveProfileCallback());
+                    }
+                };
+                compressUploadTask.execute(avatarUrl);
+            }
+            else {
+                User user = new User(userId, userName, userGender,
+                        userLocation, userSignature, userPhotoUrl);
+                RequestServer.updateProfile(user, newSaveProfileCallback());
+            }
+        }
+    }
+
     public void attemptSaveProfile() {
         final String userName = profileName.getText().toString();
         final String userLocation = profileLocation.getText().toString();
@@ -146,7 +225,7 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
                 break;
         }
 
-        View focusView = isInputValid();
+        View focusView = isInputValid(userPhotoUrl);
 
         if (focusView != null) {
             focusView.requestFocus();
@@ -164,11 +243,11 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
         }
     }
 
-    private View isInputValid() {
+    private View isInputValid(String userAvatar) {
         String userName = profileName.getText().toString();
         String userLocation = profileLocation.getText().toString();
         String userSignature = profileSignature.getText().toString();
-        String userPhotoUrl = avatarUrl;
+        String userPhotoUrl = userAvatar;
 
         View focusView = null;
 
@@ -202,6 +281,7 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
     private boolean isUserPhotoUrlValid(String userPhotoUrl) {
         return userPhotoUrl.length() > 0;
     }
+
 
     private JsonHttpResponseHandler newSaveProfileCallback() {
         return new JsonHttpResponseHandler() {
@@ -243,7 +323,16 @@ public class AddProfileActivity extends BaseToolbarActivity implements TextWatch
 
     @Override
     public void afterTextChanged(Editable s) {
-        if(isInputValid() == null) {
+        String userAvatar;
+
+        if(userId == 0)
+            userAvatar = avatarUrl;
+        else if (userId != 0 && avatarUrl != null)
+            userAvatar = avatarUrl;
+        else
+            userAvatar = currentUser.getUserPhoto();
+
+        if(isInputValid(userAvatar) == null) {
             saveProfile.setClickable(true);
         }
         else

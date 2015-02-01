@@ -100,6 +100,7 @@ public class UserFragment extends BaseFragment {
                 ActivityTransition.startAddPetActivity(this);
                 return true;
             default:
+                ActivityTransition.startAddProfileActivity(UserFragment.this, currentUserId);
                 return super.onOptionsItemSelected(item);
         }
     }
@@ -114,6 +115,19 @@ public class UserFragment extends BaseFragment {
                     addBriefPetItem(pet);
                 }
             }
+        }
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if(hidden == false) {
+            if(user == null)
+                userPhoto.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        RequestServer.getUserInfo(userId, newGetUserInfoCallback());
+                    }
+                });
         }
     }
 

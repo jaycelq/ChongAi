@@ -55,6 +55,8 @@ public class StateItemView extends LinearLayout {
     public TextView statePraiseNum;
     public ImageView likeState;
 
+    private StateItem stateItem;
+
     public StateItemView(Context context) {
         this(context, null);
         this.context = context;
@@ -91,6 +93,8 @@ public class StateItemView extends LinearLayout {
     }
 
     public void updateStateItemView(final StateItem stateItem) {
+        this.stateItem = stateItem;
+
         Picasso.with(context)
                 .load(stateItem.getStateOwnerPhoto())
                 .fit()
@@ -126,7 +130,10 @@ public class StateItemView extends LinearLayout {
                         ((BaseToolbarActivity) context).showProgressDialog("正在处理...");
                         RequestServer.follow(stateItem.getStateOwnerId(), newFollowCallback(isFollowed));
                     }
-                    //TODO: deal with cancel follow action
+                    else {
+                        ((BaseToolbarActivity) context).showProgressDialog("正在处理...");
+                        RequestServer.unfollow(stateItem.getStateOwnerId(), newUnfollowCallback(isFollowed));
+                    }
                 }
             });
         }
@@ -258,7 +265,28 @@ public class StateItemView extends LinearLayout {
                 // If the response is JSONObject instead of expected JSONArray
                 Log.i("JSON", response.toString());
                 ((BaseToolbarActivity)context).hideProgressDialog();
+                stateItem.setFollowedStaetOwner(true);
                 follow.setText("√ 已关注");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.i("JSON", "JSON FAIL");
+                ((BaseToolbarActivity)context).hideProgressDialog();
+            }
+
+        };
+    }
+
+    private JsonHttpResponseHandler newUnfollowCallback(final TextView follow) {
+        return new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.i("JSON", response.toString());
+                ((BaseToolbarActivity)context).hideProgressDialog();
+                stateItem.setFollowedStaetOwner(false);
+                follow.setText("+ 关注");
             }
 
             @Override

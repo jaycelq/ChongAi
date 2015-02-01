@@ -80,6 +80,7 @@ public final class Constants {
 
     public static class User {
         public static final String USER_ID = "user_id";
+        public static final int UPDATE_USER = 3001;
     }
 
     public static class Pet {
