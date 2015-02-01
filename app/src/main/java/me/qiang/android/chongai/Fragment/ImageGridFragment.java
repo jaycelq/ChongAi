@@ -67,7 +67,6 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
     private int positionSelected;
 
     private File photoFile;
-    static final int REQUEST_TAKE_PHOTO = 1;
 
     private Context context;
 
@@ -191,7 +190,7 @@ public class ImageGridFragment extends AbsListViewBaseFragment implements ListDi
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
         Log.i("OnActivityResult", "return from take photo");
-        if (requestCode == REQUEST_TAKE_PHOTO) {
+        if (requestCode == Constants.Image.TAKE_PHOTO) {
             if(resultCode == Activity.RESULT_OK) {
                 try {
                     Intent intent = new Intent();
