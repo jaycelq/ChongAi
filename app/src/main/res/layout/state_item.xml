@@ -35,6 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:text="NANA"
+                android:gravity="center_vertical"
                 android:textColor="#8EB03A"
                 android:layout_weight="1"/>
 
@@ -43,6 +44,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:text="上海市 长宁区"
                 android:textSize="11sp"
                 android:textColor="#8EB03A"
@@ -56,7 +58,8 @@
                 android:text="1.5KM"
                 android:textSize="11sp"
                 android:textColor="#8EB03A"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:visibility="gone"/>
         </LinearLayout>
 
         <TextView

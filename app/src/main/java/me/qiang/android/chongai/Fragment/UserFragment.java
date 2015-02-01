@@ -14,11 +14,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.picasso.Picasso;
 
@@ -54,7 +54,7 @@ public class UserFragment extends BaseFragment {
 
     private ArrayList<Pet> userPetList;
 
-    private PullToRefreshListView userProfileList;
+    private ListView userProfileList;
 
     // UI widget in header view
     private View profileHeader;
@@ -136,7 +136,7 @@ public class UserFragment extends BaseFragment {
         View rootView = inflater.inflate(R.layout.fragment_user, container, false);
         profileAdapter = new ProfileAdapter();
 
-        userProfileList = (PullToRefreshListView) rootView.findViewById(R.id.list);
+        userProfileList = (ListView) rootView.findViewById(R.id.list);
 
         profileHeader = getActivity().getLayoutInflater().inflate(R.layout.profile_header, null);
         userPhoto = (CircleImageView) profileHeader.findViewById(R.id.user_photo);
@@ -151,7 +151,7 @@ public class UserFragment extends BaseFragment {
         userGenderIcon = (ImageView) profileDataView.findViewById(R.id.user_gender_icon);
         userSignatrure = (TextView) profileDataView.findViewById(R.id.user_signature);
 
-        userProfileList.getRefreshableView().addHeaderView(profileHeader);
+        userProfileList.addHeaderView(profileHeader);
 
         userProfileList.setAdapter(profileAdapter);
 

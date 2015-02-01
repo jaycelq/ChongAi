@@ -169,6 +169,16 @@ public class StateFragment extends BaseFragment {
                 Log.i("JSON", "JSON FAIL");
                 pullToRefreshView.onRefreshComplete();
             }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                pullToRefreshView.onRefreshComplete();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                pullToRefreshView.onRefreshComplete();
+            }
         };
     }
 
@@ -293,7 +303,7 @@ public class StateFragment extends BaseFragment {
 
             holder.stateItemView.updateStateItemView(stateItem);
 
-            holder.stateItemView.setOnClickListener(new View.OnClickListener() {
+            holder.stateItemView.setOnCommentClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     startCommentActivity(position);

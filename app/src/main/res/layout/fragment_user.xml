@@ -5,8 +5,7 @@
     android:orientation="vertical"
     tools:context="me.qiang.android.chongai.Activity.UserAcitivity">
 
-    <com.handmark.pulltorefresh.library.PullToRefreshListView
-        xmlns:ptr="http://schemas.android.com/apk/res-auto"
+    <ListView
         android:id="@+id/list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -16,10 +15,6 @@
         android:fastScrollEnabled="false"
         android:footerDividersEnabled="false"
         android:headerDividersEnabled="false"
-        android:smoothScrollbar="true"
-        ptr:ptrAnimationStyle="rotate"
-        ptr:ptrHeaderBackground="#E1F0C8"
-        ptr:ptrShowIndicator="false"
-        ptr:ptrDrawable="@null"/>
+        android:smoothScrollbar="true"/>
 
 </LinearLayout>

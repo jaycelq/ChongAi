@@ -11,6 +11,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import me.qiang.android.chongai.Activity.LoginActivity;
+import me.qiang.android.chongai.util.IMEI;
 
 /**
  * Created by qiang on 1/7/2015.
@@ -164,6 +165,19 @@ public class UserSessionManager {
         String petListDetails = pref.getString(KEY_PET_INFO, "");
         ArrayList<Pet> petList = gson.fromJson(petListDetails, PetListType);
         return petList;
+    }
+
+    public ArrayList<Pet> getBindedPetList() {
+        String petListDetails = pref.getString(KEY_PET_INFO, "");
+        ArrayList<Pet> petList = gson.fromJson(petListDetails, PetListType);
+        ArrayList<Pet> bindedPetList = new ArrayList<>();
+        for(int i = 0; i < petList.size(); i++) {
+            Pet pet = petList.get(i);
+            if(IMEI.isIMEIValid(pet.getImei())) {
+                bindedPetList.add(pet);
+            }
+        }
+        return bindedPetList;
     }
 
     /**

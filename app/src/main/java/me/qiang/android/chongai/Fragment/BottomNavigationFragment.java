@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import java.util.ArrayList;
@@ -29,6 +30,9 @@ public class BottomNavigationFragment extends BaseFragment {
     UserSessionManager userSessionManager;
     private OnFragmentInteractionListener mListener;
     private RadioGroup tabRadioGroup;
+    private RadioButton aboutMe;
+    private RadioButton album;
+    private RadioButton map;
     private ImageView addState;
 
     public BottomNavigationFragment() {
@@ -59,16 +63,26 @@ public class BottomNavigationFragment extends BaseFragment {
             }
         });
 
+        album = (RadioButton) rootView.findViewById(R.id.album);
+        map = (RadioButton) rootView.findViewById(R.id.map);
+        aboutMe = (RadioButton) rootView.findViewById(R.id.about_me);
+
         tabRadioGroup = (RadioGroup) rootView.findViewById(R.id.tab_menu);
         tabRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                        mListener.onFragmentInteraction(checkedId);
+                ArrayList<Pet> bindedPetList = userSessionManager.getBindedPetList();
+                if(checkedId == R.id.map && bindedPetList.size() == 0) {
+                        showBindPetDialog(getActivity());
+                }
+                else
+                    mListener.onFragmentInteraction(checkedId);
             }
         });
 
         return rootView;
     }
+
 
     //显示基本的AlertDialog
     private void showDialog(Context context) {
@@ -79,6 +93,25 @@ public class BottomNavigationFragment extends BaseFragment {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         ActivityTransition.startAddPetActivity(BottomNavigationFragment.this);
+                    }
+                });
+        builder.show();
+    }
+
+    //显示基本的AlertDialog
+    private void showBindPetDialog(Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("目前没有宠物绑定设备，现在绑定？");
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                album.setChecked(true);
+            }
+        });
+        builder.setPositiveButton("确定",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        aboutMe.setChecked(true);
                     }
                 });
         builder.show();

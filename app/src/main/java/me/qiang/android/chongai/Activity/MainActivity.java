@@ -14,6 +14,8 @@ import me.qiang.android.chongai.Fragment.CreateNewStateFragment;
 import me.qiang.android.chongai.Fragment.DrawerFragment;
 import me.qiang.android.chongai.Fragment.StateFragment;
 import me.qiang.android.chongai.Fragment.UserFragment;
+import me.qiang.android.chongai.GlobalApplication;
+import me.qiang.android.chongai.Model.UserSessionManager;
 import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.baidumap.BDMapFragment;
 
@@ -30,6 +32,8 @@ public class MainActivity extends BaseToolbarActivity implements
     private StateFragment stateFragment;
     private UserFragment userFragment;
 
+    private UserSessionManager userSessionManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +41,7 @@ public class MainActivity extends BaseToolbarActivity implements
         setToolbarTile("我的爱宠");
         hideBackButton();
         getWindow().setFormat(PixelFormat.TRANSLUCENT);
+        userSessionManager = GlobalApplication.getUserSessionManager();
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(false);

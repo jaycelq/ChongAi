@@ -3,6 +3,7 @@ package me.qiang.android.chongai.baidumap;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Service;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,13 +12,18 @@ import android.os.Vibrator;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,30 +45,35 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Stroke;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import me.qiang.android.chongai.GlobalApplication;
+import me.qiang.android.chongai.Model.Pet;
+import me.qiang.android.chongai.Model.UserSessionManager;
 import me.qiang.android.chongai.R;
 
 public class BDMapFragment extends Fragment implements View.OnClickListener{
 	static final String TAG = "BDMapFragment";
-	
-	public static final String IMEI = "862950025623748";
+
+	public String IMEI = "862950025623748";
 
     GlobalApplication mApplication;//全局应用
-	
+
 	MapView mMapView;//百度地图视图控件
 	BaiduMap mMapController;//百度地图控制器
-	
+
 	LocationClient mLocationClient;//定位服务的客户端
 	LocationClientOption locationOption;//定位参数
 	BDLocation mCurLocation;//当前位置
-	
+
 	View view = null;
 	EditText etRadius;
 	TextView tvPetName, tvDistance, tvBattery;
@@ -71,18 +82,29 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 	MyToggleButton toggleBtnPetGPS, toggleBtnZhalan;
 	ImageView ivPetName;
 	Vibrator mVibrator;//震动组件
-	
+
 	LatLng petLocation = null;//宠物坐标
 	int radius = 0;//检测半径
 	boolean isOutBound = false;//是否离开限定区域
 	int mSingleChoiceID = -1;//当前选定宠物ID
-	String[] petNames = {"菲比", "莉莉", "金毛"};//宠物名列表（测试）
-	
+
+    private UserSessionManager userSessionManager;
+    private ArrayList<Pet> bindedPetList;
+    private Pet currentPet;
+    private int petSelectedPosition = 0;
+    private Context context;
+    private PetListAdapter petListAdapter;
+
 	Timer timer = null;
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		view = inflater.inflate(R.layout.fragment_bdmap, container, false);
+
+        context = getActivity();
+        userSessionManager = GlobalApplication.getUserSessionManager();
+        bindedPetList = userSessionManager.getBindedPetList();
+        currentPet = bindedPetList.get(0);
 
         /**全局Application初始化，尽量在setContentView之前初始化 */
         mApplication = GlobalApplication.GetInstance();
@@ -102,6 +124,7 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 
         /**UI初始化*/
         tvPetName = (TextView) view.findViewById(R.id.tv_petname);
+        tvPetName.setText(currentPet.getPetName());
         tvDistance = (TextView) view.findViewById(R.id.tv_distance);
         tvBattery = (TextView) view.findViewById(R.id.tv_battery);
         etRadius = (EditText) view.findViewById(R.id.et_radius);
@@ -164,12 +187,12 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 
 		return view;
 	}
-	
+
 	@SuppressLint("HandlerLeak")
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
+
 		/**地图视图、控制器初始化 */
 		mMapController = mMapView.getMap();//百度地图控制器
 		initMapStatus();
@@ -209,7 +232,7 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 								distance = updateDistance();
 								//视图移动到宠物位置
 //								mMapController.setMapStatus(MapStatusUpdateFactory.newLatLng(petLocation));
-								Toast.makeText(getActivity(), "宠物坐标纬度：" + petLocation.latitude + 
+								Toast.makeText(getActivity(), "宠物坐标纬度：" + petLocation.latitude +
 										"；经度：" + petLocation.longitude, Toast.LENGTH_LONG).show();
 							}
 						}
@@ -227,17 +250,17 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 							tvBattery.setText(battery + "%");
 						}
 						//从json获取宠物名
-						String petName = JsonProcess.ParseJsonForPetName(jsonObject);
-						if (petName != null) {
-							tvPetName.setText(petName);
-						}
+//						String petName = JsonProcess.ParseJsonForPetName(jsonObject);
+//						if (petName != null) {
+//							tvPetName.setText(petName);
+//						}
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 			}
 		});
-		
+
 		/**开启POST请求获取json数据（转移到OnStart） */
 //		timer = new Timer();
 //		timer.scheduleAtFixedRate(new TimerTask() {
@@ -246,9 +269,9 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 //				JsonProcess.RequestForString(getActivity());
 //			}
 //		}, 3 * 1000, 20 * 1000);//每20s发送一次请求
-		
+
 	}
-	
+
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.btn_locate) {
@@ -266,7 +289,7 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 			showPetListDialog();
 		}
 	}
-	
+
 	/**从字符串提取整（格式判断与异常处理）
 	 * @param s
 	 * @return
@@ -284,7 +307,7 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 		Toast.makeText(getActivity(), "请输入距离", Toast.LENGTH_SHORT).show();
 		return -1;
 	}
-	
+
 	/**更新人宠距离
 	 * @return 失败将返回-1
 	 */
@@ -304,80 +327,81 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 				Toast.makeText(getActivity(), "距离计算失败", Toast.LENGTH_SHORT).show();
 				return -1d;
 			}
-			
+
 		}
 		return distance;
 	}
-	
+
 	/**创建并显示宠物越界提醒对话框
 	 */
 	private void showPetOutBoundAlertDialog(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//		builder.setIcon(R.drawable.icon);  
-        builder.setTitle("您的宠物已跑出栅栏！");  
-        builder.setPositiveButton("开启精准定位", new DialogInterface.OnClickListener() {  
-            public void onClick(DialogInterface dialog, int whichButton) {  
+//		builder.setIcon(R.drawable.icon);
+        builder.setTitle("您的宠物已跑出栅栏！");
+        builder.setPositiveButton("开启精准定位", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
 //                new AlertDialog.Builder(getActivity()).setMessage("开启精准定位").show();
             	Toast.makeText(getActivity(), "开启精准定位", Toast.LENGTH_SHORT).show();
-            }  
-        });  
-        builder.setNegativeButton("知道了", new DialogInterface.OnClickListener() {  
-            public void onClick(DialogInterface dialog, int whichButton) {  
+            }
+        });
+        builder.setNegativeButton("知道了", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
 //            	new AlertDialog.Builder(getActivity()).setMessage("知道了").show();
                 toggleBtnZhalan.turnoff();
                 mMapController.clear();
                 drawCircleOnReceiveLocation(radius);
                 drawPetIcon(petLocation);
             	Toast.makeText(getActivity(), "知道了", Toast.LENGTH_SHORT).show();
-            }  
-        });  
-        builder.create().show();  
+            }
+        });
+        builder.create().show();
 	}
-	
+
 	/**创建并显示宠物列表选择对话框
 	 */
-	private void showPetListDialog(){
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());   
-		 
-//		builder.setIcon(R.drawable.pet_median);  
-	    builder.setTitle("请选择您的宠物");  
-	    builder.setSingleChoiceItems(petNames, 0, new DialogInterface.OnClickListener() {  
-	        public void onClick(DialogInterface dialog, int whichButton) {  
-                mSingleChoiceID = whichButton;
-	        }  
-	    });  
-	    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {  
-	        public void onClick(DialogInterface dialog, int whichButton) {  
-	            if(mSingleChoiceID != -1) {
-	            	tvPetName.setText(petNames[mSingleChoiceID]);
-	            	Toast.makeText(getActivity(), "切换到宠物：" + petNames[mSingleChoiceID], Toast.LENGTH_SHORT).show();
-	            }  
-	        }  
-	    });  
-	    builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {  
-	        public void onClick(DialogInterface dialog, int whichButton) {  
-	        }  
-	    });  
-	    builder.create().show();
-	}
-	
+    private void showPetListDialog(){
+        final AlertDialog.Builder alertDialog = new AlertDialog
+                .Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View convertView = (View) inflater.inflate(R.layout.basic_listview, null);
+        alertDialog.setView(convertView);
+        alertDialog.setTitle("选择宠物");
+        final AlertDialog petListAlertDialog = alertDialog.create();
+        ListView lv = (ListView) convertView.findViewById(R.id.basic_list);
+        petListAdapter = new PetListAdapter();
+        lv.setAdapter(petListAdapter);
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    petSelectedPosition = position;
+                    petListAdapter.notifyDataSetChanged();
+                    Pet pet = bindedPetList.get(position);
+                    currentPet = pet;
+                    tvPetName.setText(currentPet.petName);
+                    IMEI = currentPet.getImei();
+                    petListAlertDialog.dismiss();
+            }
+        });
+        petListAlertDialog.show();
+    }
+
 	/**设置地图状态
 	 */
 	private void initMapStatus() {
 		mMapView.showZoomControls(false);//取消缩放控件
-		
+
 		//MapStatusUpdateFactory生成地图状态将要发生的变化
 		MapStatusUpdate msu = MapStatusUpdateFactory.zoomTo(17.0f);//设置缩放级别
 		//setMapStatus更新地图状态
 		mMapController.setMapStatus(msu);
-		
+
 		//MapStatus定义地图状态，MapStatus.Builder为地图状态构造器
 		MapStatus mapStatus = new MapStatus.Builder(mMapController.getMapStatus()).rotate(0).build();
 		MapStatusUpdate u = MapStatusUpdateFactory.newMapStatus(mapStatus);//newMapStatus设置地图新状态
 		//animateMapStatus以动画方式更新地图状态，动画耗时 300 ms
 		mMapController.animateMapStatus(u);
 	}
-	
+
 	/**当获取新的位置信息时，进行相关处理
 	 */
 	private void locatingOnReceiveLocation() {
@@ -403,7 +427,7 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 		MapStatusUpdate u = MapStatusUpdateFactory.newLatLng(ll);//newLatLng设置地图新中心点
 		mMapController.animateMapStatus(u);//animateMapStatus以动画方式更新地图状态，动画耗时 300 ms
 	}
-	
+
 	/**绘制以当前位置为圆心的圆
 	 */
 	private void drawCircleOnReceiveLocation(int radius) {
@@ -422,7 +446,7 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 			mMapController.addOverlay(circleOverlayOptions);//向地图添加一个 Overlay
 		}
 	}
-	
+
 	/**在给定坐标绘制宠物头像
 	 * @param petLocation
 	 */
@@ -437,7 +461,7 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 			}
 		}
 	}
-	
+
 	/**绘制模拟的点
 	 */
 //	private void drawDotOnReceiveLocation(double lat, double lng) {
@@ -448,7 +472,7 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 //			.color(0xFF0000FF);//设置圆点的颜色
 //		mMapController.addOverlay(ooDot);
 //	}
-	
+
 	/**设置定位参数
 	 * @param option
 	 */
@@ -461,7 +485,7 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 		option.setAddrType("all");//locating results include all address infos
 		option.setIsNeedAddress(true);//include address infos
 	}
-	
+
 	@Override
     public void onStart() {
     	super.onStart();
@@ -474,21 +498,21 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 			}
 		}, 3 * 1000, 20 * 1000);//每20s发送一次请求
     }
-	
+
     @Override
-	public void onResume() {  
-        super.onResume();  
-        //在activity执行onResume时执行mMapView.onResume()，实现地图生命周期管理  
+	public void onResume() {
+        super.onResume();
+        //在activity执行onResume时执行mMapView.onResume()，实现地图生命周期管理
         mMapView.onResume();
     }
-    
+
     @Override
-	public void onPause() {  
-        super.onPause();  
-        //在activity执行onPause时执行mMapView.onPause()，实现地图生命周期管理  
+	public void onPause() {
+        super.onPause();
+        //在activity执行onPause时执行mMapView.onPause()，实现地图生命周期管理
         mMapView.onPause();
     }
-    
+
     @Override
     public void onStop() {
     	super.onStop();
@@ -497,14 +521,79 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
     }
 
     @Override
-    public void onDestroy() {  
+    public void onDestroy() {
     	// 退出时停止定位sdk
     	mLocationClient.stop();
     	// 关闭定位图层
     	mMapController.setMyLocationEnabled(false);
-    	
+
     	mMapView.onDestroy();
     	mMapView = null;
     	super.onDestroy();
+    }
+
+    public class PetListAdapter extends BaseAdapter {
+
+        private LayoutInflater inflater;
+
+        PetListAdapter() {
+            inflater = getActivity().getLayoutInflater();
+        }
+
+        @Override
+        public int getCount() {
+            return bindedPetList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            final ViewHolder holder;
+            View view = convertView;
+
+            if (view == null) {
+                Log.i("GetView", position + " " + petSelectedPosition);
+                view = inflater.inflate(R.layout.pet_choose_item, parent, false);
+                holder = new ViewHolder();
+                assert view != null;
+                holder.petPhoto = (CircleImageView) view.findViewById(R.id.pet_photo);
+                holder.petName = (TextView) view.findViewById(R.id.pet_name);
+                holder.petSelected = (ImageView) view.findViewById(R.id.pet_selected);
+                view.setTag(holder);
+            } else {
+                holder = (ViewHolder) view.getTag();
+            }
+
+            Pet pet = bindedPetList.get(position);
+            Picasso.with(context)
+                    .load(pet.getPetPhoto())
+                    .fit()
+                    .centerCrop()
+                    .into(holder.petPhoto);
+
+            holder.petName.setText(pet.getPetName());
+
+            if (position == petSelectedPosition)
+                holder.petSelected.setImageResource(R.drawable.dir_choose);
+            else
+                holder.petSelected.setImageResource(android.R.color.transparent);
+
+            return view;
+        }
+    }
+
+    static class ViewHolder {
+        CircleImageView petPhoto;
+        TextView petName;
+        ImageView petSelected;
     }
 }

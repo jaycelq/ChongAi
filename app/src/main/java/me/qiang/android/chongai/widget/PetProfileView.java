@@ -210,6 +210,7 @@ public class PetProfileView extends RelativeLayout {
                         Intent intent = new Intent();
                         intent.putExtra(Constants.Pet.PET_UPDATE_RESULT, pet.getPetId());
                         imeiInputDialog.dismiss();
+                        petDeviceStatus.setText("点击更改设备");
                     }
                 } catch (JSONException ex) {
                 }
