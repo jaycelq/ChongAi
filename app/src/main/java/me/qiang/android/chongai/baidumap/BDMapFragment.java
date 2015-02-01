@@ -175,7 +175,7 @@ public class BDMapFragment extends Fragment implements View.OnClickListener{
 		initMapStatus();
 		//开启定位图层
 		mMapController.setMyLocationEnabled(true);//setMyLocationEnabled设置是否允许定位图层
-		
+
 		/**定位初始化 */
 		//定位服务的客户端，从BDApplication获取全局LocationClient
 		mLocationClient = ((GlobalApplication)getActivity().getApplication()).mLocationClient;

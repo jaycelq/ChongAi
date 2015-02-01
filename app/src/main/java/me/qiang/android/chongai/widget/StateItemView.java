@@ -25,6 +25,8 @@ import me.qiang.android.chongai.Constants;
 import me.qiang.android.chongai.GlobalApplication;
 import me.qiang.android.chongai.Model.Pet;
 import me.qiang.android.chongai.Model.StateItem;
+import me.qiang.android.chongai.Model.User;
+import me.qiang.android.chongai.Model.UserSessionManager;
 import me.qiang.android.chongai.R;
 import me.qiang.android.chongai.util.ActivityTransition;
 import me.qiang.android.chongai.util.RequestServer;
@@ -34,6 +36,8 @@ import me.qiang.android.chongai.util.RequestServer;
  */
 public class StateItemView extends LinearLayout {
     private Context context;
+    private UserSessionManager userSessionManager;
+    private User currentUser;
 
     public CircleImageView stateOwnerPhoto;
     public TextView stateOwnerName;
@@ -64,6 +68,8 @@ public class StateItemView extends LinearLayout {
     public StateItemView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         this.context = context;
+        userSessionManager = GlobalApplication.getUserSessionManager();
+        currentUser = userSessionManager.getCurrentUser();
 
         LayoutInflater.from(context).inflate(R.layout.state_item, this, true);
 
@@ -101,23 +107,29 @@ public class StateItemView extends LinearLayout {
 
         stateOwnerLocation.setText(stateItem.getStateOwnerLocation());
 
-        if(stateItem.isFollowedStateOwner())
-            isFollowed.setText("√ 已关注");
-        else
-            isFollowed.setText("+ 关注");
+        if(stateItem.getStateOwnerId() == currentUser.getUserId()){
+            isFollowed.setVisibility(GONE);
+        }
+        else {
+            isFollowed.setVisibility(VISIBLE);
+            if (stateItem.isFollowedStateOwner())
+                isFollowed.setText("√ 已关注");
+            else
+                isFollowed.setText("+ 关注");
 
-        isFollowed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isFollowed.setClickable(false);
-                if(!stateItem.isFollowedStateOwner()) {
-                    Log.i("Follow", "onclick");
-                    ((BaseToolbarActivity)context).showProgressDialog("正在处理...");
-                    RequestServer.follow(stateItem.getStateOwnerId(), newFollowCallback(isFollowed));
+            isFollowed.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    isFollowed.setClickable(false);
+                    if (!stateItem.isFollowedStateOwner()) {
+                        Log.i("Follow", "onclick");
+                        ((BaseToolbarActivity) context).showProgressDialog("正在处理...");
+                        RequestServer.follow(stateItem.getStateOwnerId(), newFollowCallback(isFollowed));
+                    }
+                    //TODO: deal with cancel follow action
                 }
-                //TODO: deal with cancel follow action
-            }
-        });
+            });
+        }
 
         statePetName.setText(stateItem.getStatePetName());
         statePetType.setText(stateItem.getStatePetType());
