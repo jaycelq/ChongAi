@@ -3,6 +3,7 @@ package me.qiang.android.chongai.Activity;
 import android.app.ProgressDialog;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,6 +26,10 @@ public class BaseToolbarActivity extends ActionBarActivity {
         mToolbarTitle = (TextView) findViewById(R.id.toolbar_title);
         barProgressDialog = new ProgressDialog(this);
         barProgressDialog.setProgressStyle(barProgressDialog.STYLE_SPINNER);
+        if(mToolbarBackButton != null) {
+            enableBackButton();
+            Log.i("BACKBUTTON", mToolbarBackButton.toString());
+        }
 
         if(mToolbar != null) {
             setSupportActionBar(mToolbar);
@@ -46,10 +51,6 @@ public class BaseToolbarActivity extends ActionBarActivity {
                 onBackPressed();
             }
         });
-    }
-
-    public void disableBackButton() {
-        mToolbarBackButton.setClickable(false);
     }
 
     public void hideBackButton() {
